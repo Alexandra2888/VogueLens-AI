@@ -9,12 +9,14 @@ const config = {
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   testEnvironment: 'jest-environment-jsdom',
   moduleNameMapper: {
-    '^@/components/(.*)$': '<rootDir>/src/components/$1',
-    '^@/lib/(.*)$': '<rootDir>/src/lib/$1',
+    '^@/(.*)$': '<rootDir>/app/$1',
+    '^@/components/(.*)$': '<rootDir>/components/$1',
+    '^@/lib/(.*)$': '<rootDir>/lib/$1'
   },
-  coverageProvider: 'v8',
-  testMatch: ['**/*.test.ts', '**/*.test.tsx'],
-  roots: ['<rootDir>/src/', '<rootDir>/__tests__/'],
+  testMatch: [
+    '**/__tests__/**/*.test.{js,jsx,ts,tsx}',
+    '**/*.test.{js,jsx,ts,tsx}'
+  ]
 };
 
 module.exports = createJestConfig(config);

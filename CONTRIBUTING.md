@@ -48,8 +48,7 @@ Enhancement suggestions are tracked as GitHub issues. When creating an enhanceme
 
 1. Clone the repository
 ```bash
-git clone https://github.com/Alexandra2888/VogueLens-AI
-```
+git clone git@github.com:Alexandra2888/VogueLens-AI.git
 
 2. Create a branch
 ```bash
