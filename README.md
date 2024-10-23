@@ -20,6 +20,7 @@ VogueLens AI is an intelligent fashion advisor that helps users make better styl
 ## 🛠 Tech Stack
 
 ### Frontend
+
 - Next.js 14 with TypeScript
 - Tailwind CSS + shadcn/ui
 - Zustand for state management
@@ -27,12 +28,14 @@ VogueLens AI is an intelligent fashion advisor that helps users make better styl
 - Code splitting and lazy loading
 
 ### Backend
+
 - Next.js API routes
 - Supabase + Prisma ORM
 - Cloud Vision API + Replicate + OpenAI
 - API rate limiting
 
 ### Infrastructure
+
 - Docker
 - Vercel hosting
 - Cloudinary for image management
@@ -41,6 +44,7 @@ VogueLens AI is an intelligent fashion advisor that helps users make better styl
 - CDN for static assets
 
 ### Testing
+
 - Jest + React Testing Library for unit tests
 - Playwright for E2E testing
 
@@ -56,22 +60,26 @@ npm >= 9.0.0
 ### Installation
 
 1. Clone the repository
+
 ```bash
 git clone git@github.com:Alexandra2888/VogueLens-AI.git
 cd voguelens-ai
 ```
 
 2. Install dependencies
+
 ```bash
 npm install
 ```
 
 3. Set up environment variables
+
 ```bash
 cp .env.example .env.local
 ```
 
 Fill in your environment variables:
+
 ```env
 # Authentication
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
@@ -100,12 +108,14 @@ NEXT_PUBLIC_SENTRY_DSN=
 ```
 
 4. Initialize the database
+
 ```bash
 npx prisma generate
 npx prisma db push
 ```
 
 5. Run the development server
+
 ```bash
 npm run dev
 ```
@@ -135,11 +145,13 @@ voguelens-ai/
 ## 🧪 Testing
 
 Run unit tests:
+
 ```bash
 npm run test
 ```
 
 Run E2E tests:
+
 ```bash
 npm run test:e2e
 ```
@@ -177,20 +189,25 @@ npm run test:e2e     # Run E2E tests
 
 Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct and development process.
 
-
 1. Fork the repository
 2. Create your feature branch
+
 ```bash
 git checkout -b feature/amazing-feature
 ```
+
 3. Commit your changes
+
 ```bash
 git commit -m 'feat: add amazing feature'
 ```
+
 4. Push to the branch
+
 ```bash
 git push origin feature/amazing-feature
 ```
+
 5. Open a Pull Request
 
 Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct and development process.

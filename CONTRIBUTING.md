@@ -47,7 +47,8 @@ Enhancement suggestions are tracked as GitHub issues. When creating an enhanceme
 ## Development Process
 
 1. Clone the repository
-```bash
+
+````bash
 git clone git@github.com:Alexandra2888/VogueLens-AI.git
 
 2. Create a branch
@@ -55,15 +56,17 @@ git clone git@github.com:Alexandra2888/VogueLens-AI.git
 git checkout -b feature/my-feature
 # or
 git checkout -b bugfix/my-bugfix
-```
+````
 
 3. Make your changes and commit
+
 ```bash
 git add .
 git commit -m "feat: add some feature"
 ```
 
 Follow our commit message conventions:
+
 - `feat:` for new features
 - `fix:` for bug fixes
 - `docs:` for documentation changes
@@ -73,6 +76,7 @@ Follow our commit message conventions:
 - `chore:` for maintenance tasks
 
 4. Push to your fork
+
 ```bash
 git push origin feature/my-feature
 ```
@@ -82,21 +86,25 @@ git push origin feature/my-feature
 ## Development Setup
 
 1. Install dependencies
+
 ```bash
 npm install
 ```
 
 2. Set up environment variables
+
 ```bash
 cp .env.example .env.local
 ```
 
 3. Run development server
+
 ```bash
 npm run dev
 ```
 
 4. Run tests
+
 ```bash
 npm run test        # Unit tests
 npm run test:e2e    # E2E tests
@@ -143,6 +151,7 @@ npm run test:e2e    # E2E tests
 ## Review Process
 
 Pull Requests are reviewed by:
+
 1. Automated checks (tests, linting)
 2. Code review by maintainers
 3. Final approval by a maintainer
