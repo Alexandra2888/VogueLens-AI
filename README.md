@@ -40,7 +40,7 @@ VogueLens AI is an intelligent fashion advisor that helps users make better styl
 - Vercel hosting
 - Cloudinary for image management
 - Redis/Vercel Edge Caching
-- Sentry for monitoring
+- Vercel's Built-in Error Monitoring
 - CDN for static assets
 
 ### Testing
@@ -80,7 +80,7 @@ cp .env.example .env.local
 
 Fill in your environment variables:
 
-```env
+````env
 # Authentication
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
 CLERK_SECRET_KEY=
@@ -103,16 +103,14 @@ CLOUDINARY_API_SECRET=
 UPSTASH_REDIS_REST_URL=
 UPSTASH_REDIS_REST_TOKEN=
 
-# Sentry
-NEXT_PUBLIC_SENTRY_DSN=
-```
+
 
 4. Initialize the database
 
 ```bash
 npx prisma generate
 npx prisma db push
-```
+````
 
 5. Run the development server
 
@@ -178,7 +176,7 @@ npm run test:e2e     # Run E2E tests
 
 ## 📈 Monitoring
 
-- Sentry for error tracking
+- Vercel's Built-in Error Monitoring
 - Web Vitals monitoring
 - API performance monitoring
 - User analytics
