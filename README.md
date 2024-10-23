@@ -1,0 +1,222 @@
+# VogueLens AI 🎭
+
+VogueLens AI is an intelligent fashion advisor that helps users make better style choices through AI-powered analysis. Upload your clothing items, get color palette insights, style recommendations, and create your perfect wardrobe.
+
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Next.js](https://img.shields.io/badge/Next.js-14-black)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.0-38B2AC)](https://tailwindcss.com/)
+
+## ✨ Features
+
+- 🤖 AI-powered style analysis
+- 🎨 Color palette extraction
+- 👗 Style classification
+- 📅 Occasion-based recommendations
+- 📱 Responsive design
+- 🌓 Dark mode support
+- ⚡️ Performance optimized
+
+## 🛠 Tech Stack
+
+### Frontend
+- Next.js 14 with TypeScript
+- Tailwind CSS + shadcn/ui
+- Zustand for state management
+- Next.js Image optimization
+- Code splitting and lazy loading
+
+### Backend
+- Next.js API routes
+- Supabase + Prisma ORM
+- Cloud Vision API + Replicate + OpenAI
+- API rate limiting
+
+### Infrastructure
+- Docker
+- Vercel hosting
+- Cloudinary for image management
+- Redis/Vercel Edge Caching
+- Sentry for monitoring
+- CDN for static assets
+
+### Testing
+- Jest + React Testing Library for unit tests
+- Playwright for E2E testing
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+```bash
+node >= 18.0.0
+npm >= 9.0.0
+```
+
+### Installation
+
+1. Clone the repository
+```bash
+git clone https://github.com/Alexandra2888/VogueLens-AI
+cd voguelens-ai
+```
+
+2. Install dependencies
+```bash
+npm install
+```
+
+3. Set up environment variables
+```bash
+cp .env.example .env.local
+```
+
+Fill in your environment variables:
+```env
+# Authentication
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
+CLERK_SECRET_KEY=
+
+# Database
+DATABASE_URL=
+
+# OpenAI
+OPENAI_API_KEY=
+
+# Google Cloud Vision
+GOOGLE_APPLICATION_CREDENTIALS=
+
+# Cloudinary
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+
+# Redis
+UPSTASH_REDIS_REST_URL=
+UPSTASH_REDIS_REST_TOKEN=
+
+# Sentry
+NEXT_PUBLIC_SENTRY_DSN=
+```
+
+4. Initialize the database
+```bash
+npx prisma generate
+npx prisma db push
+```
+
+5. Run the development server
+```bash
+npm run dev
+```
+
+Visit [http://localhost:3000](http://localhost:3000)
+
+## 📦 Project Structure
+
+```
+voguelens-ai/
+├── src/
+│   ├── app/              # Next.js 14 app directory
+│   ├── components/       # React components
+│   │   ├── ui/          # UI components
+│   │   └── features/    # Feature components
+│   ├── lib/             # Utility functions
+│   ├── styles/          # Global styles
+│   └── types/           # TypeScript types
+├── prisma/              # Database schema
+├── public/              # Static assets
+├── tests/               # Test files
+│   ├── unit/
+│   └── e2e/
+└── docs/               # Documentation
+```
+
+## 🧪 Testing
+
+Run unit tests:
+```bash
+npm run test
+```
+
+Run E2E tests:
+```bash
+npm run test:e2e
+```
+
+## 🔧 Scripts
+
+```bash
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run start        # Start production server
+npm run lint         # Run ESLint
+npm run format       # Run Prettier
+npm run test         # Run tests
+npm run test:e2e     # Run E2E tests
+```
+
+## 🔒 Security
+
+- API rate limiting implemented
+- Secure headers configured
+- Input validation with Zod
+- Image upload restrictions
+- Authentication with Clerk
+
+## 📈 Monitoring
+
+- Sentry for error tracking
+- Web Vitals monitoring
+- API performance monitoring
+- User analytics
+
+## 🤝 Contributing
+
+## Contributing
+
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct and development process.
+
+
+1. Fork the repository
+2. Create your feature branch
+```bash
+git checkout -b feature/amazing-feature
+```
+3. Commit your changes
+```bash
+git commit -m 'feat: add amazing feature'
+```
+4. Push to the branch
+```bash
+git push origin feature/amazing-feature
+```
+5. Open a Pull Request
+
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct and development process.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- [Next.js](https://nextjs.org/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [shadcn/ui](https://ui.shadcn.com/)
+- [Vercel](https://vercel.com/)
+- [OpenAI](https://openai.com/)
+
+## 📞 Support
+
+For support, email moldovan.alexandra28@gmail.com.
+
+## 🔮 Roadmap
+
+- [ ] Virtual wardrobe functionality
+- [ ] Outfit generator
+- [ ] Trend matching
+
+## 🌟 Show your support
+
+Give a ⭐️ if this project helped you!

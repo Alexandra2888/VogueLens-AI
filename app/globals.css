@@ -1,0 +1,86 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Light theme variables */
+    --background: 255 255 255;
+    --background-secondary: 241 250 238;
+    --card: 255 255 255;
+    --text-primary: 58 58 58;
+    --text-secondary: 29 53 87;
+    --text-muted: 107 114 128;
+    --border: 209 213 219;
+  }
+
+  .dark {
+    /* Dark theme variables */
+    --background: 31 41 55;
+    --background-secondary: 17 24 39;
+    --card: 55 65 81;
+    --text-primary: 241 250 238;
+    --text-secondary: 168 218 220;
+    --text-muted: 156 163 175;
+    --border: 75 85 99;
+  }
+}
+
+@layer components {
+  /* Button styles */
+  .btn-primary {
+    @apply bg-secondary hover:bg-secondary-hover text-white 
+           px-4 py-2 rounded-lg transition-colors duration-200
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply bg-highlight hover:bg-highlight-hover text-navy
+           px-4 py-2 rounded-lg transition-colors duration-200
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* Card styles */
+  .card {
+    @apply bg-card-light dark:bg-card-dark
+           border border-border-light dark:border-border-dark
+           rounded-lg shadow-sm;
+  }
+
+  /* Input styles */
+  .input {
+    @apply bg-background-light dark:bg-background-dark
+           border border-border-light dark:border-border-dark
+           text-text-primary-light dark:text-text-primary-dark
+           rounded-lg px-3 py-2 focus:ring-2 focus:ring-highlight
+           focus:border-transparent;
+  }
+
+  /* Link styles */
+  .link {
+    @apply text-navy hover:text-secondary dark:text-highlight
+           dark:hover:text-secondary transition-colors duration-200;
+  }
+}
+
+/* Smooth transitions for theme switching */
+.transition-theme {
+  @apply transition-colors duration-200;
+}
+
+/* Typography styles */
+h1 {
+  @apply text-4xl font-bold text-text-primary-light dark:text-text-primary-dark;
+}
+
+h2 {
+  @apply text-3xl font-semibold text-text-primary-light dark:text-text-primary-dark;
+}
+
+h3 {
+  @apply text-2xl font-semibold text-text-primary-light dark:text-text-primary-dark;
+}
+
+p {
+  @apply text-text-primary-light dark:text-text-primary-dark;
+}
