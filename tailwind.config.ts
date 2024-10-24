@@ -3,27 +3,30 @@ import forms from '@tailwindcss/forms';
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  darkMode: 'class',
+  darkMode: ['class', 'class'],
   content: [
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
     './app/**/*.{js,ts,jsx,tsx,mdx}',
+    './@/**/*.{ts,tsx}',
   ],
   theme: {
     extend: {
       colors: {
-        // Brand Colors
         primary: {
-          DEFAULT: '#3A3A3A',
+          DEFAULT: 'hsl(var(--primary))',
           hover: '#2A2A2A',
+          foreground: 'hsl(var(--primary-foreground))',
         },
         secondary: {
-          DEFAULT: '#E63946',
+          DEFAULT: 'hsl(var(--secondary))',
           hover: '#D32F2F',
+          foreground: 'hsl(var(--secondary-foreground))',
         },
         accent: {
-          DEFAULT: '#F1FAEE',
+          DEFAULT: 'hsl(var(--accent))',
           hover: '#E1EAE0',
+          foreground: 'hsl(var(--accent-foreground))',
         },
         highlight: {
           DEFAULT: '#A8DADC',
@@ -33,8 +36,6 @@ module.exports = {
           DEFAULT: '#1D3557',
           hover: '#152848',
         },
-
-        // Semantic Colors
         success: {
           light: '#4CAF50',
           dark: '#10B981',
@@ -51,12 +52,7 @@ module.exports = {
           light: '#A8DADC',
           dark: '#60A5FA',
         },
-
-        // Background Colors
-        background: {
-          light: '#FFFFFF',
-          dark: '#1F2937',
-        },
+        background: 'hsl(var(--background))',
         'background-secondary': {
           light: '#F1FAEE',
           dark: '#111827',
@@ -64,9 +60,9 @@ module.exports = {
         card: {
           light: '#FFFFFF',
           dark: '#374151',
+          DEFAULT: 'hsl(var(--card))',
+          foreground: 'hsl(var(--card-foreground))',
         },
-
-        // Text Colors
         text: {
           primary: {
             light: '#3A3A3A',
@@ -81,11 +77,28 @@ module.exports = {
             dark: '#9CA3AF',
           },
         },
-
-        // Border Colors
-        border: {
-          light: '#D1D5DB',
-          dark: '#4B5563',
+        border: 'hsl(var(--border))',
+        foreground: 'hsl(var(--foreground))',
+        popover: {
+          DEFAULT: 'hsl(var(--popover))',
+          foreground: 'hsl(var(--popover-foreground))',
+        },
+        muted: {
+          DEFAULT: 'hsl(var(--muted))',
+          foreground: 'hsl(var(--muted-foreground))',
+        },
+        destructive: {
+          DEFAULT: 'hsl(var(--destructive))',
+          foreground: 'hsl(var(--destructive-foreground))',
+        },
+        input: 'hsl(var(--input))',
+        ring: 'hsl(var(--ring))',
+        chart: {
+          '1': 'hsl(var(--chart-1))',
+          '2': 'hsl(var(--chart-2))',
+          '3': 'hsl(var(--chart-3))',
+          '4': 'hsl(var(--chart-4))',
+          '5': 'hsl(var(--chart-5))',
         },
       },
       fontFamily: {
@@ -101,7 +114,12 @@ module.exports = {
         '3xl': ['1.875rem', { lineHeight: '2.25rem' }],
         '4xl': ['2.25rem', { lineHeight: '2.5rem' }],
       },
+      borderRadius: {
+        lg: 'var(--radius)',
+        md: 'calc(var(--radius) - 2px)',
+        sm: 'calc(var(--radius) - 4px)',
+      },
     },
   },
-  plugins: [require('@tailwindcss/forms')],
+  plugins: [require('@tailwindcss/forms'), require('tailwindcss-animate')],
 };
