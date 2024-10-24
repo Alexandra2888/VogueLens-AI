@@ -1,3 +1,4 @@
+// app/layout.tsx
 import { Analytics } from '@vercel/analytics/react';
 import { WebVitals } from '../components/WebVitals';
 import { ErrorBoundary } from '../components/ErrorBoundary';
@@ -10,7 +11,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body>
         <ThemeProvider
           attribute="class"
@@ -19,9 +20,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <ErrorBoundary>{children}</ErrorBoundary>
+          <Analytics />
+          <WebVitals />
         </ThemeProvider>
-        <Analytics />
-        <WebVitals />
       </body>
     </html>
   );
