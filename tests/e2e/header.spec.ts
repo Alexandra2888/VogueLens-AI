@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+
 test.describe('Header Navigation', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
@@ -9,9 +10,8 @@ test.describe('Header Navigation', () => {
     // Test mobile view
     await page.setViewportSize({ width: 375, height: 667 });
 
-    // Check mobile logo visibility using the test id
-    const mobileLogo = page.getByTestId('mobile-logo');
-    await expect(mobileLogo).toBeVisible();
+    // Check mobile logo visibility
+    await expect(page.getByTestId('mobile-logo')).toBeVisible();
 
     // Test menu button functionality
     const menuButton = page.getByRole('button', { name: 'Toggle menu' });
@@ -22,17 +22,40 @@ test.describe('Header Navigation', () => {
     await menuButton.click();
     await expect(menuButton).toHaveAttribute('aria-expanded', 'true');
 
-    // Check all navigation items are visible in mobile menu
-    const mobileNav = page.locator('nav').last();
+    // Check navigation items in mobile menu
     for (const item of ['Home', 'Chat', 'Wardrobe']) {
-      await expect(mobileNav.getByRole('link', { name: item })).toBeVisible();
+      // Use a more specific selector for mobile menu items
+      const link = page
+        .locator('nav.md\\:hidden')
+        .getByRole('link', { name: item });
+      await expect(link).toBeVisible();
     }
 
     // Test navigation and menu closing
-    await mobileNav.getByRole('link', { name: 'Chat' }).click();
+    await page
+      .locator('nav.md\\:hidden')
+      .getByRole('link', { name: 'Chat' })
+      .click();
     await expect(page).toHaveURL('/chat');
-    // Menu should close after navigation
     await expect(menuButton).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  test('desktop navigation functionality', async ({ page }) => {
+    // Set desktop viewport
+    await page.setViewportSize({ width: 1024, height: 768 });
+
+    // Check desktop navigation
+    const desktopNav = page.getByTestId('desktop-nav');
+    await expect(desktopNav).toBeVisible();
+
+    // Check all nav items are visible
+    for (const item of ['Home', 'Chat', 'Wardrobe']) {
+      await expect(desktopNav.getByRole('link', { name: item })).toBeVisible();
+    }
+
+    // Test navigation
+    await desktopNav.getByRole('link', { name: 'Chat' }).click();
+    await expect(page).toHaveURL('/chat');
   });
 
   test('theme toggle functionality', async ({ page }) => {
@@ -52,15 +75,18 @@ test.describe('Header Navigation', () => {
   });
 
   test('active link indicators', async ({ page }) => {
-    // Check active state changes on navigation
+    // Use desktop view for consistent testing
+    await page.setViewportSize({ width: 1024, height: 768 });
+
     const paths = ['/', '/chat', '/wardrobe'];
 
     for (const path of paths) {
       await page.goto(path);
       await page.waitForLoadState('networkidle');
 
-      // Get all nav links
-      const links = await page.locator('nav').first().getByRole('link').all();
+      // Check desktop navigation links
+      const desktopNav = page.getByTestId('desktop-nav');
+      const links = await desktopNav.getByRole('link').all();
 
       for (const link of links) {
         const href = await link.getAttribute('href');
@@ -68,6 +94,25 @@ test.describe('Header Navigation', () => {
           await expect(link).toHaveAttribute('aria-current', 'page');
         } else {
           await expect(link).not.toHaveAttribute('aria-current', 'page');
+        }
+      }
+
+      // If in mobile view, also check mobile navigation
+      if (page.viewportSize()?.width! < 768) {
+        const menuButton = page.getByRole('button', { name: 'Toggle menu' });
+        await menuButton.click();
+
+        const mobileLinks = await page
+          .locator('nav.md\\:hidden')
+          .getByRole('link')
+          .all();
+        for (const link of mobileLinks) {
+          const href = await link.getAttribute('href');
+          if (href === path) {
+            await expect(link).toHaveAttribute('aria-current', 'page');
+          } else {
+            await expect(link).not.toHaveAttribute('aria-current', 'page');
+          }
         }
       }
     }

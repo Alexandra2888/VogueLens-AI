@@ -81,7 +81,10 @@ export default function Header() {
         </motion.div>
 
         {/* Desktop Navigation */}
-        <nav className="hidden items-center gap-8 md:flex">
+        <nav
+          className="hidden items-center gap-8 md:flex"
+          data-testid="desktop-nav"
+        >
           {navItems.map((item, i) => (
             <motion.div
               key={item.href}
@@ -96,7 +99,10 @@ export default function Header() {
         </nav>
 
         {/* Mobile Menu Button */}
-        <div className="flex items-center gap-4 md:hidden">
+        <div
+          className="flex items-center gap-4 md:hidden"
+          data-testid="mobile-nav"
+        >
           <ThemeToggle />
           <motion.button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
