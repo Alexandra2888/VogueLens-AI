@@ -1,6 +1,6 @@
 import Header from '../_components/nav/header';
 
-export default function HomePage() {
+export default function ChatPage() {
   return (
     <>
       <Header />
