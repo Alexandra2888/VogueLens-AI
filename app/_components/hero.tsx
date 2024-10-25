@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
+import { Button } from '../../components/ui/button';
 
 const Hero = () => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
@@ -37,7 +38,7 @@ const Hero = () => {
   };
 
   return (
-    <section className="flex justify-center overflow-hidden py-12 lg:py-24">
+    <section className="flex justify-center overflow-hidden pt-12 lg:pt-24">
       <div className="container px-4 md:px-6">
         <div className="grid gap-6 lg:grid-cols-[1fr_500px] lg:gap-12 xl:grid-cols-[1fr_550px]">
           <motion.div
@@ -54,6 +55,17 @@ const Hero = () => {
                 Get personalized fashion advice, outfit recommendations and
                 style tips from our AI-powered chatbot.
               </p>
+              <div className="flex flex-col gap-2 min-[400px]:flex-row">
+                <Button className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-8 text-sm font-medium shadow transition-colors hover:bg-secondary-hover focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 dark:text-primary">
+                  Try Now
+                </Button>
+                <Button
+                  variant="outline"
+                  className="inline-flex h-10 items-center justify-center rounded-md border border-border bg-background px-8 text-sm font-medium text-foreground shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+                >
+                  Learn More
+                </Button>
+              </div>
             </div>
           </motion.div>
 
