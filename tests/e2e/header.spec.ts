@@ -1,7 +1,9 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Header Navigation', () => {
+  // Reset viewport and load the page before each test to ensure a clean state
   test.beforeEach(async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 720 });
     await page.goto('/');
     await page.waitForLoadState('networkidle');
   });
@@ -18,13 +20,13 @@ test.describe('Header Navigation', () => {
     await expect(menuButton).toBeVisible();
     await expect(menuButton).toHaveAttribute('aria-expanded', 'false');
 
-    // Open menu
+    // Open the menu and verify
     await menuButton.click();
     await expect(menuButton).toHaveAttribute('aria-expanded', 'true');
+    await page.waitForSelector('nav.md\\:hidden', { state: 'visible' }); // Wait for the menu to appear
 
     // Check navigation items in mobile menu
     for (const item of ['Home', 'Chat', 'Wardrobe']) {
-      // Use a more specific selector for mobile menu items
       const link = page
         .locator('nav.md\\:hidden')
         .getByRole('link', { name: item });
@@ -38,13 +40,14 @@ test.describe('Header Navigation', () => {
       .click();
     await expect(page).toHaveURL('/chat');
     await expect(menuButton).toHaveAttribute('aria-expanded', 'false');
+    await page.waitForSelector('nav.md\\:hidden', { state: 'hidden' });
   });
 
   test('desktop navigation functionality', async ({ page }) => {
     // Set desktop viewport
     await page.setViewportSize({ width: 1024, height: 768 });
 
-    // Check desktop navigation
+    // Check desktop navigation visibility
     const desktopNav = page.getByTestId('desktop-nav');
     await expect(desktopNav).toBeVisible();
 
