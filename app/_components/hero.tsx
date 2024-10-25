@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 
 const Hero = () => {
-  const [hoveredIndex, setHoveredIndex] = useState(null);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   const images = [
     {
@@ -27,6 +27,14 @@ const Hero = () => {
       height: 360,
     },
   ];
+
+  const handleMouseEnter = (index: number) => {
+    setHoveredIndex(index);
+  };
+
+  const handleMouseLeave = () => {
+    setHoveredIndex(null);
+  };
 
   return (
     <section className="flex justify-center overflow-hidden py-12 lg:py-24">
@@ -59,25 +67,26 @@ const Hero = () => {
               {images.map((image, index) => (
                 <motion.div
                   key={index}
-                  className="absolute rounded-lg border border-zinc-200 shadow-lg"
+                  className="absolute overflow-hidden rounded-lg border border-zinc-200 shadow-lg"
                   style={{
                     width: `${70 - index * 10}%`,
                     height: `${90 - index * 10}%`,
-                    objectFit: 'cover',
                     zIndex: hoveredIndex === index ? 10 : index + 1,
                     right: `${index * 10}%`,
                     top: `${index * 10}%`,
                   }}
-                  onMouseEnter={() => setHoveredIndex(index)}
-                  onMouseLeave={() => setHoveredIndex(null)}
+                  onMouseEnter={() => handleMouseEnter(index)}
+                  onMouseLeave={handleMouseLeave}
                   whileHover={{ scale: 1.05 }}
                   transition={{ duration: 0.3 }}
                 >
                   <Image
                     src={image.src}
                     alt={image.alt}
-                    width={image.width}
-                    height={image.height}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    priority={index === 0}
                   />
                 </motion.div>
               ))}
