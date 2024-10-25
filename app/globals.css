@@ -85,9 +85,9 @@
   }
 
   /* Input styles */
-  .input {
-    @apply border-border-light bg-background-light dark:border-border-dark dark:bg-background-dark rounded-lg border px-3 py-2 text-text-primary-light focus:border-transparent focus:ring-2 focus:ring-highlight dark:text-text-primary-dark;
-  }
+  /*.input {*/
+  /*  @apply border-border-light bg-background-light dark:border-border-dark dark:bg-background-dark rounded-lg border px-3 py-2 text-text-primary-light focus:border-transparent focus:ring-2 focus:ring-highlight dark:text-text-primary-dark;*/
+  /*}*/
 
   /* Link styles */
   .link {
