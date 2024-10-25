@@ -63,8 +63,8 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <header className="fixed w-full border-b border-border bg-background/95 backdrop-blur-md transition-colors">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
+    <header className="fixed z-50 w-full bg-background/95 transition-colors">
+      <div className="mx-auto flex max-w-7xl items-center justify-between border-b border-border px-4 py-4">
         {/* Logo */}
         <motion.div
           className="flex items-center"
@@ -123,10 +123,10 @@ export default function Header() {
 
       {/* Mobile Navigation */}
       <motion.nav
-        className="border-t border-border bg-background md:hidden"
+        className="fixed inset-0 top-14 z-40 bg-secondary dark:bg-primary md:hidden"
         initial={{ height: 0, opacity: 0 }}
         animate={{
-          height: isMenuOpen ? 'auto' : 0,
+          height: isMenuOpen ? '100vh' : 0,
           opacity: isMenuOpen ? 1 : 0,
         }}
         transition={{
@@ -134,7 +134,7 @@ export default function Header() {
           ease: 'easeInOut',
         }}
       >
-        <div className="mx-auto max-w-7xl space-y-4 px-4 py-4">
+        <div className="mx-auto mt-16 max-w-7xl space-y-4 px-4 py-4">
           {navItems.map((item, i) => (
             <motion.div
               key={item.href}
