@@ -1,5 +1,7 @@
-import Footer from 'app/_components/footer';
-import Header from 'app/_components/nav/header';
+import dynamic from 'next/dynamic';
+
+const Footer = dynamic(() => import('app/_components/footer'));
+const Header = dynamic(() => import('app/_components/nav/header'));
 
 const HomeLayout = ({ children }: { children: React.ReactNode }) => {
   return (

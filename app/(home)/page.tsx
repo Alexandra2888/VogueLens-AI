@@ -1,7 +1,9 @@
-import Features from 'app/_components/features';
-import Hero from 'app/_components/hero';
-import HowItWorks from '../_components/how-it-works';
 import Head from 'next/head';
+import dynamic from 'next/dynamic';
+
+const Hero = dynamic(() => import('app/_components/hero'));
+const Features = dynamic(() => import('app/_components/features'));
+const HowItWorks = dynamic(() => import('../_components/how-it-works'));
 
 export default function HomePage() {
   return (
