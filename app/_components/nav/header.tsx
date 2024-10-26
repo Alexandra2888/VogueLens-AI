@@ -12,7 +12,7 @@ import MinimalLogo from '../logo/minimal-logo';
 
 const navItems = [
   { href: '/', label: 'Home' },
-  { href: '/(chat)', label: 'Chat' },
+  { href: '/chat', label: 'Chat' },
   { href: '/wardrobe', label: 'Wardrobe' },
 ];
 

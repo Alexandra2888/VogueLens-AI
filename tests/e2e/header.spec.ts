@@ -38,7 +38,7 @@ test.describe('Header Navigation', () => {
       .locator('nav.md\\:hidden')
       .getByRole('link', { name: 'Chat' })
       .click();
-    await expect(page).toHaveURL('/(chat)');
+    await expect(page).toHaveURL('/chat');
     await expect(menuButton).toHaveAttribute('aria-expanded', 'false');
     await page.waitForSelector('nav.md\\:hidden', { state: 'hidden' });
   });
@@ -58,7 +58,7 @@ test.describe('Header Navigation', () => {
 
     // Test navigation
     await desktopNav.getByRole('link', { name: 'Chat' }).click();
-    await expect(page).toHaveURL('/(chat)');
+    await expect(page).toHaveURL('/chat');
   });
 
   test('theme toggle functionality', async ({ page }) => {
@@ -81,7 +81,7 @@ test.describe('Header Navigation', () => {
     // Use desktop view for consistent testing
     await page.setViewportSize({ width: 1024, height: 768 });
 
-    const paths = ['/', '/(chat)', '/wardrobe'];
+    const paths = ['/', '/chat', '/wardrobe'];
 
     for (const path of paths) {
       await page.goto(path);
