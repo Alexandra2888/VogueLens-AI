@@ -28,7 +28,8 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "setupTests.js"
+    "setupTests.js",
+    "build/types/**/*.ts"
   ],
   "exclude": ["node_modules"]
 }
