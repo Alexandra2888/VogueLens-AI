@@ -21,7 +21,7 @@ test.describe('HowItWorks Component', () => {
     const subtitle = await page.getByTestId('how-it-works-subtitle');
     await expect(subtitle).toBeVisible();
     await expect(subtitle).toHaveText(
-      'Experience fashion advice like never before with our easy-to-use AI chat app'
+      'Experience fashion advice like never before with our easy-to-use AI (chat) app'
     );
   });
 
