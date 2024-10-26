@@ -26,7 +26,7 @@ const HERO_IMAGES = [
   },
 ];
 
-const MainHeroImage = ({ image, onLoad }: any) => (
+const MainHeroImage = ({ image, onLoad }:any) => (
   <div
     className="absolute overflow-hidden rounded-lg border border-zinc-200 shadow-lg"
     style={{
@@ -58,7 +58,7 @@ const AnimatedHeroImage = ({
   isHovered,
   onMouseEnter,
   onMouseLeave,
-}) => (
+}:any) => (
   <motion.div
     className="absolute overflow-hidden rounded-lg border border-zinc-200 shadow-lg"
     style={{
