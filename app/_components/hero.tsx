@@ -5,6 +5,26 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Button } from '../../components/ui/button';
 
+interface HeroImage {
+  src: string;
+  alt: string;
+  width: number;
+  height: number;
+}
+
+interface MainHeroImageProps {
+  image: HeroImage;
+  onLoad: () => void;
+}
+
+interface AnimatedHeroImageProps {
+  image: HeroImage;
+  index: number;
+  isHovered: boolean;
+  onMouseEnter: () => void;
+  onMouseLeave: () => void;
+}
+
 const HERO_IMAGES = [
   {
     src: 'https://res.cloudinary.com/dnpjmrdik/image/upload/v1729791776/img1_rz1swm.avif',
@@ -26,7 +46,7 @@ const HERO_IMAGES = [
   },
 ];
 
-const MainHeroImage = ({ image, onLoad }:any) => (
+const MainHeroImage = ({ image, onLoad }:MainHeroImageProps) => (
   <div
     className="absolute overflow-hidden rounded-lg border border-zinc-200 shadow-lg"
     style={{
@@ -58,7 +78,7 @@ const AnimatedHeroImage = ({
   isHovered,
   onMouseEnter,
   onMouseLeave,
-}:any) => (
+}:AnimatedHeroImageProps) => (
   <motion.div
     className="absolute overflow-hidden rounded-lg border border-zinc-200 shadow-lg"
     style={{
