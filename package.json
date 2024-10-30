@@ -26,6 +26,7 @@
     ]
   },
   "dependencies": {
+    "@clerk/nextjs": "^6.0.2",
     "@google-cloud/vision": "^4.3.2",
     "@hookform/resolvers": "^3.9.0",
     "@prisma/client": "^5.21.1",

@@ -9,6 +9,8 @@ import { usePathname } from 'next/navigation';
 import { ThemeToggle } from './theme-toggle';
 import Logo from '../logo/logo';
 import MinimalLogo from '../logo/minimal-logo';
+import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
+import SignInCustomButton from './sign-in-custom-button';
 
 const navItems = [
   { href: '/', label: 'Home' },
@@ -95,6 +97,18 @@ export default function Header() {
               <NavLink href={item.href} label={item.label} />
             </motion.div>
           ))}
+          <SignedOut>
+            <SignInCustomButton isMobile={false} />
+          </SignedOut>
+          <SignedIn>
+            <UserButton
+              appearance={{
+                elements: {
+                  avatarBox: 'w-10 h-10',
+                },
+              }}
+            />
+          </SignedIn>
           <ThemeToggle />
         </nav>
 
@@ -103,6 +117,18 @@ export default function Header() {
           className="flex items-center gap-4 md:hidden"
           data-testid="mobile-nav"
         >
+          <SignedOut>
+            <SignInCustomButton isMobile={true} />
+          </SignedOut>
+          <SignedIn>
+            <UserButton
+              appearance={{
+                elements: {
+                  avatarBox: 'w-8 h-8',
+                },
+              }}
+            />
+          </SignedIn>
           <ThemeToggle />
           <motion.button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
