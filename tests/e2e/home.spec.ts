@@ -3,13 +3,10 @@ import { test, expect } from '@playwright/test';
 test('home page', async ({ page }) => {
   await page.goto('/');
 
-  // Wait for the page to load
+  // Wait for page to load
   await page.waitForLoadState('networkidle');
 
-  // Check title
-  await expect(page).toHaveTitle('VogueLens AI');
-
-  // Check heading
-  const heading = page.locator('h1');
-  await expect(heading).toHaveText('VogueLens AI');
+  // Check if navigation exists
+  const nav = page.locator('nav.hidden.md\\:flex');
+  await expect(nav).toBeVisible();
 });

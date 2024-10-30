@@ -1,20 +1,16 @@
-import { Analytics } from '@vercel/analytics/react';
-import { WebVitals } from '../../components/WebVitals';
-import { ErrorBoundary } from '../../components/ErrorBoundary';
-import '../globals.css';
+import dynamic from 'next/dynamic';
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+const Footer = dynamic(() => import('app/_components/footer'));
+const Header = dynamic(() => import('app/_components/nav/header'));
+
+const HomeLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <html lang="en">
-      <body>
-        <ErrorBoundary>{children}</ErrorBoundary>
-        <Analytics />
-        <WebVitals />
-      </body>
-    </html>
+    <main className="flex min-h-screen flex-col">
+      <Header />
+      <div className="flex-1 pt-16">{children}</div>
+      <Footer />
+    </main>
   );
-}
+};
+
+export default HomeLayout;
