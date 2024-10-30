@@ -6,6 +6,7 @@ import { ThemeProvider } from './providers/providers';
 import Script from 'next/script';
 import './globals.css';
 import CrispProvider from './providers/crisp-provider';
+import { ClerkProvider } from '@clerk/nextjs';
 
 export const metadata: Metadata = {
   title: 'VogueLens AI - Your AI Fashion Stylist',
@@ -142,8 +143,10 @@ export default function RootLayout({
                 __html: JSON.stringify(jsonLd),
               }}
             />
-            <CrispProvider />
-            {children}
+            <ClerkProvider dynamic>
+              <CrispProvider />
+              {children}
+            </ClerkProvider>
           </ErrorBoundary>
           <Analytics />
           <WebVitals />
