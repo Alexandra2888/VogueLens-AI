@@ -13,7 +13,10 @@ export default function NotFound() {
         transition={{ duration: 0.5 }}
         className="w-full max-w-md space-y-8 text-center"
       >
-        <div className="flex items-center justify-center" data-testid="logo-container">
+        <div
+          className="flex items-center justify-center"
+          data-testid="logo-container"
+        >
           <Logo />
         </div>
         <motion.h1

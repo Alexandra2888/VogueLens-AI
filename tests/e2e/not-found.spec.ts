@@ -10,7 +10,9 @@ test.describe('404 Page', () => {
     await expect(page.locator('h1')).toHaveText('404');
     await expect(page.getByText('Oops! Page not found.')).toBeVisible();
     await expect(
-      page.getByText("The page you're looking for doesn't exist or has been moved.")
+      page.getByText(
+        "The page you're looking for doesn't exist or has been moved."
+      )
     ).toBeVisible();
   });
 
@@ -24,9 +26,10 @@ test.describe('404 Page', () => {
     await expect(page.locator('[data-testid="logo-container"]')).toBeVisible();
   });
 
-
   // Test the "Return Home" button functionality
-  test('should navigate to home page when clicking Return Home', async ({ page }) => {
+  test('should navigate to home page when clicking Return Home', async ({
+    page,
+  }) => {
     await page.goto('/non-existent-page');
 
     // Click the Return Home link
@@ -41,7 +44,9 @@ test.describe('404 Page', () => {
     await page.goto('/non-existent-page');
 
     // Check if motion div has the correct classes
-    await expect(page.locator('div.space-y-8')).toHaveClass(/w-full max-w-md space-y-8 text-center/);
+    await expect(page.locator('div.space-y-8')).toHaveClass(
+      /w-full max-w-md space-y-8 text-center/
+    );
   });
 
   // Test accessibility
@@ -56,7 +61,9 @@ test.describe('404 Page', () => {
   });
 
   // Test responsive layout
-  test('should maintain layout on different viewport sizes', async ({ page }) => {
+  test('should maintain layout on different viewport sizes', async ({
+    page,
+  }) => {
     await page.goto('/non-existent-page');
 
     // Test mobile viewport
