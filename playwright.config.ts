@@ -1,4 +1,3 @@
-// playwright.config.ts
 import { PlaywrightTestConfig } from '@playwright/test';
 
 const config: PlaywrightTestConfig = {
@@ -17,13 +16,19 @@ const config: PlaywrightTestConfig = {
   retries: process.env.CI ? 2 : 0,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'html',
+
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
     baseURL: process.env.PLAYWRIGHT_TEST_BASE_URL || 'http://localhost:3000',
     /* Collect trace when retrying the failed test. */
     trace: 'on-first-retry',
+    // Add custom test context
+    contextOptions: {
+      ignoreHTTPSErrors: true,
+    },
   },
+
   /* Configure projects for major browsers */
   projects: [
     {
@@ -33,13 +38,30 @@ const config: PlaywrightTestConfig = {
       },
     },
   ],
+
   /* Run your local dev server before starting the tests */
   webServer: {
     command: 'npm run dev',
     url: 'http://localhost:3000',
     timeout: 120 * 1000,
     reuseExistingServer: !process.env.CI,
+    env: {
+      // Add test environment variables
+      NODE_ENV: 'test',
+      NEXT_PUBLIC_CLERK_BYPASS_AUTH: 'true',
+      // Mock Clerk environment variables
+      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: 'test-key',
+      CLERK_SECRET_KEY: 'test-secret',
+      // Add any other required env variables
+      NEXT_PUBLIC_CLERK_SIGN_IN_URL: '/sign-in',
+      NEXT_PUBLIC_CLERK_SIGN_UP_URL: '/sign-up',
+      NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL: '/',
+      NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL: '/',
+    },
   },
+
+  // Add global setup
+  globalSetup: require.resolve('global-setup.ts'),
 };
 
 export default config;

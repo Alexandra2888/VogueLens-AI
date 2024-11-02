@@ -12,6 +12,9 @@ import MinimalLogo from '../logo/minimal-logo';
 import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 import SignInCustomButton from './sign-in-custom-button';
 
+// Check for test environment
+const isTestEnvironment = process.env.NEXT_PUBLIC_CLERK_BYPASS_AUTH === 'true';
+
 const navItems = [
   { href: '/', label: 'Home' },
   { href: '/chat', label: 'Chat' },
@@ -38,6 +41,7 @@ const NavLink = ({
       className="relative inline-block"
       onClick={onClick}
       aria-current={isActive ? 'page' : undefined}
+      data-testid={`nav-link-${label.toLowerCase()}${isMobile ? '-mobile' : '-desktop'}`}
     >
       <motion.div
         className={`relative font-medium text-foreground transition-colors hover:text-secondary-hover ${
@@ -61,11 +65,48 @@ const NavLink = ({
   );
 };
 
+// Mock UserButton for testing
+const MockUserButton = ({ isMobile = false }: { isMobile?: boolean }) => (
+  <div
+    className={`rounded-full bg-secondary ${isMobile ? 'h-8 w-8' : 'h-10 w-10'}`}
+    data-testid={`mock-user-button${isMobile ? '-mobile' : '-desktop'}`}
+  />
+);
+
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  const renderAuthButtons = (isMobile: boolean) => {
+    if (isTestEnvironment) {
+      return <MockUserButton isMobile={isMobile} />;
+    }
+
+    return (
+      <>
+        <SignedOut>
+          <SignInCustomButton
+            isMobile={isMobile}
+            data-testid={`sign-in-button${isMobile ? '-mobile' : '-desktop'}`}
+          />
+        </SignedOut>
+        <SignedIn>
+          <UserButton
+            appearance={{
+              elements: {
+                avatarBox: isMobile ? 'w-8 h-8' : 'w-10 h-10',
+              },
+            }}
+          />
+        </SignedIn>
+      </>
+    );
+  };
+
   return (
-    <header className="fixed z-50 w-full bg-background/95 transition-colors">
+    <header
+      className="fixed z-50 w-full bg-background/95 transition-colors"
+      data-testid="header"
+    >
       <div className="mx-auto flex max-w-7xl items-center justify-between border-b border-border px-4 py-4">
         {/* Logo */}
         <motion.div
@@ -74,7 +115,7 @@ export default function Header() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <Link href="/" className="hidden md:block">
+          <Link href="/" className="hidden md:block" data-testid="desktop-logo">
             <Logo />
           </Link>
           <Link href="/" className="block md:hidden" data-testid="mobile-logo">
@@ -97,18 +138,7 @@ export default function Header() {
               <NavLink href={item.href} label={item.label} />
             </motion.div>
           ))}
-          <SignedOut>
-            <SignInCustomButton isMobile={false} />
-          </SignedOut>
-          <SignedIn>
-            <UserButton
-              appearance={{
-                elements: {
-                  avatarBox: 'w-10 h-10',
-                },
-              }}
-            />
-          </SignedIn>
+          {renderAuthButtons(false)}
           <ThemeToggle />
         </nav>
 
@@ -117,18 +147,7 @@ export default function Header() {
           className="flex items-center gap-4 md:hidden"
           data-testid="mobile-nav"
         >
-          <SignedOut>
-            <SignInCustomButton isMobile={true} />
-          </SignedOut>
-          <SignedIn>
-            <UserButton
-              appearance={{
-                elements: {
-                  avatarBox: 'w-8 h-8',
-                },
-              }}
-            />
-          </SignedIn>
+          {renderAuthButtons(true)}
           <ThemeToggle />
           <motion.button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -137,6 +156,7 @@ export default function Header() {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             aria-expanded={isMenuOpen ? 'true' : 'false'}
+            data-testid="mobile-menu-button"
           >
             {isMenuOpen ? (
               <X className="h-6 w-6" />
@@ -159,6 +179,7 @@ export default function Header() {
           duration: 0.2,
           ease: 'easeInOut',
         }}
+        data-testid="mobile-menu"
       >
         <div className="mx-auto mt-16 max-w-7xl space-y-4 px-4 py-4">
           {navItems.map((item, i) => (
