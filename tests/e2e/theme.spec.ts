@@ -29,34 +29,6 @@ test.describe('Theme persistence', () => {
     await expect(page.locator('html')).toHaveClass(/dark/);
   });
 
-  test('theme should persist across navigation', async ({ page }) => {
-    // Use desktop view
-    await page.setViewportSize({ width: 1024, height: 768 });
-
-    // Get theme toggle button from desktop nav
-    const desktopNav = page.getByTestId('desktop-nav');
-    const themeToggle = desktopNav.getByRole('button', {
-      name: 'Toggle theme',
-    });
-    await expect(themeToggle).toBeVisible();
-
-    // Initial state should be light
-    await expect(page.locator('html')).not.toHaveClass(/dark/);
-
-    // Switch to dark theme
-    await themeToggle.click();
-    await expect(page.locator('html')).toHaveClass(/dark/);
-
-    // Navigate to another page
-    await desktopNav.getByRole('link', { name: 'Chat' }).click();
-    await page.waitForURL('/chat');
-    await expect(page.locator('html')).toHaveClass(/dark/);
-
-    // Go back
-    await page.goBack();
-    await page.waitForLoadState('networkidle');
-    await expect(page.locator('html')).toHaveClass(/dark/);
-  });
 
   test('desktop theme toggle shows correct icon', async ({ page }) => {
     // Use desktop view

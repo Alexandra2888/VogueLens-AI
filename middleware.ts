@@ -2,18 +2,20 @@ import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 
 const isProtectedRoute = createRouteMatcher(['/chat(.*)', '/wardrobe(.*)']);
 
-export default clerkMiddleware(async (auth, req) => {
-  // Skip auth protection during tests
-  if (process.env.NODE_ENV === 'test') return;
+// Skip auth checks entirely during tests
+const isTestEnvironment = process.env.NODE_ENV === 'test';
 
-  if (isProtectedRoute(req)) await auth.protect();
+export default clerkMiddleware((auth, req) => {
+  if (isTestEnvironment) return;
+
+  if (isProtectedRoute(req)) {
+    return auth.protect();
+  }
 });
 
 export const config = {
   matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
-    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
-    // Always run for API routes
-    '/(api|trpc)(.*)',
+    "/((?!.*\\..*|_next).*)",
+    "/(api|trpc)(.*)"
   ],
 };
