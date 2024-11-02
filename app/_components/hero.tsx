@@ -120,8 +120,8 @@ const Hero = () => {
   };
 
   return (
-    <section className="flex justify-center overflow-hidden pt-12 lg:pt-24">
-      <div className="container px-4 md:px-6">
+    <section className="mt-24 flex max-h-full justify-center">
+      <div className="container max-w-7xl px-4 md:px-6">
         <div className="grid gap-6 lg:grid-cols-[1fr_500px] lg:gap-12 xl:grid-cols-[1fr_550px]">
           <div className="flex flex-col justify-center space-y-4">
             <div className="space-y-2">
@@ -133,7 +133,7 @@ const Hero = () => {
                 style tips from our AI-powered chatbot.
               </p>
               <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                <Button className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-8 text-sm font-medium">
+                <Button className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-8 text-sm font-medium hover:bg-secondary-hover">
                   Try Now
                 </Button>
                 <Button

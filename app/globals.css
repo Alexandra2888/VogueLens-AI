@@ -80,9 +80,9 @@
   }
 
   /* Card styles */
-  .card {
-    @apply border-border-light dark:border-border-dark rounded-lg border bg-card-light shadow-sm dark:bg-card-dark;
-  }
+  /*.card {*/
+  /*  @apply border-border-light dark:border-border-dark rounded-lg border bg-card-light shadow-sm dark:bg-card-dark;*/
+  /*}*/
 
   /* Input styles */
   /*.input {*/

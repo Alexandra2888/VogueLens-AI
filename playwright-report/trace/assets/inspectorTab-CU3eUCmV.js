@@ -17034,12 +17034,10 @@ class vp {
     );
   }
   strictModeViolationError(t, n) {
-    const r = n
-        .slice(0, 10)
-        .map((o) => ({
-          preview: this.previewNode(o),
-          selector: this.generateSelectorSimple(o),
-        })),
+    const r = n.slice(0, 10).map((o) => ({
+        preview: this.previewNode(o),
+        selector: this.generateSelectorSimple(o),
+      })),
       i = r.map(
         (o, s) => `
     ${s + 1}) ${o.preview} aka ${zn(this._sdkLanguage, o.selector)}`
