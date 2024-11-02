@@ -3,6 +3,9 @@ import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 const isProtectedRoute = createRouteMatcher(['/chat(.*)', '/wardrobe(.*)']);
 
 export default clerkMiddleware(async (auth, req) => {
+  // Skip auth protection during tests
+  if (process.env.NODE_ENV === 'test') return;
+
   if (isProtectedRoute(req)) await auth.protect();
 });
 

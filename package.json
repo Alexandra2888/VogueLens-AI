@@ -14,7 +14,8 @@
     "test": "jest --passWithNoTests",
     "test:unit": "jest",
     "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui"
+    "test:e2e:ui": "playwright test --ui",
+    "clean": "npx rimraf --no-glob ./.next"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
