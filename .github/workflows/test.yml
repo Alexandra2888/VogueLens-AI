@@ -63,11 +63,7 @@ jobs:
           touch .env
           echo NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }} >> .env
           echo CLERK_SECRET_KEY=${{ secrets.CLERK_SECRET_KEY }} >> .env
-          echo NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=${{ secrets.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME }} >> .env
-          echo CLOUDINARY_API_KEY=${{ secrets.CLOUDINARY_API_KEY }} >> .env
-          echo CLOUDINARY_API_SECRET=${{ secrets.CLOUDINARY_API_SECRET }} >> .env
-          echo OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} >> .env
-          echo DATABASE_URL=${{ secrets.DATABASE_URL }} >> .env
+          echo NEXT_OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} >> .env
 
       - name: Install Playwright
         run: npx playwright install --with-deps

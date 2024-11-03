@@ -4,7 +4,9 @@ import { NextResponse } from 'next/server';
 let vision: ImageAnnotatorClient;
 
 try {
-  const credentials = JSON.parse(process.env.GOOGLE_CLOUD_CREDENTIALS || '');
+  const credentials = JSON.parse(
+    process.env.NEXT_GOOGLE_CLOUD_CREDENTIALS || ''
+  );
 
   if (!credentials.client_email || !credentials.private_key) {
     throw new Error('Invalid credentials format');
