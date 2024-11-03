@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, ImagePlus, Bot, Loader2, Menu, Wand2 } from 'lucide-react';
+import { Send, ImagePlus, Bot, Loader2, Menu, Wand2, X } from 'lucide-react';
 
 import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
@@ -24,6 +24,10 @@ export default function ChatbotInterface() {
     useState<ConversationProps | null>(null);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<{
+    file: File;
+    preview: string;
+  } | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -36,6 +40,15 @@ export default function ChatbotInterface() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [currentConversation?.messages]);
+
+  // Cleanup preview URL when component unmounts or new image is selected
+  useEffect(() => {
+    return () => {
+      if (selectedImage) {
+        URL.revokeObjectURL(selectedImage.preview);
+      }
+    };
+  }, [selectedImage]);
 
   const handleImageGeneration = async () => {
     if (!input.trim() || !currentConversation) return;
@@ -99,32 +112,56 @@ export default function ChatbotInterface() {
     }
   };
 
-  const handleImageUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file || !currentConversation) return;
+    if (!file) return;
+
+    setSelectedImage({
+      file,
+      preview: URL.createObjectURL(file),
+    });
+  };
+
+  const clearSelectedImage = () => {
+    if (selectedImage) {
+      URL.revokeObjectURL(selectedImage.preview);
+      setSelectedImage(null);
+    }
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const handleSend = async () => {
+    if ((!input.trim() && !selectedImage) || !currentConversation || isLoading)
+      return;
 
     setIsLoading(true);
+
     try {
-      const imageUrl = URL.createObjectURL(file);
-      const formData = new FormData();
-      formData.append('image', file);
-
-      const response = await fetch('/api/analyze-image', {
-        method: 'POST',
-        body: formData,
-      });
-
-      const data = await response.json();
-      const imageAnalysis = data.description;
-
-      const userMessage: MessageProps = {
+      let userMessage: MessageProps = {
         id: Date.now(),
         text: input.trim() || "Here's an outfit I'd like you to analyze",
         sender: 'user',
-        imageUrl,
       };
+
+      let imageAnalysis = null;
+
+      // Handle image upload if present
+      if (selectedImage) {
+        userMessage.imageUrl = selectedImage.preview;
+
+        const formData = new FormData();
+        formData.append('image', selectedImage.file);
+
+        const imageResponse = await fetch('/api/analyze-image', {
+          method: 'POST',
+          body: formData,
+        });
+
+        const imageData = await imageResponse.json();
+        imageAnalysis = imageData.description;
+      }
 
       const updatedConversation = {
         ...currentConversation,
@@ -137,21 +174,28 @@ export default function ChatbotInterface() {
         )
       );
       setCurrentConversation(updatedConversation);
+      setInput('');
+      clearSelectedImage();
 
-      const botResponse = await fetch('/api/chat', {
+      // Get bot response
+      const chatResponse = await fetch('/api/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          prompt: 'What fashion advice can you give based on this image?',
+          prompt:
+            input.trim() ||
+            'What fashion advice can you give based on this image?',
           imageAnalysis,
         }),
-      }).then((res) => res.json());
+      });
+
+      const chatData = await chatResponse.json();
 
       const botMessage: MessageProps = {
         id: Date.now() + 1,
-        text: botResponse.response,
+        text: chatData.response,
         sender: 'bot',
         imageAnalysis,
       };
@@ -167,72 +211,10 @@ export default function ChatbotInterface() {
         )
       );
       setCurrentConversation(finalConversation);
-      setInput('');
     } catch (error) {
-      console.error('Error processing image:', error);
+      console.error('Error processing message:', error);
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const handleSend = async () => {
-    if (input.trim() && currentConversation) {
-      setIsLoading(true);
-
-      const userMessage: MessageProps = {
-        id: Date.now(),
-        text: input.trim(),
-        sender: 'user',
-      };
-
-      const updatedConversation = {
-        ...currentConversation,
-        messages: [...currentConversation.messages, userMessage],
-      };
-
-      setConversations(
-        conversations.map((conv) =>
-          conv.id === currentConversation.id ? updatedConversation : conv
-        )
-      );
-      setCurrentConversation(updatedConversation);
-      setInput('');
-
-      try {
-        const response = await fetch('/api/chat', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            prompt: input.trim(),
-          }),
-        });
-
-        const data = await response.json();
-
-        const botMessage: MessageProps = {
-          id: Date.now() + 1,
-          text: data.response,
-          sender: 'bot',
-        };
-
-        const finalConversation = {
-          ...updatedConversation,
-          messages: [...updatedConversation.messages, botMessage],
-        };
-
-        setConversations(
-          conversations.map((conv) =>
-            conv.id === currentConversation.id ? finalConversation : conv
-          )
-        );
-        setCurrentConversation(finalConversation);
-      } catch (error) {
-        console.error('Error getting bot response:', error);
-      } finally {
-        setIsLoading(false);
-      }
     }
   };
 
@@ -300,56 +282,79 @@ export default function ChatbotInterface() {
         </ScrollArea>
 
         <div className="border-t p-4 dark:border-gray-700">
-          <div className="flex items-center space-x-2">
-            <input
-              type="file"
-              accept="image/*"
-              className="hidden"
-              ref={fileInputRef}
-              onChange={handleImageUpload}
-            />
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={!currentConversation || isLoading}
-              className="dark:bg-gray-700 dark:text-white"
-            >
-              <ImagePlus className="h-5 w-5" />
-            </Button>
-            <Input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask for fashion advice or describe an image to generate..."
-              className="flex-1 text-zinc-900 dark:bg-gray-700 dark:text-white"
-              onKeyPress={(e) =>
-                e.key === 'Enter' && !isLoading && handleSend()
-              }
-              disabled={!currentConversation || isLoading}
-            />
-            <Button
-              onClick={handleImageGeneration}
-              disabled={!currentConversation || !input.trim() || isLoading}
-              size="icon"
-              className="dark:bg-gray-700 dark:text-white"
-              title="Generate Image"
-            >
-              <Wand2 className="h-5 w-5" />
-            </Button>
-            <Button
-              onClick={handleSend}
-              disabled={!currentConversation || !input.trim() || isLoading}
-              size="icon"
-              className="dark:bg-blue-600 dark:text-white"
-            >
-              {isLoading ? (
-                <Loader2 className="h-5 w-5 animate-spin" />
-              ) : (
-                <Send className="h-5 w-5" />
-              )}
-              <span className="sr-only">Send message</span>
-            </Button>
+          <div className="flex flex-col space-y-2">
+            {selectedImage && (
+              <div className="relative inline-block">
+                <img
+                  src={selectedImage.preview}
+                  alt="Selected"
+                  className="h-20 w-20 rounded-md object-cover"
+                />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute -right-2 -top-2"
+                  onClick={clearSelectedImage}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
+            <div className="flex items-center space-x-2">
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                ref={fileInputRef}
+                onChange={handleImageSelect}
+              />
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={!currentConversation || isLoading}
+                className="dark:bg-gray-700 dark:text-white"
+              >
+                <ImagePlus className="h-5 w-5" />
+              </Button>
+              <Input
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Ask for fashion advice or describe an image to generate..."
+                className="flex-1 text-zinc-900 dark:bg-gray-700 dark:text-white"
+                onKeyPress={(e) =>
+                  e.key === 'Enter' && !isLoading && handleSend()
+                }
+                disabled={!currentConversation || isLoading}
+              />
+              <Button
+                onClick={handleImageGeneration}
+                disabled={!currentConversation || !input.trim() || isLoading}
+                size="icon"
+                className="dark:bg-gray-700 dark:text-white"
+                title="Generate Image"
+              >
+                <Wand2 className="h-5 w-5" />
+              </Button>
+              <Button
+                onClick={handleSend}
+                disabled={
+                  !currentConversation ||
+                  (!input.trim() && !selectedImage) ||
+                  isLoading
+                }
+                size="icon"
+                className="dark:bg-blue-600 dark:text-white"
+              >
+                {isLoading ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  <Send className="h-5 w-5" />
+                )}
+                <span className="sr-only">Send message</span>
+              </Button>
+            </div>
           </div>
         </div>
       </main>
