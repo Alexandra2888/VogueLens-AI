@@ -4,4 +4,4 @@ export type MessageProps = {
   sender: 'user' | 'bot';
   imageUrl?: string;
   imageAnalysis?: string;
-}
+};

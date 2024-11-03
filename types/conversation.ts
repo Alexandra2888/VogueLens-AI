@@ -4,4 +4,4 @@ export type ConversationProps = {
   id: number;
   title: string;
   messages: MessageProps[];
-}
+};

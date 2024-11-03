@@ -1,10 +1,15 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, ImagePlus, Bot, Loader2 } from 'lucide-react';
+import { Send, ImagePlus, Bot, Loader2, Menu } from 'lucide-react';
 
 import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+} from '../../../components/ui/sheet';
 
 import { ScrollArea } from '../../../components/ui/scroll-area';
 import Sidebar from './sidebar';
@@ -180,15 +185,35 @@ export default function ChatbotInterface() {
   };
 
   return (
-    <div className="mx-auto flex h-[90vh] max-w-7xl">
-      <Sidebar
-        conversations={conversations}
-        currentConversation={currentConversation}
-        onConversationSelect={setCurrentConversation}
-        onNewConversation={startNewConversation}
-      />
+    <div className="mx-auto mt-4 flex h-[90vh] max-w-7xl dark:bg-gray-900">
+      {/* Mobile Sidebar */}
+      <Sheet>
+        <SheetTrigger asChild>
+          <Button variant="outline" size="icon" className="md:hidden">
+            <Menu className="h-5 w-5" />
+          </Button>
+        </SheetTrigger>
+        <SheetContent side="left" className="w-[300px] p-0">
+          <Sidebar
+            conversations={conversations}
+            currentConversation={currentConversation}
+            onConversationSelect={setCurrentConversation}
+            onNewConversation={startNewConversation}
+          />
+        </SheetContent>
+      </Sheet>
 
-      <main className="flex flex-1 flex-col overflow-hidden">
+      {/* Desktop Sidebar */}
+      <div className="hidden md:block">
+        <Sidebar
+          conversations={conversations}
+          currentConversation={currentConversation}
+          onConversationSelect={setCurrentConversation}
+          onNewConversation={startNewConversation}
+        />
+      </div>
+
+      <main className="flex flex-1 flex-col overflow-hidden dark:bg-gray-800">
         <ScrollArea className="flex-1 p-4">
           {currentConversation ? (
             <>
@@ -200,11 +225,11 @@ export default function ChatbotInterface() {
           ) : (
             <div className="flex h-full items-center justify-center">
               <div className="space-y-2 text-center">
-                <Bot className="mx-auto h-12 w-12 text-zinc-300" />
-                <h3 className="text-lg font-semibold">
+                <Bot className="mx-auto h-12 w-12 text-zinc-300 dark:text-zinc-600" />
+                <h3 className="text-lg font-semibold dark:text-white">
                   Welcome to AI Fashion Assistant
                 </h3>
-                <p className="text-sm text-zinc-500">
+                <p className="text-sm text-zinc-500 dark:text-zinc-400">
                   Start a new conversation to get personalized fashion advice
                 </p>
               </div>
@@ -212,7 +237,7 @@ export default function ChatbotInterface() {
           )}
         </ScrollArea>
 
-        <div className="border-t p-4">
+        <div className="border-t p-4 dark:border-gray-700">
           <div className="flex items-center space-x-2">
             <input
               type="file"
@@ -226,6 +251,7 @@ export default function ChatbotInterface() {
               size="icon"
               onClick={() => fileInputRef.current?.click()}
               disabled={!currentConversation || isLoading}
+              className="dark:bg-gray-700 dark:text-white"
             >
               <ImagePlus className="h-5 w-5" />
             </Button>
@@ -234,7 +260,7 @@ export default function ChatbotInterface() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask for fashion advice..."
-              className="flex-1 text-zinc-900"
+              className="flex-1 text-zinc-900 dark:bg-gray-700 dark:text-white"
               onKeyPress={(e) =>
                 e.key === 'Enter' && !isLoading && handleSend()
               }
@@ -244,6 +270,7 @@ export default function ChatbotInterface() {
               onClick={handleSend}
               disabled={!currentConversation || !input.trim() || isLoading}
               size="icon"
+              className="dark:bg-blue-600 dark:text-white"
             >
               {isLoading ? (
                 <Loader2 className="h-5 w-5 animate-spin" />
