@@ -7,9 +7,24 @@ const openai = new OpenAI({
 
 export async function POST(req: Request) {
   try {
-    const { prompt, imageAnalysis } = await req.json();
+    const { prompt, imageAnalysis, generateImage } = await req.json();
 
-    // Create system message based on whether we have image analysis
+    // Handle image generation request
+    if (generateImage) {
+      const imageResponse = await openai.images.generate({
+        model: 'dall-e-3',
+        prompt: prompt,
+        n: 1,
+        size: '1024x1024',
+      });
+
+      return NextResponse.json({
+        response: 'Image generated successfully',
+        imageUrl: imageResponse.data[0].url,
+      });
+    }
+
+    // Handle regular chat request
     const systemMessage = imageAnalysis
       ? `You are a helpful fashion assistant. Analyze the following image description and provide fashion advice: ${imageAnalysis}`
       : 'You are a helpful fashion assistant. Provide fashion advice based on user queries.';
@@ -30,7 +45,7 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error('Error in chat route:', error);
     return NextResponse.json(
-      { error: 'Failed to get chat response' },
+      { error: 'Failed to process request' },
       { status: 500 }
     );
   }

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, ImagePlus, Bot, Loader2, Menu } from 'lucide-react';
+import { Send, ImagePlus, Bot, Loader2, Menu, Wand2 } from 'lucide-react';
 
 import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
@@ -36,6 +36,68 @@ export default function ChatbotInterface() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [currentConversation?.messages]);
+
+  const handleImageGeneration = async () => {
+    if (!input.trim() || !currentConversation) return;
+
+    setIsLoading(true);
+    try {
+      const userMessage: MessageProps = {
+        id: Date.now(),
+        text: `Generate image: ${input.trim()}`,
+        sender: 'user',
+      };
+
+      const updatedConversation = {
+        ...currentConversation,
+        messages: [...currentConversation.messages, userMessage],
+      };
+
+      setConversations(
+        conversations.map((conv) =>
+          conv.id === currentConversation.id ? updatedConversation : conv
+        )
+      );
+      setCurrentConversation(updatedConversation);
+      setInput('');
+
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          prompt: input.trim(),
+          generateImage: true,
+        }),
+      });
+
+      const data = await response.json();
+
+      const botMessage: MessageProps = {
+        id: Date.now() + 1,
+        text: "Here's the generated image based on your request:",
+        sender: 'bot',
+        imageUrl: data.imageUrl,
+      };
+
+      const finalConversation = {
+        ...updatedConversation,
+        messages: [...updatedConversation.messages, botMessage],
+      };
+
+      setConversations(
+        conversations.map((conv) =>
+          conv.id === currentConversation.id ? finalConversation : conv
+        )
+      );
+      setCurrentConversation(finalConversation);
+    } catch (error) {
+      console.error('Error generating image:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleImageUpload = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -259,13 +321,22 @@ export default function ChatbotInterface() {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask for fashion advice..."
+              placeholder="Ask for fashion advice or describe an image to generate..."
               className="flex-1 text-zinc-900 dark:bg-gray-700 dark:text-white"
               onKeyPress={(e) =>
                 e.key === 'Enter' && !isLoading && handleSend()
               }
               disabled={!currentConversation || isLoading}
             />
+            <Button
+              onClick={handleImageGeneration}
+              disabled={!currentConversation || !input.trim() || isLoading}
+              size="icon"
+              className="dark:bg-gray-700 dark:text-white"
+              title="Generate Image"
+            >
+              <Wand2 className="h-5 w-5" />
+            </Button>
             <Button
               onClick={handleSend}
               disabled={!currentConversation || !input.trim() || isLoading}
