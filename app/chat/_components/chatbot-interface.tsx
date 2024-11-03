@@ -10,6 +10,7 @@ import {
   SheetContent,
   SheetTrigger,
 } from '../../../components/ui/sheet';
+import LoadingMessage from './loading-message';
 
 import { ScrollArea } from '../../../components/ui/scroll-area';
 import Sidebar from './sidebar';
@@ -39,9 +40,8 @@ export default function ChatbotInterface() {
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [currentConversation?.messages]);
+  }, [currentConversation?.messages, isLoading]);
 
-  // Cleanup preview URL when component unmounts or new image is selected
   useEffect(() => {
     return () => {
       if (selectedImage) {
@@ -147,7 +147,6 @@ export default function ChatbotInterface() {
 
       let imageAnalysis = null;
 
-      // Handle image upload if present
       if (selectedImage) {
         userMessage.imageUrl = selectedImage.preview;
 
@@ -177,7 +176,6 @@ export default function ChatbotInterface() {
       setInput('');
       clearSelectedImage();
 
-      // Get bot response
       const chatResponse = await fetch('/api/chat', {
         method: 'POST',
         headers: {
@@ -230,7 +228,6 @@ export default function ChatbotInterface() {
 
   return (
     <div className="mx-auto mt-4 flex h-[90vh] max-w-7xl dark:bg-gray-900">
-      {/* Mobile Sidebar */}
       <Sheet>
         <SheetTrigger asChild>
           <Button variant="outline" size="icon" className="md:hidden">
@@ -247,7 +244,6 @@ export default function ChatbotInterface() {
         </SheetContent>
       </Sheet>
 
-      {/* Desktop Sidebar */}
       <div className="hidden md:block">
         <Sidebar
           conversations={conversations}
@@ -264,6 +260,7 @@ export default function ChatbotInterface() {
               {currentConversation.messages.map((message) => (
                 <Message key={message.id} message={message} />
               ))}
+              {isLoading && <LoadingMessage />}
               <div ref={messagesEndRef} />
             </>
           ) : (

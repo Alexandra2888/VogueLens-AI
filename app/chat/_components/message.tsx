@@ -5,7 +5,12 @@ import React from 'react';
 
 import { MessageProps } from '../../../types/message';
 
-const Message = ({ message }: { message: MessageProps }) => (
+const Message = ({
+  message,
+}: {
+  message: MessageProps;
+  isLoading?: boolean;
+}) => (
   <div
     className={`my-12 flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
   >
