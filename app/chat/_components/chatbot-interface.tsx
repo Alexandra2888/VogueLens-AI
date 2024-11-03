@@ -32,6 +32,28 @@ export default function ChatbotInterface() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Helper function to generate a chat title from the first message
+  const generateChatTitle = (message: string): string => {
+    // Remove 'Generate image: ' prefix if present
+    const cleanMessage = message.replace(/^Generate image:\s*/i, '');
+    // Take first 30 characters and add ellipsis if needed
+    return cleanMessage.length > 30
+      ? `${cleanMessage.substring(0, 27)}...`
+      : cleanMessage;
+  };
+
+  // update conversation title
+  const updateConversationTitle = (
+    conversationId: number,
+    newTitle: string
+  ) => {
+    setConversations((prevConversations) =>
+      prevConversations.map((conv) =>
+        conv.id === conversationId ? { ...conv, title: newTitle } : conv
+      )
+    );
+  };
+
   useEffect(() => {
     if (conversations.length === 0) {
       startNewConversation();
@@ -60,6 +82,12 @@ export default function ChatbotInterface() {
         text: `Generate image: ${input.trim()}`,
         sender: 'user',
       };
+
+      // update title if this is the first message
+      if (currentConversation.messages.length === 0) {
+        const newTitle = generateChatTitle(userMessage.text);
+        updateConversationTitle(currentConversation.id, newTitle);
+      }
 
       const updatedConversation = {
         ...currentConversation,
@@ -145,6 +173,12 @@ export default function ChatbotInterface() {
         sender: 'user',
       };
 
+      // Update title if this is the first message
+      if (currentConversation.messages.length === 0) {
+        const newTitle = generateChatTitle(userMessage.text);
+        updateConversationTitle(currentConversation.id, newTitle);
+      }
+
       let imageAnalysis = null;
 
       if (selectedImage) {
@@ -219,7 +253,7 @@ export default function ChatbotInterface() {
   const startNewConversation = () => {
     const newConversation: ConversationProps = {
       id: Date.now(),
-      title: `New Chat ${conversations.length + 1}`,
+      title: 'Last Fashion Message',
       messages: [],
     };
     setConversations([...conversations, newConversation]);
