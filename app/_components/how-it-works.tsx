@@ -50,7 +50,10 @@ const itemVariants = {
 
 export default function HowItWorks() {
   return (
-    <section className="my-24 w-full" data-testid="how-it-works-section">
+    <section
+      className="my-36 max-h-full w-full"
+      data-testid="how-it-works-section"
+    >
       <div className="container mx-auto px-4">
         <motion.div
           initial="hidden"
@@ -60,7 +63,7 @@ export default function HowItWorks() {
         >
           <div className="mb-16 text-center" data-testid="how-it-works-header">
             <h2
-              className="mb-4 text-4xl font-bold text-primary md:text-5xl"
+              className="my-12 text-4xl font-bold text-primary md:text-5xl"
               data-testid="how-it-works-title"
             >
               How It Works

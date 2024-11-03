@@ -5,7 +5,6 @@ import { ErrorBoundary } from '../components/ErrorBoundary';
 import { ThemeProvider } from './providers/providers';
 import Script from 'next/script';
 import './globals.css';
-import CrispProvider from './providers/crisp-provider';
 
 export const metadata: Metadata = {
   title: 'VogueLens AI - Your AI Fashion Stylist',
@@ -142,7 +141,6 @@ export default function RootLayout({
                 __html: JSON.stringify(jsonLd),
               }}
             />
-            <CrispProvider />
             {children}
           </ErrorBoundary>
           <Analytics />
