@@ -3,3 +3,9 @@ node_modules
 build
 dist
 public
+
+
+playwright-report/
+test-results/
+build/
+coverage/

@@ -49,7 +49,7 @@ const itemVariants = {
 
 export default function FeaturesSection() {
   return (
-    <section className="my-24 w-full" data-testid="features-section">
+    <section className="my-36 max-h-full" data-testid="features-section">
       <div className="container mx-auto px-4">
         <motion.div
           initial="hidden"
@@ -59,7 +59,7 @@ export default function FeaturesSection() {
         >
           <div className="mb-16 text-center" data-testid="features-header">
             <h2
-              className="mb-4 text-4xl font-bold text-primary md:text-5xl"
+              className="my-12 text-4xl font-bold text-primary md:text-5xl"
               data-testid="features-title"
             >
               Features
