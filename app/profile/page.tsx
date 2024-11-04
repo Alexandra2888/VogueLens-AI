@@ -21,7 +21,7 @@ export default function ProfilePage() {
       <Header />
       <main className="container mx-auto flex h-[80vh] items-center justify-center px-4">
         <div className="mx-auto max-w-4xl">
-          <h1 className="mb-6 text-2xl font-bold text-primary ">Profile</h1>
+          <h1 className="mb-6 text-2xl font-bold text-primary">Profile</h1>
 
           <div className="space-y-6 rounded-lg p-6 shadow">
             {/* Profile Header */}
@@ -32,7 +32,7 @@ export default function ProfilePage() {
                 className="h-24 w-24 rounded-full border-4 border-white shadow"
               />
               <div>
-                <h2 className="text-2xl font-semibold text-primary" >
+                <h2 className="text-2xl font-semibold text-primary">
                   {user.firstName} {user.lastName}
                 </h2>
                 <p className="text-primary">
