@@ -25,9 +25,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Create test environment file
+      # Single .env file creation with all needed variables
+      - name: Create environment file
         run: |
-          cat << EOF > .env.test
+          cat << EOF > .env
           NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
           CLERK_SECRET_KEY=${{ secrets.CLERK_SECRET_KEY }}
           NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
@@ -44,7 +45,18 @@ jobs:
         run: npm run build
 
       - name: Run Playwright tests
-        run: npm run test:e2e
+        run: |
+          echo "Debug: Checking environment setup"
+          if [ -f ".env" ]; then
+            echo "✓ .env file exists"
+            echo "✓ Checking Clerk key presence (not showing value):"
+            if grep -q "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY" .env; then
+              echo "✓ NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY is set"
+            fi
+          else
+            echo "✗ .env file missing"
+          fi
+          npm run test:e2e
 
       - uses: actions/upload-artifact@v3
         if: always()
