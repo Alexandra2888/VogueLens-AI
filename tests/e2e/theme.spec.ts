@@ -29,7 +29,6 @@ test.describe('Theme persistence', () => {
     await expect(page.locator('html')).toHaveClass(/dark/);
   });
 
-
   test('desktop theme toggle shows correct icon', async ({ page }) => {
     // Use desktop view
     await page.setViewportSize({ width: 1024, height: 768 });

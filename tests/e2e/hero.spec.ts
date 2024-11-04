@@ -20,6 +20,7 @@ test.describe('Hero Component', () => {
     expect(images.length).toBe(3);
 
     // Verify each image's attributes and visibility
+    // @ts-ignore
     for (const [index, expectedImage] of HERO_IMAGES.entries()) {
       const image = page.locator(`img[alt="${expectedImage.alt}"]`);
       await expect(image).toBeVisible();
@@ -30,11 +31,11 @@ test.describe('Hero Component', () => {
     }
   });
 
-
-
   test('should render buttons with correct text', async ({ page }) => {
     await expect(page.getByRole('button', { name: 'Try Now' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Learn More' })).toBeVisible();
+    await expect(
+      page.getByRole('button', { name: 'Learn More' })
+    ).toBeVisible();
   });
 });
 

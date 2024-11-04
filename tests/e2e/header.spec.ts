@@ -43,7 +43,6 @@ test.describe('Header Component Tests', () => {
 
     for (const path of paths) {
       await page.goto(path);
-      await page.waitForLoadState('networkidle');
 
       const desktopNav = page.getByTestId('desktop-nav');
       const links = await desktopNav.getByRole('link').all();

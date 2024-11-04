@@ -19,6 +19,7 @@ const navItems = [
   { href: '/', label: 'Home' },
   { href: '/chat', label: 'Chat' },
   { href: '/wardrobe', label: 'Wardrobe' },
+  { href: '/profile', label: 'Profile' },
 ];
 
 const NavLink = ({
