@@ -6,7 +6,11 @@ import {
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-const isProtectedRoute = createRouteMatcher(['/chat(.*)', '/wardrobe(.*)']);
+const isProtectedRoute = createRouteMatcher([
+  '/chat(.*)',
+  '/wardrobe(.*)',
+  '/profile(.*)',
+]);
 
 const isTestEnvironment = process.env.NODE_ENV === 'test';
 
