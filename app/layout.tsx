@@ -143,7 +143,10 @@ export default function RootLayout({
                 __html: JSON.stringify(jsonLd),
               }}
             />
-            <ClerkProvider dynamic publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}>
+            <ClerkProvider
+              dynamic
+              publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
+            >
               <CrispProvider />
               {children}
             </ClerkProvider>
