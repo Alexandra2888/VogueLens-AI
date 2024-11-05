@@ -8,14 +8,20 @@ test.describe('Privacy Policy Page', () => {
     await page.waitForLoadState('domcontentloaded');
   });
 
-  test('should display the privacy policy title and version', async ({ page }) => {
+  test('should display the privacy policy title and version', async ({
+    page,
+  }) => {
     // Wait for the content to be visible
     await page.waitForSelector('[data-testid="privacy-policy-title"]');
 
-    const titleText = await page.textContent('[data-testid="privacy-policy-title"]');
+    const titleText = await page.textContent(
+      '[data-testid="privacy-policy-title"]'
+    );
     expect(titleText).toBe('Privacy Policy');
 
-    const versionText = await page.textContent('[data-testid="privacy-policy-version"]');
+    const versionText = await page.textContent(
+      '[data-testid="privacy-policy-version"]'
+    );
     expect(versionText).toContain('Version 1.0');
   });
 
@@ -23,10 +29,14 @@ test.describe('Privacy Policy Page', () => {
     await page.waitForSelector('[data-testid="privacy-policy-intro"]');
     await page.waitForSelector('[data-testid="privacy-policy-scope"]');
 
-    const introText = await page.textContent('[data-testid="privacy-policy-intro"]');
+    const introText = await page.textContent(
+      '[data-testid="privacy-policy-intro"]'
+    );
     expect(introText).toContain('VogueLens AI collects and processes data');
 
-    const scopeText = await page.textContent('[data-testid="privacy-policy-scope"]');
+    const scopeText = await page.textContent(
+      '[data-testid="privacy-policy-scope"]'
+    );
     expect(scopeText).toContain('This document is relevant to you');
   });
 
@@ -45,7 +55,9 @@ test.describe('Privacy Policy Page', () => {
 
     // Verify content is visible
     const personalDataContent = await page.textContent(personalDataSection);
-    expect(personalDataContent).toContain('VogueLens AI confirms that it does NOT collect personal data');
+    expect(personalDataContent).toContain(
+      'VogueLens AI confirms that it does NOT collect personal data'
+    );
 
     // Test Service Data section
     const serviceDataSection = '[data-testid="service-data-section"]';
@@ -58,7 +70,9 @@ test.describe('Privacy Policy Page', () => {
 
     // Verify content is visible
     const serviceDataContent = await page.textContent(serviceDataSection);
-    expect(serviceDataContent).toContain('VogueLens AI collects and processes data');
+    expect(serviceDataContent).toContain(
+      'VogueLens AI collects and processes data'
+    );
 
     // Verify JSON example is visible
     await page.waitForSelector('[data-testid="json-example"]');
@@ -74,7 +88,9 @@ test.describe('Privacy Policy Page', () => {
     await page.waitForTimeout(300); // Wait for animation
 
     // Verify content is visible
-    const isVisible = await page.isVisible('[data-testid="personal-data-section"] [role="region"]');
+    const isVisible = await page.isVisible(
+      '[data-testid="personal-data-section"] [role="region"]'
+    );
     expect(isVisible).toBeTruthy();
 
     // Click to close
@@ -82,7 +98,9 @@ test.describe('Privacy Policy Page', () => {
     await page.waitForTimeout(300); // Wait for animation
 
     // Verify content is hidden
-    const isHidden = await page.isHidden('[data-testid="personal-data-section"] [role="region"]');
+    const isHidden = await page.isHidden(
+      '[data-testid="personal-data-section"] [role="region"]'
+    );
     expect(isHidden).toBeTruthy();
   });
 
@@ -101,14 +119,18 @@ test.describe('Privacy Policy Page', () => {
     await page.waitForSelector('[data-testid="privacy-policy-container"]');
 
     // Verify key elements are visible
-    const isTitleVisible = await page.isVisible('[data-testid="privacy-policy-title"]');
+    const isTitleVisible = await page.isVisible(
+      '[data-testid="privacy-policy-title"]'
+    );
     expect(isTitleVisible).toBeTruthy();
 
     // Verify accordion is usable on mobile
     await page.click('[data-testid="personal-data-section"] button');
     await page.waitForTimeout(300);
 
-    const isAccordionContentVisible = await page.isVisible('[data-testid="personal-data-section"] [role="region"]');
+    const isAccordionContentVisible = await page.isVisible(
+      '[data-testid="personal-data-section"] [role="region"]'
+    );
     expect(isAccordionContentVisible).toBeTruthy();
   });
 });
