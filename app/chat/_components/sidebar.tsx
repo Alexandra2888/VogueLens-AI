@@ -1,8 +1,8 @@
 import React from 'react';
 import { ImagePlus, Bot, ChevronRight } from 'lucide-react';
 
-import { Button } from '../../../components/ui/button';
-import { ScrollArea } from '../../../components/ui/scroll-area';
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 import { ConversationProps } from '../../../types/conversation';
 

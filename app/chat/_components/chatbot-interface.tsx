@@ -3,16 +3,16 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, ImagePlus, Bot, Loader2, Menu, Wand2, X } from 'lucide-react';
 
-import { Button } from '../../../components/ui/button';
-import { Input } from '../../../components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   Sheet,
   SheetContent,
   SheetTrigger,
-} from '../../../components/ui/sheet';
+} from '@/components/ui/sheet';
 import LoadingMessage from './loading-message';
 
-import { ScrollArea } from '../../../components/ui/scroll-area';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import Sidebar from './sidebar';
 import Message from './message';
 
