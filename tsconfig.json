@@ -29,7 +29,8 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "setupTests.js",
-    "build/types/**/*.ts"
+    "build/types/**/*.ts",
+    "global-setup.ts"
   ],
   "exclude": ["node_modules"]
 }

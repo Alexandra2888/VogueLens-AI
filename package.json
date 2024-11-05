@@ -14,7 +14,8 @@
     "test": "jest --passWithNoTests",
     "test:unit": "jest",
     "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui"
+    "test:e2e:ui": "playwright test --ui",
+    "clean": "npx rimraf --no-glob ./.next"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
@@ -26,6 +27,7 @@
     ]
   },
   "dependencies": {
+    "@clerk/nextjs": "^6.0.2",
     "@google-cloud/vision": "^4.3.2",
     "@hookform/resolvers": "^3.9.0",
     "@prisma/client": "^5.21.1",

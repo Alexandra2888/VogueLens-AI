@@ -5,6 +5,8 @@ import { ErrorBoundary } from '../components/ErrorBoundary';
 import { ThemeProvider } from './providers/providers';
 import Script from 'next/script';
 import './globals.css';
+import CrispProvider from './providers/crisp-provider';
+import { ClerkProvider } from '@clerk/nextjs';
 
 export const metadata: Metadata = {
   title: 'VogueLens AI - Your AI Fashion Stylist',
@@ -141,7 +143,13 @@ export default function RootLayout({
                 __html: JSON.stringify(jsonLd),
               }}
             />
-            {children}
+            <ClerkProvider
+              dynamic
+              publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
+            >
+              <CrispProvider />
+              {children}
+            </ClerkProvider>
           </ErrorBoundary>
           <Analytics />
           <WebVitals />

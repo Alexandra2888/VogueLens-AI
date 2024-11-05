@@ -261,7 +261,7 @@ export default function ChatbotInterface() {
   };
 
   return (
-    <div className="mx-auto mt-4 flex h-[90vh] max-w-7xl dark:bg-gray-900">
+    <div className="mx-auto mt-4 flex h-[70vh] max-w-7xl dark:bg-gray-900">
       <Sheet>
         <SheetTrigger asChild>
           <Button variant="outline" size="icon" className="md:hidden">
