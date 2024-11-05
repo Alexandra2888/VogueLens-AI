@@ -1,8 +1,13 @@
+import Header from '../_components/nav/header';
+import Footer from '../_components/footer';
+
 const WardrobeLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <main>
-      <div>{children}</div>
-    </main>
+    <>
+      <Header />
+      <main>{children}</main>
+      <Footer />
+    </>
   );
 };
 

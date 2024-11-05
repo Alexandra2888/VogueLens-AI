@@ -66,5 +66,4 @@ test.describe('Terms and Conditions Page', () => {
     await expect(page.getByTestId('section-content-0')).toBeVisible();
     await expect(page.getByTestId('section-content-1')).toBeVisible();
   });
-
 });
