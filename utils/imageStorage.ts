@@ -2,7 +2,7 @@
 
 interface StoredImage {
   id: string;
-  file: Blob;  // Store as Blob instead of File
+  file: Blob; // Store as Blob instead of File
   fileName: string;
   fileType: string;
   timestamp: number;
@@ -76,7 +76,7 @@ class ImageStorage {
     return {
       id: imageData.id,
       url: URL.createObjectURL(file),
-      file: file
+      file: file,
     };
   }
 
@@ -101,10 +101,10 @@ class ImageStorage {
           }
 
           // Convert stored images to display images with new object URLs
-          const displayImages = validImages.map(img => ({
+          const displayImages = validImages.map((img) => ({
             id: img.id,
             url: URL.createObjectURL(img.file),
-            file: new File([img.file], img.fileName, { type: img.fileType })
+            file: new File([img.file], img.fileName, { type: img.fileType }),
           }));
 
           resolve(displayImages);

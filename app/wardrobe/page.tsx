@@ -3,13 +3,19 @@
 import Header from '../_components/nav/header';
 import { useUser } from '@clerk/nextjs';
 import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion'
-import { Upload, X, Search } from 'lucide-react'
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useToast } from "@/hooks/use-toast"
-import { Toaster } from "@/components/ui/toaster"
+import { motion, AnimatePresence } from 'framer-motion';
+import { Upload, X, Search } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { useToast } from '@/hooks/use-toast';
+import { Toaster } from '@/components/ui/toaster';
 import { redirect } from 'next/navigation';
 import Footer from '../_components/footer';
 
@@ -19,13 +25,14 @@ import { imageStorage } from '../../utils/imageStorage';
 export default function WardrobePage() {
   const { user, isLoaded } = useUser();
 
-  const [images, setImages] = useState<Array<{ id: string; url: string; file: File }>>([]);
+  const [images, setImages] = useState<
+    Array<{ id: string; url: string; file: File }>
+  >([]);
   const [analysisType, setAnalysisType] = useState<string>('style');
   const [results, setResults] = useState<string[]>([]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
-  const { toast } = useToast()
-
+  const { toast } = useToast();
 
   useEffect(() => {
     const loadStoredImages = async () => {
@@ -35,9 +42,9 @@ export default function WardrobePage() {
       } catch (error) {
         console.error('Error loading stored images:', error);
         toast({
-          title: "Error",
-          description: "Failed to load stored images",
-          variant: "destructive",
+          title: 'Error',
+          description: 'Failed to load stored images',
+          variant: 'destructive',
         });
       }
     };
@@ -61,23 +68,25 @@ export default function WardrobePage() {
     redirect('/sign-in');
   }
 
-  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const files = Array.from(event.target.files || []);
 
     if (images.length + files.length > 3) {
       toast({
-        title: "Upload limit reached",
-        description: "You can only upload up to 3 images at a time.",
-        variant: "destructive",
+        title: 'Upload limit reached',
+        description: 'You can only upload up to 3 images at a time.',
+        variant: 'destructive',
       });
       return;
     }
 
     try {
       const newImages = await Promise.all(
-        files.map(file => imageStorage.storeImage(file))
+        files.map((file) => imageStorage.storeImage(file))
       );
-      setImages(prevImages => [...prevImages, ...newImages]);
+      setImages((prevImages) => [...prevImages, ...newImages]);
 
       // Reset the input value so the same file can be uploaded again if needed
       if (event.target.value) {
@@ -86,9 +95,9 @@ export default function WardrobePage() {
     } catch (error) {
       console.error('Error storing images:', error);
       toast({
-        title: "Error",
-        description: "Failed to store images",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Failed to store images',
+        variant: 'destructive',
       });
     }
   };
@@ -96,19 +105,19 @@ export default function WardrobePage() {
   const removeImage = async (id: string) => {
     try {
       await imageStorage.removeImage(id);
-      setImages(prevImages => {
-        const imageToRemove = prevImages.find(img => img.id === id);
+      setImages((prevImages) => {
+        const imageToRemove = prevImages.find((img) => img.id === id);
         if (imageToRemove) {
           imageStorage.revokeImageUrl(imageToRemove.url);
         }
-        return prevImages.filter(img => img.id !== id);
+        return prevImages.filter((img) => img.id !== id);
       });
     } catch (error) {
       console.error('Error removing image:', error);
       toast({
-        title: "Error",
-        description: "Failed to remove image",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Failed to remove image',
+        variant: 'destructive',
       });
     }
   };
@@ -117,15 +126,15 @@ export default function WardrobePage() {
     setIsAnalyzing(true);
     try {
       const analysisResults = await Promise.all(
-        images.map(img => analyzeImage(img.file, analysisType))
+        images.map((img) => analyzeImage(img.file, analysisType))
       );
       setResults(analysisResults);
     } catch (error) {
       console.error('Error during analysis:', error);
       toast({
-        title: "Error",
-        description: "Failed to analyze images",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Failed to analyze images',
+        variant: 'destructive',
       });
     } finally {
       setIsAnalyzing(false);
@@ -135,8 +144,8 @@ export default function WardrobePage() {
   return (
     <>
       <Header />
-      <main className="container mx-auto p-4 h-[80vh] flex flex-col justify-center items-center">
-        <h1 className="text-3xl font-bold mb-6 text-primary">Your Wardrobe</h1>
+      <main className="container mx-auto flex h-[80vh] flex-col items-center justify-center p-4">
+        <h1 className="mb-6 text-3xl font-bold text-primary">Your Wardrobe</h1>
         <div className="mb-6">
           <input
             type="file"
@@ -153,10 +162,12 @@ export default function WardrobePage() {
               </span>
             </Button>
           </label>
-          <p className="text-sm text-gray-500 mt-2">Upload up to 3 images at once</p>
+          <p className="mt-2 text-sm text-gray-500">
+            Upload up to 3 images at once
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-3">
           <AnimatePresence>
             {images.map((image) => (
               <motion.div
@@ -167,16 +178,16 @@ export default function WardrobePage() {
                 transition={{ duration: 0.3 }}
               >
                 <Card>
-                  <CardContent className="p-2 relative">
+                  <CardContent className="relative p-2">
                     <img
                       src={image.url}
                       alt="Uploaded"
-                      className="w-full h-48 object-cover rounded"
+                      className="h-48 w-full rounded object-cover"
                     />
                     <Button
                       variant="destructive"
                       size="icon"
-                      className="absolute top-4 right-4"
+                      className="absolute right-4 top-4"
                       onClick={() => removeImage(image.id)}
                     >
                       <X className="h-4 w-4" />
@@ -188,7 +199,7 @@ export default function WardrobePage() {
           </AnimatePresence>
         </div>
 
-        <div className="flex items-center gap-4 mb-6">
+        <div className="mb-6 flex items-center gap-4">
           <Select value={analysisType} onValueChange={setAnalysisType}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Select analysis type" />
@@ -218,7 +229,7 @@ export default function WardrobePage() {
 
         {results.length > 0 && (
           <div className="mt-6">
-            <h2 className="text-2xl font-semibold mb-4">Analysis Results</h2>
+            <h2 className="mb-4 text-2xl font-semibold">Analysis Results</h2>
             <ul className="space-y-2">
               {results.map((result, index) => (
                 <motion.li
@@ -226,7 +237,7 @@ export default function WardrobePage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="bg-gray-100 p-4 rounded-lg"
+                  className="rounded-lg bg-gray-100 p-4"
                 >
                   {result}
                 </motion.li>

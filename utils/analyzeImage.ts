@@ -11,7 +11,7 @@ const extractFromDescription = (description: string) => {
   return {
     labels: labelsMatch ? labelsMatch[1].split(', ') : [],
     objects: objectsMatch ? objectsMatch[1].split(', ') : [],
-    colors: colorsMatch ? colorsMatch[1].split(', ') : []
+    colors: colorsMatch ? colorsMatch[1].split(', ') : [],
   };
 };
 
@@ -24,20 +24,30 @@ const getColorPalette = (colors: string[]) => {
     if (!match) return { h: 0, s: 0, l: 0 };
 
     let [, r, g, b] = match.map(Number);
-    r /= 255; g /= 255; b /= 255;
+    r /= 255;
+    g /= 255;
+    b /= 255;
 
     const max = Math.max(r, g, b);
     const min = Math.min(r, g, b);
-    let h = 0, s, l = (max + min) / 2;
+    let h = 0,
+      s,
+      l = (max + min) / 2;
 
     if (max !== min) {
       const d = max - min;
       s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
 
       switch (max) {
-        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-        case g: h = (b - r) / d + 2; break;
-        case b: h = (r - g) / d + 4; break;
+        case r:
+          h = (g - b) / d + (g < b ? 6 : 0);
+          break;
+        case g:
+          h = (b - r) / d + 2;
+          break;
+        case b:
+          h = (r - g) / d + 4;
+          break;
       }
       h /= 6;
     }
@@ -47,17 +57,20 @@ const getColorPalette = (colors: string[]) => {
   };
 
   const hslColors = colors.map(rgbToHsl);
-  const hueDiffs = hslColors.map((c1, i) =>
-    hslColors.slice(i + 1).map(c2 => Math.abs(c1.h - c2.h))
-  ).flat();
+  const hueDiffs = hslColors
+    .map((c1, i) => hslColors.slice(i + 1).map((c2) => Math.abs(c1.h - c2.h)))
+    .flat();
 
-  if (hueDiffs.some(diff => diff > 150)) return 'Complementary';
-  if (hueDiffs.some(diff => diff > 90)) return 'Triadic';
-  if (hueDiffs.every(diff => diff < 30)) return 'Analogous';
+  if (hueDiffs.some((diff) => diff > 150)) return 'Complementary';
+  if (hueDiffs.some((diff) => diff > 90)) return 'Triadic';
+  if (hueDiffs.every((diff) => diff < 30)) return 'Analogous';
   return 'Mixed';
 };
 
-const analyzeImage = async (file: File, analysisType: string): Promise<string> => {
+const analyzeImage = async (
+  file: File,
+  analysisType: string
+): Promise<string> => {
   try {
     const formData = new FormData();
     formData.append('image', file);
@@ -71,43 +84,68 @@ const analyzeImage = async (file: File, analysisType: string): Promise<string> =
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const result = await response.json() as SimpleAnalysisResponse;
+    const result = (await response.json()) as SimpleAnalysisResponse;
 
     if (result.error) {
       throw new Error(result.error);
     }
 
-    const { labels, objects, colors } = extractFromDescription(result.description);
-    const allItems = [...labels, ...objects].map(item => item.toLowerCase());
+    const { labels, objects, colors } = extractFromDescription(
+      result.description
+    );
+    const allItems = [...labels, ...objects].map((item) => item.toLowerCase());
 
     switch (analysisType) {
       case 'style': {
         const styleCategories = {
           formal: {
-            keywords: ['suit', 'dress shirt', 'blazer', 'formal wear', 'blouse', 'dress pants'],
-            description: 'formal and professional'
+            keywords: [
+              'suit',
+              'dress shirt',
+              'blazer',
+              'formal wear',
+              'blouse',
+              'dress pants',
+            ],
+            description: 'formal and professional',
           },
           casual: {
-            keywords: ['t-shirt', 'jeans', 'hoodie', 'sweater', 'casual', 'top'],
-            description: 'casual and relaxed'
+            keywords: [
+              't-shirt',
+              'jeans',
+              'hoodie',
+              'sweater',
+              'casual',
+              'top',
+            ],
+            description: 'casual and relaxed',
           },
           athletic: {
             keywords: ['sportswear', 'athletic', 'workout', 'active', 'sports'],
-            description: 'athletic and sporty'
+            description: 'athletic and sporty',
           },
           bohemian: {
-            keywords: ['boho', 'floral', 'loose', 'flowing', 'ethnic', 'pattern'],
-            description: 'bohemian and free-spirited'
+            keywords: [
+              'boho',
+              'floral',
+              'loose',
+              'flowing',
+              'ethnic',
+              'pattern',
+            ],
+            description: 'bohemian and free-spirited',
           },
           elegant: {
             keywords: ['gown', 'dress', 'silk', 'satin', 'elegant'],
-            description: 'elegant and sophisticated'
-          }
+            description: 'elegant and sophisticated',
+          },
         };
 
         const detectedStyles = Object.entries(styleCategories)
           .filter(([_, { keywords }]) =>
-            keywords.some(keyword => allItems.some(item => item.includes(keyword)))
+            keywords.some((keyword) =>
+              allItems.some((item) => item.includes(keyword))
+            )
           )
           .map(([style, { description }]) => ({ style, description }));
 
@@ -132,19 +170,24 @@ const analyzeImage = async (file: File, analysisType: string): Promise<string> =
 
         switch (palette) {
           case 'Monochromatic':
-            colorAdvice = 'This creates a sophisticated, cohesive look. Try accessorizing with contrasting colors for accent.';
+            colorAdvice =
+              'This creates a sophisticated, cohesive look. Try accessorizing with contrasting colors for accent.';
             break;
           case 'Complementary':
-            colorAdvice = 'These colors create striking contrasts. Perfect for making a bold statement.';
+            colorAdvice =
+              'These colors create striking contrasts. Perfect for making a bold statement.';
             break;
           case 'Triadic':
-            colorAdvice = 'This balanced color scheme offers vibrant variety while maintaining harmony.';
+            colorAdvice =
+              'This balanced color scheme offers vibrant variety while maintaining harmony.';
             break;
           case 'Analogous':
-            colorAdvice = 'These harmonious colors create a serene, cohesive look.';
+            colorAdvice =
+              'These harmonious colors create a serene, cohesive look.';
             break;
           case 'Mixed':
-            colorAdvice = 'This versatile palette offers multiple styling possibilities.';
+            colorAdvice =
+              'This versatile palette offers multiple styling possibilities.';
             break;
         }
 
@@ -153,15 +196,33 @@ const analyzeImage = async (file: File, analysisType: string): Promise<string> =
 
       case 'weather': {
         const weatherIndicators = {
-          summer: ['short sleeve', 't-shirt', 'tank', 'light', 'thin', 'cotton', 'linen'],
-          winter: ['long sleeve', 'sweater', 'coat', 'jacket', 'thick', 'wool', 'warm'],
+          summer: [
+            'short sleeve',
+            't-shirt',
+            'tank',
+            'light',
+            'thin',
+            'cotton',
+            'linen',
+          ],
+          winter: [
+            'long sleeve',
+            'sweater',
+            'coat',
+            'jacket',
+            'thick',
+            'wool',
+            'warm',
+          ],
           spring: ['light jacket', 'cardigan', 'medium weight'],
-          fall: ['jacket', 'long sleeve', 'medium weight']
+          fall: ['jacket', 'long sleeve', 'medium weight'],
         };
 
         const seasons = Object.entries(weatherIndicators)
           .filter(([_, keywords]) =>
-            keywords.some(keyword => allItems.some(item => item.includes(keyword)))
+            keywords.some((keyword) =>
+              allItems.some((item) => item.includes(keyword))
+            )
           )
           .map(([season]) => season);
 
@@ -169,9 +230,10 @@ const analyzeImage = async (file: File, analysisType: string): Promise<string> =
           return `This is a versatile piece that can be layered for different seasons. ${result.description}`;
         }
 
-        const seasonText = seasons.length > 1
-          ? `${seasons.slice(0, -1).join(', ')} and ${seasons.slice(-1)}`
-          : seasons[0];
+        const seasonText =
+          seasons.length > 1
+            ? `${seasons.slice(0, -1).join(', ')} and ${seasons.slice(-1)}`
+            : seasons[0];
 
         return `This piece is most suitable for ${seasonText} wear. ${result.description}`;
       }
@@ -179,26 +241,35 @@ const analyzeImage = async (file: File, analysisType: string): Promise<string> =
       case 'occasion': {
         const occasionCategories = {
           workwear: {
-            keywords: ['business', 'professional', 'office', 'formal', 'suit', 'blazer'],
-            description: 'professional settings'
+            keywords: [
+              'business',
+              'professional',
+              'office',
+              'formal',
+              'suit',
+              'blazer',
+            ],
+            description: 'professional settings',
           },
           casual: {
             keywords: ['casual', 't-shirt', 'jeans', 'everyday', 'relaxed'],
-            description: 'casual outings'
+            description: 'casual outings',
           },
           formal: {
             keywords: ['formal', 'dress', 'gown', 'elegant', 'sophisticated'],
-            description: 'formal events'
+            description: 'formal events',
           },
           athletic: {
             keywords: ['sport', 'athletic', 'workout', 'gym', 'active'],
-            description: 'athletic activities'
-          }
+            description: 'athletic activities',
+          },
         };
 
         const occasions = Object.entries(occasionCategories)
           .filter(([_, { keywords }]) =>
-            keywords.some(keyword => allItems.some(item => item.includes(keyword)))
+            keywords.some((keyword) =>
+              allItems.some((item) => item.includes(keyword))
+            )
           )
           .map(([_, { description }]) => description);
 
@@ -210,8 +281,17 @@ const analyzeImage = async (file: File, analysisType: string): Promise<string> =
       }
 
       case 'trend': {
-        const trendKeywords = ['fashion', 'trendy', 'modern', 'contemporary', 'style', 'chic'];
-        const isTrendy = trendKeywords.some(keyword => allItems.some(item => item.includes(keyword)));
+        const trendKeywords = [
+          'fashion',
+          'trendy',
+          'modern',
+          'contemporary',
+          'style',
+          'chic',
+        ];
+        const isTrendy = trendKeywords.some((keyword) =>
+          allItems.some((item) => item.includes(keyword))
+        );
 
         if (isTrendy) {
           return `This piece features current fashion elements. ${result.description}`;

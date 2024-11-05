@@ -5,11 +5,7 @@ import { Send, ImagePlus, Bot, Loader2, Menu, Wand2, X } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-} from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import LoadingMessage from './loading-message';
 
 import { ScrollArea } from '@/components/ui/scroll-area';
