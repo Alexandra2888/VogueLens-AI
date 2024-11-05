@@ -133,7 +133,7 @@ const Hero = () => {
                 style tips from our AI-powered chatbot.
               </p>
               <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                <Button className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-8 text-sm font-medium hover:bg-secondary-hover">
+                <Button className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-8 text-sm font-medium text-secondary hover:bg-secondary-hover">
                   Try Now
                 </Button>
                 <Button

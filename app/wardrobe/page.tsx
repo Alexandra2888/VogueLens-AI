@@ -216,6 +216,7 @@ export default function WardrobePage() {
             onClick={handleAnalysis}
             disabled={images.length === 0 || isAnalyzing}
             variant="default"
+            className="text-secondary hover:bg-secondary-hover"
           >
             {isAnalyzing ? (
               <>Analyzing...</>
