@@ -27,21 +27,18 @@ VogueLens AI is an intelligent fashion advisor that helps users make better styl
 - Next.js Image optimization
 - Code splitting and lazy loading
 
-### Backend
+### AI & APIs
 
-- Next.js API routes
-- Supabase + Prisma ORM
-- Cloud Vision API + Replicate + OpenAI
-- API rate limiting
+- OpenAI API for style recommendations
+- Google Cloud Vision API for image analysis
+- Clerk for authentication
+- Web API for image handling
 
 ### Infrastructure
 
-- Docker
 - Vercel hosting
-- Cloudinary for image management
-- Redis/Vercel Edge Caching
-- Vercel's Built-in Error Monitoring
 - CDN for static assets
+- Vercel's Built-in Error Monitoring
 
 ### Testing
 
@@ -80,39 +77,19 @@ cp .env.example .env.local
 
 Fill in your environment variables:
 
-````env
+```env
 # Authentication
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
 CLERK_SECRET_KEY=
-
-# Database
-DATABASE_URL=
 
 # OpenAI
 OPENAI_API_KEY=
 
 # Google Cloud Vision
 GOOGLE_APPLICATION_CREDENTIALS=
+```
 
-# Cloudinary
-NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=
-CLOUDINARY_API_KEY=
-CLOUDINARY_API_SECRET=
-
-# Redis
-UPSTASH_REDIS_REST_URL=
-UPSTASH_REDIS_REST_TOKEN=
-
-
-
-4. Initialize the database
-
-```bash
-npx prisma generate
-npx prisma db push
-````
-
-5. Run the development server
+4. Run the development server
 
 ```bash
 npm run dev
@@ -132,7 +109,6 @@ voguelens-ai/
 │   ├── lib/             # Utility functions
 │   ├── styles/          # Global styles
 │   └── types/           # TypeScript types
-├── prisma/              # Database schema
 ├── public/              # Static assets
 ├── tests/               # Test files
 │   ├── unit/
@@ -182,10 +158,6 @@ npm run test:e2e     # Run E2E tests
 - User analytics
 
 ## 🤝 Contributing
-
-## Contributing
-
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct and development process.
 
 1. Fork the repository
 2. Create your feature branch

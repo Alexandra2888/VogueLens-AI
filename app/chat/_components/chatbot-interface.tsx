@@ -3,16 +3,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, ImagePlus, Bot, Loader2, Menu, Wand2, X } from 'lucide-react';
 
-import { Button } from '../../../components/ui/button';
-import { Input } from '../../../components/ui/input';
-import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-} from '../../../components/ui/sheet';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import LoadingMessage from './loading-message';
 
-import { ScrollArea } from '../../../components/ui/scroll-area';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import Sidebar from './sidebar';
 import Message from './message';
 
@@ -261,7 +257,7 @@ export default function ChatbotInterface() {
   };
 
   return (
-    <div className="mx-auto mt-4 flex h-[90vh] max-w-7xl dark:bg-gray-900">
+    <div className="mx-auto mt-4 flex h-[70vh] max-w-7xl dark:bg-gray-900">
       <Sheet>
         <SheetTrigger asChild>
           <Button variant="outline" size="icon" className="md:hidden">

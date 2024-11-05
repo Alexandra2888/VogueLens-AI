@@ -1,10 +1,14 @@
 import { Analytics } from '@vercel/analytics/react';
-import { WebVitals } from '../components/WebVitals';
+import { WebVitals } from '@/components/WebVitals';
 import { Metadata } from 'next';
-import { ErrorBoundary } from '../components/ErrorBoundary';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { ThemeProvider } from './providers/providers';
 import Script from 'next/script';
 import './globals.css';
+import CrispProvider from './providers/crisp-provider';
+import { ClerkProvider } from '@clerk/nextjs';
+
+import PWAInstallBanner from '../app/_components/PWAInstallBanner';
 
 export const metadata: Metadata = {
   title: 'VogueLens AI - Your AI Fashion Stylist',
@@ -125,6 +129,13 @@ export default function RootLayout({
       <head>
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href="https://voguelens.ai" />
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="application-name" content="VogueLens AI" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="VogueLens AI" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="theme-color" content="#000000" />
       </head>
       <body>
         <ThemeProvider
@@ -141,7 +152,14 @@ export default function RootLayout({
                 __html: JSON.stringify(jsonLd),
               }}
             />
-            {children}
+            <ClerkProvider
+              dynamic
+              publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
+            >
+              <CrispProvider />
+              {children}
+              <PWAInstallBanner />
+            </ClerkProvider>
           </ErrorBoundary>
           <Analytics />
           <WebVitals />

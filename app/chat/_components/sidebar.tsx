@@ -1,8 +1,8 @@
 import React from 'react';
 import { ImagePlus, Bot, ChevronRight } from 'lucide-react';
 
-import { Button } from '../../../components/ui/button';
-import { ScrollArea } from '../../../components/ui/scroll-area';
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 import { ConversationProps } from '../../../types/conversation';
 
@@ -57,7 +57,7 @@ const Sidebar = ({
       <div className="border-t p-4 dark:border-gray-700">
         <Button
           onClick={onNewConversation}
-          className="w-full gap-2 dark:bg-blue-600 dark:text-white"
+          className="w-full gap-2 text-secondary dark:bg-blue-600 dark:text-white"
         >
           <ImagePlus className="h-4 w-4" />
           New Fashion Chat
