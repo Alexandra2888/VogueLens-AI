@@ -1,7 +1,7 @@
 import { Analytics } from '@vercel/analytics/react';
-import { WebVitals } from '../components/WebVitals';
+import { WebVitals } from '@/components/WebVitals';
 import { Metadata } from 'next';
-import { ErrorBoundary } from '../components/ErrorBoundary';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { ThemeProvider } from './providers/providers';
 import Script from 'next/script';
 import './globals.css';

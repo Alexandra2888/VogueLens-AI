@@ -1,6 +1,6 @@
 import { Bot } from 'lucide-react';
-import { Card } from '../../../components/ui/card';
-import { Avatar, AvatarFallback } from '../../../components/ui/avatar';
+import { Card } from '@/components/ui/card';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 const LoadingMessage = () => (
   <div className="my-12 flex justify-start">
