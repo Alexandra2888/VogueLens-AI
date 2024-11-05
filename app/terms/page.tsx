@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { ChevronDownIcon, ChevronUpIcon } from 'lucide-react';
-import Header from '../_components/nav/header';
-import Footer from '../_components/footer';
 
 export default function Component() {
   const [expandedSections, setExpandedSections] = useState<number[]>([]);
@@ -90,8 +88,6 @@ Email: [moldovan.alexandra28@gmail.com]`,
   ];
 
   return (
-    <>
-      <Header />
       <main className="flex min-h-screen items-center justify-center px-4 py-24 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl">
           <h1
@@ -151,7 +147,5 @@ Email: [moldovan.alexandra28@gmail.com]`,
           </div>
         </div>
       </main>
-      <Footer />
-    </>
   );
 }

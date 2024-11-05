@@ -36,17 +36,17 @@ test.describe('Footer', () => {
     ).toBeVisible();
   });
 
-  // test('footer links are navigable', async ({ page }) => {
-  //   // Click Terms link
-  //   await page
-  //     .locator('footer')
-  //     .getByRole('link', { name: 'Terms of Service' })
-  //     .click();
-  //   await expect(page).toHaveURL('/terms');
-  //
-  //   // Go back and click Privacy link
-  //   await page.goto('/');
-  //   await page.locator('footer').getByRole('link', { name: 'Privacy' }).click();
-  //   await expect(page).toHaveURL('/privacy');
-  // });
+  test('footer links are navigable', async ({ page }) => {
+    // Click Terms link
+    await page
+      .locator('footer')
+      .getByRole('link', { name: 'Terms of Service' })
+      .click();
+    await expect(page).toHaveURL('/terms');
+
+    // Go back and click Privacy link
+    await page.goto('/');
+    await page.locator('footer').getByRole('link', { name: 'Privacy' }).click();
+    await expect(page).toHaveURL('/privacy');
+  });
 });

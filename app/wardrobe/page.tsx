@@ -1,6 +1,5 @@
 'use client';
 
-import Header from '../_components/nav/header';
 import { useUser } from '@clerk/nextjs';
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -17,7 +16,6 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { Toaster } from '@/components/ui/toaster';
 import { redirect } from 'next/navigation';
-import Footer from '../_components/footer';
 
 import analyzeImage from '../../utils/analyzeImage';
 import { imageStorage } from '../../utils/imageStorage';
@@ -143,7 +141,6 @@ export default function WardrobePage() {
 
   return (
     <>
-      <Header />
       <main className="container mx-auto flex h-[80vh] flex-col items-center justify-center p-4">
         <h1 className="mb-6 text-3xl font-bold text-primary">Your Wardrobe</h1>
         <div className="mb-6">
@@ -247,7 +244,6 @@ export default function WardrobePage() {
           </div>
         )}
       </main>
-      <Footer />
       <Toaster />
     </>
   );
