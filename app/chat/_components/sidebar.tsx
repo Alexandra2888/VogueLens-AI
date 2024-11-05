@@ -57,7 +57,7 @@ const Sidebar = ({
       <div className="border-t p-4 dark:border-gray-700">
         <Button
           onClick={onNewConversation}
-          className="w-full gap-2 dark:bg-blue-600 dark:text-white"
+          className="w-full gap-2 text-secondary dark:bg-blue-600 dark:text-white"
         >
           <ImagePlus className="h-4 w-4" />
           New Fashion Chat
