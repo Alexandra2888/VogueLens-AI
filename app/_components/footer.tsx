@@ -1,6 +1,6 @@
 'use client';
 
-import { Facebook, Instagram, Twitter } from 'lucide-react';
+import { Instagram } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import MinimalLogo from './logo/minimal-logo';
