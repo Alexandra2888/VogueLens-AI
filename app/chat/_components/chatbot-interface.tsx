@@ -358,7 +358,7 @@ export default function ChatbotInterface() {
               <button
                 onClick={handleImageGeneration}
                 disabled={!currentConversation || !input.trim() || isLoading}
-                className="dark:bg-gray-700 dark:text-white hover:text-secondary-hover hover:cursor-pointer"
+                className="hover:cursor-pointer hover:text-secondary-hover dark:bg-gray-700 dark:text-white"
                 title="Generate Image"
               >
                 <Wand2 className="h-5 w-5" />
@@ -370,7 +370,7 @@ export default function ChatbotInterface() {
                   (!input.trim() && !selectedImage) ||
                   isLoading
                 }
-                className="dark:bg-blue-600 dark:text-white hover:text-secondary-hover hover:cursor-pointer"
+                className="hover:cursor-pointer hover:text-secondary-hover dark:bg-blue-600 dark:text-white"
               >
                 {isLoading ? (
                   <Loader2 className="h-5 w-5 animate-spin" />
