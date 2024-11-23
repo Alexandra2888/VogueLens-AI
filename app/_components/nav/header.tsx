@@ -12,15 +12,10 @@ import MinimalLogo from '../logo/minimal-logo';
 import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 import SignInCustomButton from './sign-in-custom-button';
 
+import { navItems } from '../../../data/data';
+
 // Check for test environment
 const isTestEnvironment = process.env.NEXT_PUBLIC_CLERK_BYPASS_AUTH === 'true';
-
-const navItems = [
-  { href: '/', label: 'Home' },
-  { href: '/chat', label: 'Chat' },
-  { href: '/wardrobe', label: 'Wardrobe' },
-  { href: '/profile', label: 'Profile' },
-];
 
 const NavLink = ({
   href,
