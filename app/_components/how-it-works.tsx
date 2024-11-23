@@ -1,34 +1,8 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { MessageSquare, Search, Lightbulb, Sparkles } from 'lucide-react';
 
-const steps = [
-  {
-    icon: MessageSquare,
-    title: 'Start a Chat',
-    description:
-      'Begin your fashion journey by starting a conversation with our AI assistant.',
-  },
-  {
-    icon: Search,
-    title: 'Describe Your Needs',
-    description:
-      'Tell us about your style preferences, body type, or specific fashion questions.',
-  },
-  {
-    icon: Lightbulb,
-    title: 'Receive Personalized Advice',
-    description:
-      'Get tailored recommendations and styling tips based on your input.',
-  },
-  {
-    icon: Sparkles,
-    title: 'Refine Your Style',
-    description:
-      'Iterate and explore different options to perfect your fashion choices.',
-  },
-];
+import { steps } from '../../data/data';
 
 const containerVariants = {
   hidden: { opacity: 0 },

@@ -4,28 +4,11 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 
+import { images } from '../../data/data';
+
 const Hero = () => {
   const [hoveredIndex, setHoveredIndex] = useState(null);
-  const images = [
-    {
-      src: 'https://res.cloudinary.com/dnpjmrdik/image/upload/v1729791776/img1_rz1swm.avif',
-      alt: 'Fashion model 1',
-      width: 400,
-      height: 600,
-    },
-    {
-      src: 'https://res.cloudinary.com/dnpjmrdik/image/upload/v1729791785/img3_cimgii.avif',
-      alt: 'Fashion model 2',
-      width: 320,
-      height: 480,
-    },
-    {
-      src: 'https://res.cloudinary.com/dnpjmrdik/image/upload/v1729791781/img2_s6uhka.avif',
-      alt: 'Fashion model 3',
-      width: 240,
-      height: 360,
-    },
-  ];
+
   // @ts-ignore
   return (
     <section className="container mx-auto flex max-w-7xl items-center justify-center overflow-hidden pt-12 lg:pt-28">

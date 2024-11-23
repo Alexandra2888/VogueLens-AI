@@ -5,16 +5,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import MinimalLogo from './logo/minimal-logo';
 
-const footerLinks = [
-  { href: '/terms', label: 'Terms of Service' },
-  { href: '/privacy', label: 'Privacy' },
-];
-
-const socialLinks = [
-  { href: '#', icon: Instagram, label: 'Instagram' },
-  { href: '#', icon: Facebook, label: 'Facebook' },
-  { href: '#', icon: Twitter, label: 'Twitter' },
-];
+import { footerLinks, socialLinks } from '../../data/data';
 
 const FooterLink = ({ href, label }: { href: string; label: string }) => {
   return (
