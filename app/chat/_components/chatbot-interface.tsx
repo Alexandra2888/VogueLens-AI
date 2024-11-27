@@ -355,24 +355,22 @@ export default function ChatbotInterface() {
                 }
                 disabled={!currentConversation || isLoading}
               />
-              <Button
+              <button
                 onClick={handleImageGeneration}
                 disabled={!currentConversation || !input.trim() || isLoading}
-                size="icon"
-                className="dark:bg-gray-700 dark:text-white"
+                className="hover:cursor-pointer hover:text-secondary-hover dark:bg-gray-700 dark:text-white"
                 title="Generate Image"
               >
                 <Wand2 className="h-5 w-5" />
-              </Button>
-              <Button
+              </button>
+              <button
                 onClick={handleSend}
                 disabled={
                   !currentConversation ||
                   (!input.trim() && !selectedImage) ||
                   isLoading
                 }
-                size="icon"
-                className="dark:bg-blue-600 dark:text-white"
+                className="hover:cursor-pointer hover:text-secondary-hover dark:bg-blue-600 dark:text-white"
               >
                 {isLoading ? (
                   <Loader2 className="h-5 w-5 animate-spin" />
@@ -380,7 +378,7 @@ export default function ChatbotInterface() {
                   <Send className="h-5 w-5" />
                 )}
                 <span className="sr-only">Send message</span>
-              </Button>
+              </button>
             </div>
           </div>
         </div>

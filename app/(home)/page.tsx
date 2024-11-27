@@ -12,7 +12,7 @@ export default function HomePage() {
         <title>VogueLens AI | Your Fashion generator</title>
         <meta
           name="description"
-          content="  Get personalized fashion advice, outfit recommendations and
+          content="Get personalized fashion advice, outfit recommendations and
                 style tips from our AI-powered chatbot."
           key="desc"
         />

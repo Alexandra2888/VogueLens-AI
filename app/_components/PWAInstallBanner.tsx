@@ -70,8 +70,8 @@ const PWAInstallBanner = () => {
   if (!isVisible) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background p-4 shadow-lg">
-      <div className="container mx-auto flex items-center justify-between">
+    <div className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background p-4 pb-36 shadow-lg md:pb-0">
+      <div className="container mx-auto flex max-w-5xl items-center justify-around py-6">
         <div className="mr-4 flex-1">
           <h3 className="text-lg font-semibold">Install VogueLens AI</h3>
           <p className="text-sm text-muted-foreground">

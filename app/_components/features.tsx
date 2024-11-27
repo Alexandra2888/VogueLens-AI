@@ -1,33 +1,8 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Sparkles, Palette, Zap, Shirt } from 'lucide-react';
 
-const features = [
-  {
-    icon: Sparkles,
-    title: 'AI-Powered Recommendations',
-    description:
-      'Get personalized fashion advice tailored to your style and preferences.',
-  },
-  {
-    icon: Palette,
-    title: 'Color Coordination',
-    description:
-      'Discover perfect color combinations that complement your wardrobe.',
-  },
-  {
-    icon: Zap,
-    title: 'Instant Styling Tips',
-    description: 'Receive quick and practical styling advice for any occasion.',
-  },
-  {
-    icon: Shirt,
-    title: 'Outfit Generator',
-    description:
-      'Create complete outfits from your existing wardrobe or with new pieces.',
-  },
-];
+import { features } from '../../data/data';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -77,7 +52,7 @@ export default function FeaturesSection() {
             className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4"
             data-testid="features-grid"
           >
-            {features.map((feature, index) => {
+            {features.map((feature: any, index: number) => {
               const Icon = feature.icon;
               return (
                 <motion.div
