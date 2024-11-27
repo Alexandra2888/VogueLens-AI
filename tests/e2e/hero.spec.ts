@@ -42,15 +42,15 @@ test.describe('Hero Component', () => {
 // Add the image data for verification
 const HERO_IMAGES = [
   {
-    src: 'https://res.cloudinary.com/dnpjmrdik/image/upload/v1729791776/img1_rz1swm.avif',
+    src: 'https://res.cloudinary.com/dblgunawk/image/upload/v1732728818/img3_cimgii_i3epvq.avif',
     alt: 'Fashion model 1',
   },
   {
-    src: 'https://res.cloudinary.com/dnpjmrdik/image/upload/v1729791785/img3_cimgii.avif',
+    src: 'https://res.cloudinary.com/dblgunawk/image/upload/v1732728818/img2_s6uhka_xrf4nx.avif',
     alt: 'Fashion model 2',
   },
   {
-    src: 'https://res.cloudinary.com/dnpjmrdik/image/upload/v1729791781/img2_s6uhka.avif',
+    src: 'https://res.cloudinary.com/dblgunawk/image/upload/v1732728817/img1_rz1swm_l2gq9j.avif',
     alt: 'Fashion model 3',
   },
 ];
