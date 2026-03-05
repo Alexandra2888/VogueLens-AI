@@ -12,9 +12,7 @@ try {
     throw new Error('Invalid credentials format');
   }
 
-  vision = new ImageAnnotatorClient({
-    credentials: credentials,
-  });
+  vision = new ImageAnnotatorClient({ credentials: credentials });
 } catch (error) {
   console.error('Error initializing Google Cloud Vision:', error);
   vision = null;
