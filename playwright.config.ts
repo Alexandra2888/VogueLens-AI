@@ -3,6 +3,8 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+const isCI = !!process.env.CI;
+
 export default defineConfig({
   testDir: './tests',
   timeout: 30000,
@@ -10,10 +12,11 @@ export default defineConfig({
     timeout: 5000,
   },
   fullyParallel: true,
-  forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  forbidOnly: isCI,
+  retries: isCI ? 2 : 0,
+  workers: isCI ? 1 : undefined,
   reporter: 'html',
+  globalSetup: './global-setup.ts',
 
   use: {
     baseURL: 'http://localhost:3000',
@@ -21,10 +24,10 @@ export default defineConfig({
   },
 
   webServer: {
-    command: 'npm run dev',
+    command: isCI ? 'npm run start' : 'npm run dev',
     port: 3000,
     timeout: 120000,
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: !isCI,
   },
 
   projects: [
