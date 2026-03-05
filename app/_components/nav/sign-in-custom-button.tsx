@@ -4,23 +4,13 @@ import { motion } from 'motion/react';
 const StyledSignInButton = ({ isMobile = false }) => {
   return (
     <SignInButton mode="modal">
-      <motion.div
-        className={`text-foreground hover:text-secondary-hover relative font-medium transition-colors ${
-          isMobile ? 'text-base' : 'text-xl'
-        }`}
-        whileHover={{ y: -2 }}
-        transition={{ duration: 0.2 }}
+      <motion.button
+        className="rounded-xl bg-brand-red px-5 py-2 text-sm font-medium text-white shadow-sm shadow-brand-red/20 transition-all hover:bg-brand-red-dark hover:shadow-md hover:shadow-brand-red/30"
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
       >
-        Sign In
-        <motion.div
-          className={`bg-secondary-hover absolute left-0 h-[2px] ${
-            isMobile ? 'bottom-0 w-[60%]' : '-bottom-1 w-full'
-          }`}
-          initial={{ scaleX: 0 }}
-          whileHover={{ scaleX: 1 }}
-          transition={{ duration: 0.2 }}
-        />
-      </motion.div>
+        {isMobile ? 'Sign In' : 'Get Started'}
+      </motion.button>
     </SignInButton>
   );
 };

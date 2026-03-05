@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence, useMotionValueEvent, useScroll } from 'motion/react';
 import { usePathname } from 'next/navigation';
 
 import { ThemeToggle } from './theme-toggle';
@@ -14,7 +14,6 @@ import SignInCustomButton from './sign-in-custom-button';
 
 import { navItems } from '../../../data/data';
 
-// Check for test environment
 const isTestEnvironment = process.env.NEXT_PUBLIC_CLERK_BYPASS_AUTH === 'true';
 
 const NavLink = ({
@@ -40,37 +39,56 @@ const NavLink = ({
       data-testid={`nav-link-${label.toLowerCase()}${isMobile ? '-mobile' : '-desktop'}`}
     >
       <motion.div
-        className={`text-foreground hover:text-secondary-hover relative font-medium transition-colors ${
-          isMobile ? 'text-base' : 'text-xl'
-        }`}
-        whileHover={{ y: -2 }}
+        className={`relative font-medium transition-colors ${
+          isActive
+            ? 'text-brand-red'
+            : 'text-foreground/70 hover:text-foreground'
+        } ${isMobile ? 'text-lg' : 'text-sm tracking-wide uppercase'}`}
+        whileHover={{ y: -1 }}
         transition={{ duration: 0.2 }}
       >
         {label}
         <motion.div
-          className={`bg-secondary-hover absolute left-0 h-[2px] ${
+          className={`bg-brand-red absolute left-0 h-[2px] rounded-full ${
             isMobile ? 'bottom-0 w-[60%]' : '-bottom-1 w-full'
           }`}
           initial={{ scaleX: 0 }}
           animate={{ scaleX: isActive ? 1 : 0 }}
           whileHover={{ scaleX: 1 }}
           transition={{ duration: 0.2 }}
+          style={{ originX: 0 }}
         />
       </motion.div>
     </Link>
   );
 };
 
-// Mock UserButton for testing
 const MockUserButton = ({ isMobile = false }: { isMobile?: boolean }) => (
   <div
-    className={`bg-secondary rounded-full ${isMobile ? 'h-8 w-8' : 'h-10 w-10'}`}
+    className={`bg-brand-red/20 rounded-full ${isMobile ? 'h-8 w-8' : 'h-10 w-10'}`}
     data-testid={`mock-user-button${isMobile ? '-mobile' : '-desktop'}`}
   />
 );
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const { scrollY } = useScroll();
+
+  useMotionValueEvent(scrollY, 'change', (latest) => {
+    setScrolled(latest > 20);
+  });
+
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMenuOpen]);
 
   const renderAuthButtons = (isMobile: boolean) => {
     if (isTestEnvironment) {
@@ -99,17 +117,23 @@ export default function Header() {
   };
 
   return (
-    <header
-      className="bg-background/95 fixed z-50 w-full transition-colors"
+    <motion.header
+      className={`fixed z-50 w-full transition-all duration-500 ${
+        scrolled
+          ? 'bg-background/80 shadow-sm shadow-black/[0.03] backdrop-blur-2xl dark:shadow-white/[0.02]'
+          : 'bg-transparent'
+      }`}
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      transition={{ duration: 0.5, ease: [0.25, 0.1, 0, 1] }}
       data-testid="header"
     >
-      <div className="border-border mx-auto flex max-w-7xl items-center justify-between border-b px-4 py-4">
-        {/* Logo */}
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
         <motion.div
           className="flex items-center"
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.3 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
         >
           <Link href="/" className="hidden md:block" data-testid="desktop-logo">
             <Logo />
@@ -119,7 +143,6 @@ export default function Header() {
           </Link>
         </motion.div>
 
-        {/* Desktop Navigation */}
         <nav
           className="hidden items-center gap-8 md:flex"
           data-testid="desktop-nav"
@@ -127,75 +150,98 @@ export default function Header() {
           {navItems.map((item, i) => (
             <motion.div
               key={item.href}
-              initial={{ opacity: 0, y: -20 }}
+              initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: i * 0.1 }}
+              transition={{ duration: 0.4, delay: 0.15 + i * 0.05 }}
             >
               <NavLink href={item.href} label={item.label} />
             </motion.div>
           ))}
-          {renderAuthButtons(false)}
-          <ThemeToggle />
+
+          <motion.div
+            className="flex items-center gap-3"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.4, delay: 0.4 }}
+          >
+            <div className="h-5 w-px bg-border" />
+            {renderAuthButtons(false)}
+            <ThemeToggle />
+          </motion.div>
         </nav>
 
-        {/* Mobile Menu Button */}
         <div
-          className="flex items-center gap-4 md:hidden"
+          className="flex items-center gap-3 md:hidden"
           data-testid="mobile-nav"
         >
           {renderAuthButtons(true)}
           <ThemeToggle />
           <motion.button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="text-foreground hover:text-secondary-hover"
+            className="text-foreground relative z-50 flex h-10 w-10 items-center justify-center rounded-xl"
             aria-label="Toggle menu"
-            whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             aria-expanded={isMenuOpen ? 'true' : 'false'}
             data-testid="mobile-menu-button"
           >
-            {isMenuOpen ? (
-              <X className="h-6 w-6" />
-            ) : (
-              <Menu className="h-6 w-6" />
-            )}
+            <AnimatePresence mode="wait" initial={false}>
+              {isMenuOpen ? (
+                <motion.div
+                  key="close"
+                  initial={{ rotate: -90, opacity: 0 }}
+                  animate={{ rotate: 0, opacity: 1 }}
+                  exit={{ rotate: 90, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <X className="h-5 w-5" />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="menu"
+                  initial={{ rotate: 90, opacity: 0 }}
+                  animate={{ rotate: 0, opacity: 1 }}
+                  exit={{ rotate: -90, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Menu className="h-5 w-5" />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.button>
         </div>
       </div>
 
-      {/* Mobile Navigation */}
-      <motion.nav
-        className="bg-secondary dark:bg-primary fixed inset-0 top-14 z-40 md:hidden"
-        initial={{ height: 0, opacity: 0 }}
-        animate={{
-          height: isMenuOpen ? '100vh' : 0,
-          opacity: isMenuOpen ? 1 : 0,
-        }}
-        transition={{
-          duration: 0.2,
-          ease: 'easeInOut',
-        }}
-        data-testid="mobile-menu"
-      >
-        <div className="mx-auto mt-16 max-w-7xl space-y-4 px-4 py-4">
-          {navItems.map((item, i) => (
-            <motion.div
-              key={item.href}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: i * 0.1 }}
-              className="px-3 py-2"
-            >
-              <NavLink
-                href={item.href}
-                label={item.label}
-                isMobile={true}
-                onClick={() => setIsMenuOpen(false)}
-              />
-            </motion.div>
-          ))}
-        </div>
-      </motion.nav>
-    </header>
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.nav
+            className="bg-background/95 fixed inset-0 z-40 flex items-center justify-center backdrop-blur-2xl md:hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            data-testid="mobile-menu"
+          >
+            <div className="flex flex-col items-center gap-8">
+              {navItems.map((item, i) => (
+                <motion.div
+                  key={item.href}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ delay: i * 0.08, duration: 0.3 }}
+                >
+                  <NavLink
+                    href={item.href}
+                    label={item.label}
+                    isMobile={true}
+                    onClick={() => setIsMenuOpen(false)}
+                  />
+                </motion.div>
+              ))}
+            </div>
+          </motion.nav>
+        )}
+      </AnimatePresence>
+    </motion.header>
   );
 }

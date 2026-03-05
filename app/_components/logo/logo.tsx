@@ -1,18 +1,48 @@
+'use client';
+
+import { motion } from 'motion/react';
+
 const Logo = ({ className = '' }: { className?: string }) => {
   return (
-    <div className={`flex items-center gap-2 ${className}`}>
-      {/* Logo Mark */}
-      <div className="relative">
-        <div className="border-secondary flex h-8 w-8 items-center justify-center rounded-full border-2">
-          <div className="bg-highlight h-4 w-4 rounded-full opacity-80" />
+    <div className={`flex items-center gap-2.5 ${className}`}>
+      <motion.div
+        className="relative"
+        whileHover={{ rotate: [0, -10, 10, 0] }}
+        transition={{ duration: 0.5 }}
+      >
+        <div className="relative flex h-9 w-9 items-center justify-center">
+          <div className="absolute inset-0 rounded-xl bg-brand-red" />
+          <div className="absolute inset-[3px] rounded-[9px] bg-brand-red-light/30" />
+          <svg
+            viewBox="0 0 24 24"
+            className="relative z-10 h-5 w-5"
+            fill="none"
+          >
+            <path
+              d="M5 6L12 18L19 6"
+              stroke="white"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <circle
+              cx="12"
+              cy="12"
+              r="4"
+              stroke="white"
+              strokeWidth="1.5"
+              opacity="0.5"
+            />
+          </svg>
         </div>
-      </div>
+      </motion.div>
 
-      {/* Wordmark with better contrast */}
-      <div className="text-2xl font-bold tracking-tight">
+      <div className="text-[22px] font-bold tracking-tight">
         <span className="text-foreground">Vogue</span>
-        <span className="text-secondary-hover">Lens</span>
-        <span className="text-highlight ml-1 text-sm">AI</span>
+        <span className="text-brand-red">Lens</span>
+        <span className="ml-1 text-xs font-semibold tracking-wider text-brand-teal uppercase">
+          AI
+        </span>
       </div>
     </div>
   );

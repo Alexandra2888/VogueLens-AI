@@ -1,13 +1,31 @@
 const IconLogo = ({ className = '' }: { className?: string }) => {
   return (
-    <div className={`relative ${className}`}>
-      {/* Square base */}
-      <div className="bg-secondary flex h-8 w-8 items-center justify-center rounded-lg">
-        {/* V mark */}
-        <div className="text-3xl font-bold text-white">V</div>
-        {/* Lens overlay */}
-        <div className="absolute inset-1 rounded-full border border-white/30" />
-      </div>
+    <div
+      className={`relative flex h-9 w-9 items-center justify-center ${className}`}
+    >
+      <div className="absolute inset-0 rounded-xl bg-brand-red" />
+      <div className="absolute inset-[3px] rounded-[9px] bg-brand-red-light/30" />
+      <svg
+        viewBox="0 0 24 24"
+        className="relative z-10 h-5 w-5"
+        fill="none"
+      >
+        <path
+          d="M5 6L12 18L19 6"
+          stroke="white"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <circle
+          cx="12"
+          cy="12"
+          r="4"
+          stroke="white"
+          strokeWidth="1.5"
+          opacity="0.5"
+        />
+      </svg>
     </div>
   );
 };

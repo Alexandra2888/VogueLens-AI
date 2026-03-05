@@ -3,14 +3,15 @@
 import Link from 'next/link';
 import { motion } from 'motion/react';
 import Logo from './_components/logo/logo';
+import { ArrowLeft } from 'lucide-react';
 
 export default function NotFound() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-100 px-4 sm:px-6 lg:px-8">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4">
       <motion.div
-        initial={{ opacity: 0, y: -50 }}
+        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.6, ease: [0.25, 0.1, 0, 1] }}
         className="w-full max-w-md space-y-8 text-center"
       >
         <div
@@ -19,30 +20,49 @@ export default function NotFound() {
         >
           <Logo />
         </div>
-        <motion.h1
-          initial={{ scale: 0.5 }}
-          animate={{ scale: 1 }}
-          transition={{ type: 'spring', stiffness: 260, damping: 20 }}
-          className="mt-6 text-9xl font-extrabold text-gray-900"
+
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{
+            type: 'spring',
+            stiffness: 200,
+            damping: 20,
+            delay: 0.1,
+          }}
         >
-          404
-        </motion.h1>
+          <span className="gradient-text text-[120px] font-bold leading-none tracking-tighter">
+            404
+          </span>
+        </motion.div>
 
-        <p className="mt-2 text-2xl font-medium text-gray-600">
-          Oops! Page not found.
-        </p>
-        <p className="mt-2 text-lg text-gray-500">
-          The page you&apos;re looking for doesn&apos;t exist or has been moved.
-        </p>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3, duration: 0.5 }}
+        >
+          <p className="text-xl font-medium text-foreground">
+            Page not found
+          </p>
+          <p className="mt-2 text-foreground/50">
+            The page you&apos;re looking for doesn&apos;t exist or has been
+            moved.
+          </p>
+        </motion.div>
 
-        <div className="mt-6">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 0.4 }}
+        >
           <Link
             href="/"
-            className="bg-text-secondary-light hover:bg-text-secondary-dark inline-flex items-center rounded-md border border-transparent px-6 py-3 text-base font-medium text-white transition-colors duration-300 hover:text-black focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none"
+            className="inline-flex items-center gap-2 rounded-xl bg-brand-red px-6 py-3 text-sm font-medium text-white shadow-lg shadow-brand-red/20 transition-all hover:bg-brand-red-dark hover:shadow-xl hover:shadow-brand-red/30"
           >
+            <ArrowLeft className="h-4 w-4" />
             Return Home
           </Link>
-        </div>
+        </motion.div>
       </motion.div>
     </div>
   );

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useSyncExternalStore } from 'react';
 import { X, Download } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { motion, AnimatePresence } from 'motion/react';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -77,42 +77,56 @@ const PWAInstallBanner = () => {
     localStorage.setItem('pwaBannerDismissed', 'true');
   };
 
-  if (isStandalone || dismissed || wasPreviouslyDismissed) return null;
+  const visible = !isStandalone && !dismissed && !wasPreviouslyDismissed;
 
   return (
-    <div className="bg-background fixed right-0 bottom-0 left-0 z-50 border-t p-4 pb-36 shadow-lg md:pb-0">
-      <div className="container mx-auto flex max-w-5xl items-center justify-around py-6">
-        <div className="mr-4 flex-1">
-          <h3 className="text-lg font-semibold">Install VogueLens AI</h3>
-          <p className="text-muted-foreground text-sm">
-            Get quick access to your AI fashion stylist with our app-like
-            experience
-          </p>
-          <ul className="text-muted-foreground mt-2 text-sm">
-            <li>✨ Faster loading times</li>
-            <li>📱 Works offline</li>
-            <li>🔄 Regular style updates</li>
-          </ul>
-        </div>
-        <div className="flex items-center gap-4">
-          <Button
-            onClick={handleInstall}
-            className="text-secondary hover:bg-secondary-hover flex items-center gap-2"
-            disabled={!installPrompt}
-          >
-            <Download className="h-4 w-4" />
-            Install App
-          </Button>
-          <button
-            onClick={handleDismiss}
-            className="hover:bg-accent rounded-full p-2"
-            aria-label="Dismiss banner"
-          >
-            <X className="h-5 w-5" />
-          </button>
-        </div>
-      </div>
-    </div>
+    <AnimatePresence>
+      {visible && (
+        <motion.div
+          initial={{ y: 100, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: 100, opacity: 0 }}
+          transition={{ duration: 0.4, ease: [0.25, 0.1, 0, 1] }}
+          className="fixed right-4 bottom-4 left-4 z-50 mx-auto max-w-lg overflow-hidden rounded-2xl border border-border/50 bg-background/80 p-5 shadow-2xl shadow-black/10 backdrop-blur-2xl dark:shadow-black/30 md:right-6 md:bottom-6 md:left-auto"
+        >
+          <div className="flex items-start gap-4">
+            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-brand-red/10">
+              <Download className="h-5 w-5 text-brand-red" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-sm font-semibold text-foreground">
+                Install VogueLens AI
+              </h3>
+              <p className="mt-1 text-xs text-foreground/50">
+                Get faster loading, offline access, and an app-like experience
+              </p>
+              <div className="mt-4 flex items-center gap-3">
+                <button
+                  onClick={handleInstall}
+                  className="rounded-lg bg-brand-red px-4 py-2 text-xs font-medium text-white shadow-sm shadow-brand-red/20 transition-all hover:bg-brand-red-dark disabled:opacity-50"
+                  disabled={!installPrompt}
+                >
+                  Install
+                </button>
+                <button
+                  onClick={handleDismiss}
+                  className="rounded-lg px-4 py-2 text-xs font-medium text-foreground/50 transition-colors hover:text-foreground"
+                >
+                  Not now
+                </button>
+              </div>
+            </div>
+            <button
+              onClick={handleDismiss}
+              className="flex-shrink-0 rounded-lg p-1 text-foreground/30 transition-colors hover:text-foreground"
+              aria-label="Dismiss banner"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
 
