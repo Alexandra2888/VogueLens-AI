@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useSyncExternalStore } from 'react';
 import { X, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -9,39 +9,37 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
 }
 
+const emptySubscribe = () => () => {};
+
+function getIsStandalone() {
+  return (
+    window.matchMedia('(display-mode: standalone)').matches ||
+    (window.navigator as any).standalone ||
+    document.referrer.includes('android-app://')
+  );
+}
+
 const PWAInstallBanner = () => {
   const [installPrompt, setInstallPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
-  const [isVisible, setIsVisible] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
+  const isStandalone = useSyncExternalStore(
+    emptySubscribe,
+    getIsStandalone,
+    () => true
+  );
 
   useEffect(() => {
-    // Reset localStorage to allow banner to show again
     localStorage.removeItem('pwaBannerDismissed');
 
     const handleInstallPrompt = (e: Event) => {
       e.preventDefault();
       setInstallPrompt(e as BeforeInstallPromptEvent);
-      setIsVisible(true);
     };
 
-    // Check if running as standalone
-    const checkStandalone = () => {
-      const isStandalone =
-        window.matchMedia('(display-mode: standalone)').matches ||
-        (window.navigator as any).standalone ||
-        document.referrer.includes('android-app://');
-
-      setIsVisible(!isStandalone);
-    };
-
-    // Add listeners
     window.addEventListener('beforeinstallprompt', handleInstallPrompt);
-    window.addEventListener('appinstalled', () => setIsVisible(false));
+    window.addEventListener('appinstalled', () => setDismissed(true));
 
-    // Initial check
-    checkStandalone();
-
-    // Cleanup
     return () => {
       window.removeEventListener('beforeinstallprompt', handleInstallPrompt);
     };
@@ -54,7 +52,7 @@ const PWAInstallBanner = () => {
       await installPrompt.prompt();
       const result = await installPrompt.userChoice;
       if (result.outcome === 'accepted') {
-        setIsVisible(false);
+        setDismissed(true);
         setInstallPrompt(null);
       }
     } catch (error) {
@@ -63,11 +61,11 @@ const PWAInstallBanner = () => {
   };
 
   const handleDismiss = () => {
-    setIsVisible(false);
+    setDismissed(true);
     localStorage.setItem('pwaBannerDismissed', 'true');
   };
 
-  if (!isVisible) return null;
+  if (isStandalone || dismissed) return null;
 
   return (
     <div className="bg-background fixed right-0 bottom-0 left-0 z-50 border-t p-4 pb-36 shadow-lg md:pb-0">

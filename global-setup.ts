@@ -1,7 +1,7 @@
 // global-setup.ts
 import { FullConfig } from '@playwright/test';
 
-async function globalSetup(config: FullConfig) {
+async function globalSetup(_config: FullConfig) {
   // @ts-ignore
   process.env.NODE_ENV = 'test';
   process.env.NEXT_PUBLIC_CLERK_BYPASS_AUTH = 'true';

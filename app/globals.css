@@ -1,5 +1,5 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
 
 @plugin "@tailwindcss/forms";
 
@@ -7,50 +7,50 @@
 
 @theme {
   --color-primary: hsl(var(--primary));
-  --color-primary-hover: #2A2A2A;
+  --color-primary-hover: #2a2a2a;
   --color-primary-foreground: hsl(var(--primary-foreground));
 
   --color-secondary: hsl(var(--secondary));
-  --color-secondary-hover: #D32F2F;
+  --color-secondary-hover: #d32f2f;
   --color-secondary-foreground: hsl(var(--secondary-foreground));
 
   --color-accent: hsl(var(--accent));
-  --color-accent-hover: #E1EAE0;
+  --color-accent-hover: #e1eae0;
   --color-accent-foreground: hsl(var(--accent-foreground));
 
-  --color-highlight: #A8DADC;
-  --color-highlight-hover: #86C5DA;
+  --color-highlight: #a8dadc;
+  --color-highlight-hover: #86c5da;
 
-  --color-navy: #1D3557;
+  --color-navy: #1d3557;
   --color-navy-hover: #152848;
 
-  --color-success-light: #4CAF50;
-  --color-success-dark: #10B981;
+  --color-success-light: #4caf50;
+  --color-success-dark: #10b981;
 
-  --color-warning-light: #FFC107;
-  --color-warning-dark: #FBBF24;
+  --color-warning-light: #ffc107;
+  --color-warning-dark: #fbbf24;
 
-  --color-error-light: #E63946;
-  --color-error-dark: #EF4444;
+  --color-error-light: #e63946;
+  --color-error-dark: #ef4444;
 
-  --color-info-light: #A8DADC;
-  --color-info-dark: #60A5FA;
+  --color-info-light: #a8dadc;
+  --color-info-dark: #60a5fa;
 
   --color-background: hsl(var(--background));
-  --color-background-secondary-light: #F1FAEE;
+  --color-background-secondary-light: #f1faee;
   --color-background-secondary-dark: #111827;
 
   --color-card: hsl(var(--card));
-  --color-card-light: #FFFFFF;
+  --color-card-light: #ffffff;
   --color-card-dark: #374151;
   --color-card-foreground: hsl(var(--card-foreground));
 
-  --color-text-primary-light: #3A3A3A;
-  --color-text-primary-dark: #F1FAEE;
-  --color-text-secondary-light: #1D3557;
-  --color-text-secondary-dark: #A8DADC;
-  --color-text-muted-light: #6B7280;
-  --color-text-muted-dark: #9CA3AF;
+  --color-text-primary-light: #3a3a3a;
+  --color-text-primary-dark: #f1faee;
+  --color-text-secondary-light: #1d3557;
+  --color-text-secondary-dark: #a8dadc;
+  --color-text-muted-light: #6b7280;
+  --color-text-muted-dark: #9ca3af;
 
   --color-border: hsl(var(--border));
   --color-foreground: hsl(var(--foreground));
@@ -73,8 +73,9 @@
   --color-chart-4: hsl(var(--chart-4));
   --color-chart-5: hsl(var(--chart-5));
 
-  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-sans:
+    var(--font-jakarta), ui-sans-serif, system-ui, sans-serif,
+    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
@@ -168,15 +169,15 @@
 }
 
 @utility btn-primary {
-  @apply rounded-lg bg-secondary px-4 py-2 text-white transition-colors duration-200 hover:bg-secondary-hover disabled:cursor-not-allowed disabled:opacity-50;
+  @apply bg-secondary hover:bg-secondary-hover rounded-lg px-4 py-2 text-white transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-50;
 }
 
 @utility btn-secondary {
-  @apply rounded-lg bg-highlight px-4 py-2 text-navy transition-colors duration-200 hover:bg-highlight-hover disabled:cursor-not-allowed disabled:opacity-50;
+  @apply bg-highlight text-navy hover:bg-highlight-hover rounded-lg px-4 py-2 transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-50;
 }
 
 @utility link {
-  @apply text-navy transition-colors duration-200 hover:text-secondary dark:text-highlight dark:hover:text-secondary;
+  @apply text-navy hover:text-secondary dark:text-highlight dark:hover:text-secondary transition-colors duration-200;
 }
 
 @utility transition-theme {
@@ -184,15 +185,15 @@
 }
 
 h1 {
-  @apply text-4xl font-bold text-text-primary-light dark:text-text-primary-dark;
+  @apply text-text-primary-light dark:text-text-primary-dark text-4xl font-bold;
 }
 
 h2 {
-  @apply text-3xl font-semibold text-text-primary-light dark:text-text-primary-dark;
+  @apply text-text-primary-light dark:text-text-primary-dark text-3xl font-semibold;
 }
 
 h3 {
-  @apply text-2xl font-semibold text-text-primary-light dark:text-text-primary-dark;
+  @apply text-text-primary-light dark:text-text-primary-dark text-2xl font-semibold;
 }
 
 p {

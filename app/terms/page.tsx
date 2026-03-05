@@ -1,18 +1,19 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useSyncExternalStore } from 'react';
 import { ChevronDownIcon, ChevronUpIcon } from 'lucide-react';
 
 import { sections } from '../../data/data';
 
+const emptySubscribe = () => () => {};
+
 export default function Component() {
   const [expandedSections, setExpandedSections] = useState<number[]>([]);
-  const [mounted, setMounted] = useState(false);
-
-  // Fix: Changed useState to useEffect for mounting
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
 
   const toggleSection = (index: number) => {
     setExpandedSections((prev) =>
