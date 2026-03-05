@@ -3,13 +3,13 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { usePathname } from 'next/navigation';
 
 import { ThemeToggle } from './theme-toggle';
 import Logo from '../logo/logo';
 import MinimalLogo from '../logo/minimal-logo';
-import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
+import { Show, UserButton } from '@clerk/nextjs';
 import SignInCustomButton from './sign-in-custom-button';
 
 import { navItems } from '../../../data/data';
@@ -40,7 +40,7 @@ const NavLink = ({
       data-testid={`nav-link-${label.toLowerCase()}${isMobile ? '-mobile' : '-desktop'}`}
     >
       <motion.div
-        className={`relative font-medium text-foreground transition-colors hover:text-secondary-hover ${
+        className={`text-foreground hover:text-secondary-hover relative font-medium transition-colors ${
           isMobile ? 'text-base' : 'text-xl'
         }`}
         whileHover={{ y: -2 }}
@@ -48,7 +48,7 @@ const NavLink = ({
       >
         {label}
         <motion.div
-          className={`absolute left-0 h-[2px] bg-secondary-hover ${
+          className={`bg-secondary-hover absolute left-0 h-[2px] ${
             isMobile ? 'bottom-0 w-[60%]' : '-bottom-1 w-full'
           }`}
           initial={{ scaleX: 0 }}
@@ -64,7 +64,7 @@ const NavLink = ({
 // Mock UserButton for testing
 const MockUserButton = ({ isMobile = false }: { isMobile?: boolean }) => (
   <div
-    className={`rounded-full bg-secondary ${isMobile ? 'h-8 w-8' : 'h-10 w-10'}`}
+    className={`bg-secondary rounded-full ${isMobile ? 'h-8 w-8' : 'h-10 w-10'}`}
     data-testid={`mock-user-button${isMobile ? '-mobile' : '-desktop'}`}
   />
 );
@@ -79,13 +79,13 @@ export default function Header() {
 
     return (
       <>
-        <SignedOut>
+        <Show when="signed-out">
           <SignInCustomButton
             isMobile={isMobile}
             data-testid={`sign-in-button${isMobile ? '-mobile' : '-desktop'}`}
           />
-        </SignedOut>
-        <SignedIn>
+        </Show>
+        <Show when="signed-in">
           <UserButton
             appearance={{
               elements: {
@@ -93,17 +93,17 @@ export default function Header() {
               },
             }}
           />
-        </SignedIn>
+        </Show>
       </>
     );
   };
 
   return (
     <header
-      className="fixed z-50 w-full bg-background/95 transition-colors"
+      className="bg-background/95 fixed z-50 w-full transition-colors"
       data-testid="header"
     >
-      <div className="mx-auto flex max-w-7xl items-center justify-between border-b border-border px-4 py-4">
+      <div className="border-border mx-auto flex max-w-7xl items-center justify-between border-b px-4 py-4">
         {/* Logo */}
         <motion.div
           className="flex items-center"
@@ -165,7 +165,7 @@ export default function Header() {
 
       {/* Mobile Navigation */}
       <motion.nav
-        className="fixed inset-0 top-14 z-40 bg-secondary dark:bg-primary md:hidden"
+        className="bg-secondary dark:bg-primary fixed inset-0 top-14 z-40 md:hidden"
         initial={{ height: 0, opacity: 0 }}
         animate={{
           height: isMenuOpen ? '100vh' : 0,

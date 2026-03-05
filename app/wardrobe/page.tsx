@@ -2,7 +2,7 @@
 
 import { useUser } from '@clerk/nextjs';
 import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { Upload, X, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -142,7 +142,7 @@ export default function WardrobePage() {
   return (
     <>
       <main className="container mx-auto flex h-[80vh] flex-col items-center justify-center p-4">
-        <h1 className="mb-6 text-3xl font-bold text-primary">Your Wardrobe</h1>
+        <h1 className="text-primary mb-6 text-3xl font-bold">Your Wardrobe</h1>
         <div className="mb-6">
           <input
             type="file"
@@ -184,7 +184,7 @@ export default function WardrobePage() {
                     <Button
                       variant="destructive"
                       size="icon"
-                      className="absolute right-4 top-4"
+                      className="absolute top-4 right-4"
                       onClick={() => removeImage(image.id)}
                     >
                       <X className="h-4 w-4" />

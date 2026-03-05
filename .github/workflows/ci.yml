@@ -6,12 +6,12 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '22'
+          cache: 'npm'
       - run: npm ci
-      # Add env file creation
       - name: Create env file
         run: |
           touch .env
@@ -20,19 +20,19 @@ jobs:
           echo NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=${{ secrets.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME }} >> .env
           echo CLOUDINARY_API_KEY=${{ secrets.CLOUDINARY_API_KEY }} >> .env
           echo CLOUDINARY_API_SECRET=${{ secrets.CLOUDINARY_API_SECRET }} >> .env
-          echo OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} >> .env
+          echo NEXT_OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} >> .env
           echo DATABASE_URL=${{ secrets.DATABASE_URL }} >> .env
       - run: npm run lint
 
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '22'
+          cache: 'npm'
       - run: npm ci
-      # Add env file creation
       - name: Create env file
         run: |
           touch .env
@@ -44,12 +44,12 @@ jobs:
   e2e:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '22'
+          cache: 'npm'
       - run: npm ci
-      # Add env file creation
       - name: Create env file
         run: |
           touch .env
@@ -58,8 +58,13 @@ jobs:
           echo NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=${{ secrets.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME }} >> .env
           echo CLOUDINARY_API_KEY=${{ secrets.CLOUDINARY_API_KEY }} >> .env
           echo CLOUDINARY_API_SECRET=${{ secrets.CLOUDINARY_API_SECRET }} >> .env
-          echo OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} >> .env
+          echo NEXT_OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} >> .env
           echo DATABASE_URL=${{ secrets.DATABASE_URL }} >> .env
       - name: Install Playwright
         run: npx playwright install --with-deps
-      - run: npm run test:e2e
+      - name: Build application
+        run: npm run build
+      - name: Run e2e tests
+        run: npm run test:e2e
+        env:
+          CI: true

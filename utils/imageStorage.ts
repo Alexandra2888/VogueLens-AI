@@ -38,17 +38,17 @@ class ImageStorage {
 
   private async performTransaction(
     mode: IDBTransactionMode,
-    callback: (store: IDBObjectStore) => void
+    callback: (_store: IDBObjectStore) => void
   ): Promise<void> {
     const db = await this.initDB();
     return new Promise((resolve, reject) => {
       const transaction = db.transaction(this.storeName, mode);
-      const store = transaction.objectStore(this.storeName);
+      const objectStore = transaction.objectStore(this.storeName);
 
       transaction.oncomplete = () => resolve();
       transaction.onerror = () => reject(transaction.error);
 
-      callback(store);
+      callback(objectStore);
     });
   }
 

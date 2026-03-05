@@ -1,8 +1,8 @@
 // global-setup.ts
 import { FullConfig } from '@playwright/test';
 
-async function globalSetup(config: FullConfig) {
-  // @ts-ignore
+async function globalSetup(_config: FullConfig) {
+  // @ts-expect-error NODE_ENV is read-only in types
   process.env.NODE_ENV = 'test';
   process.env.NEXT_PUBLIC_CLERK_BYPASS_AUTH = 'true';
 

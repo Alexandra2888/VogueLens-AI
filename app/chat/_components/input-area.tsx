@@ -12,11 +12,11 @@ const InputArea = ({
   onImageUpload,
 }: {
   input: string;
-  // eslint-disable-next-line no-unused-vars
+
   setInput: (value: string) => void;
   isLoading: boolean;
   onSend: () => void;
-  // eslint-disable-next-line no-unused-vars
+
   onImageUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -47,7 +47,6 @@ const InputArea = ({
           onChange={(e) => setInput(e.target.value)}
           placeholder="Ask for fashion advice..."
           className="flex-1 text-zinc-900"
-          // eslint-disable-next-line no-unused-vars
           onKeyPress={(e) => e.key === 'Enter' && !isLoading && onSend()}
         />
         <div className="flex-none">

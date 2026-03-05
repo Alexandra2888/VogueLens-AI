@@ -42,7 +42,6 @@ test.describe('Terms and Conditions Page', () => {
     for (let i = 0; i < 3; i++) {
       // Testing first 3 sections as example
       const sectionToggle = page.getByTestId(`section-toggle-${i}`);
-      const sectionTitle = page.getByTestId(`section-title-${i}`);
 
       await sectionToggle.click();
       const sectionContent = page.getByTestId(`section-content-${i}`);

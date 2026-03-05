@@ -1,7 +1,7 @@
 import { ImageAnnotatorClient } from '@google-cloud/vision';
 import { NextResponse } from 'next/server';
 
-let vision: ImageAnnotatorClient;
+let vision: ImageAnnotatorClient | null;
 
 try {
   const credentials = JSON.parse(
@@ -12,12 +12,10 @@ try {
     throw new Error('Invalid credentials format');
   }
 
-  vision = new ImageAnnotatorClient({
-    credentials: credentials,
-  });
+  vision = new ImageAnnotatorClient({ credentials: credentials });
 } catch (error) {
   console.error('Error initializing Google Cloud Vision:', error);
-  vision = null as any;
+  vision = null;
 }
 
 export async function POST(req: Request) {

@@ -12,7 +12,9 @@ const isProtectedRoute = createRouteMatcher([
   '/profile(.*)',
 ]);
 
-const isTestEnvironment = process.env.NODE_ENV === 'test';
+const isTestEnvironment =
+  process.env.NODE_ENV === 'test' ||
+  process.env.NEXT_PUBLIC_CLERK_BYPASS_AUTH === 'true';
 
 export default clerkMiddleware(
   async (auth: ClerkMiddlewareAuth, req: NextRequest) => {
@@ -30,7 +32,7 @@ export default clerkMiddleware(
       }
 
       return NextResponse.next();
-    } catch (error) {
+    } catch {
       return NextResponse.redirect(new URL('/sign-in', req.url));
     }
   }

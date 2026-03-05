@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import Logo from './_components/logo/logo';
 
 export default function NotFound() {
@@ -38,7 +38,7 @@ export default function NotFound() {
         <div className="mt-6">
           <Link
             href="/"
-            className="inline-flex items-center rounded-md border border-transparent bg-text-secondary-light px-6 py-3 text-base font-medium text-white transition-colors duration-300 hover:bg-text-secondary-dark hover:text-black focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            className="bg-text-secondary-light hover:bg-text-secondary-dark inline-flex items-center rounded-md border border-transparent px-6 py-3 text-base font-medium text-white transition-colors duration-300 hover:text-black focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none"
           >
             Return Home
           </Link>

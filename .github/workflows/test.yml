@@ -11,12 +11,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
@@ -30,15 +30,8 @@ jobs:
           echo NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=${{ secrets.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME }} >> .env
           echo CLOUDINARY_API_KEY=${{ secrets.CLOUDINARY_API_KEY }} >> .env
           echo CLOUDINARY_API_SECRET=${{ secrets.CLOUDINARY_API_SECRET }} >> .env
-          echo OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} >> .env
+          echo NEXT_OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} >> .env
           echo DATABASE_URL=${{ secrets.DATABASE_URL }} >> .env
-
-      - name: Create test directory
-        run: mkdir -p __tests__
-
-      - name: Create sample test
-        run: |
-          echo "describe('Sample Test', () => { it('should pass', () => { expect(true).toBe(true); }); });" > __tests__/sample.test.ts
 
       - name: Run tests
         run: npm test
@@ -47,12 +40,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
@@ -73,3 +66,5 @@ jobs:
 
       - name: Run Playwright tests
         run: npm run test:e2e
+        env:
+          CI: true

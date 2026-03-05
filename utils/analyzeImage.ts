@@ -30,9 +30,9 @@ const getColorPalette = (colors: string[]) => {
 
     const max = Math.max(r, g, b);
     const min = Math.min(r, g, b);
-    let h = 0,
-      s,
-      l = (max + min) / 2;
+    let h = 0;
+    let s = 0;
+    const l = (max + min) / 2;
 
     if (max !== min) {
       const d = max - min;
@@ -52,7 +52,6 @@ const getColorPalette = (colors: string[]) => {
       h /= 6;
     }
 
-    // @ts-ignore
     return { h: h * 360, s: s * 100, l: l * 100 };
   };
 

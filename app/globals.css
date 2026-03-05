@@ -1,16 +1,112 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@plugin "@tailwindcss/forms";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --color-primary: hsl(var(--primary));
+  --color-primary-hover: #2a2a2a;
+  --color-primary-foreground: hsl(var(--primary-foreground));
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-hover: #d32f2f;
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-hover: #e1eae0;
+  --color-accent-foreground: hsl(var(--accent-foreground));
+
+  --color-highlight: #a8dadc;
+  --color-highlight-hover: #86c5da;
+
+  --color-navy: #1d3557;
+  --color-navy-hover: #152848;
+
+  --color-success-light: #4caf50;
+  --color-success-dark: #10b981;
+
+  --color-warning-light: #ffc107;
+  --color-warning-dark: #fbbf24;
+
+  --color-error-light: #e63946;
+  --color-error-dark: #ef4444;
+
+  --color-info-light: #a8dadc;
+  --color-info-dark: #60a5fa;
+
+  --color-background: hsl(var(--background));
+  --color-background-secondary-light: #f1faee;
+  --color-background-secondary-dark: #111827;
+
+  --color-card: hsl(var(--card));
+  --color-card-light: #ffffff;
+  --color-card-dark: #374151;
+  --color-card-foreground: hsl(var(--card-foreground));
+
+  --color-text-primary-light: #3a3a3a;
+  --color-text-primary-dark: #f1faee;
+  --color-text-secondary-light: #1d3557;
+  --color-text-secondary-dark: #a8dadc;
+  --color-text-muted-light: #6b7280;
+  --color-text-muted-dark: #9ca3af;
+
+  --color-border: hsl(var(--border));
+  --color-foreground: hsl(var(--foreground));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+
+  --color-chart-1: hsl(var(--chart-1));
+  --color-chart-2: hsl(var(--chart-2));
+  --color-chart-3: hsl(var(--chart-3));
+  --color-chart-4: hsl(var(--chart-4));
+  --color-chart-5: hsl(var(--chart-5));
+
+  --font-sans:
+    var(--font-jakarta), ui-sans-serif, system-ui, sans-serif,
+    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+}
+
+@keyframes accordion-down {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
+}
+
+@keyframes accordion-up {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
 
 @layer base {
   :root {
-    /* Light theme variables */
     --background: 0 0% 100%;
-    --background-secondary: 241 250 238;
     --card: 0 0% 100%;
-    --text-primary: 58 58 58;
-    --text-secondary: 29 53 87;
-    --text-muted: 107 114 128;
     --border: 0 0% 89.8%;
     --foreground: 0 0% 3.9%;
     --card-foreground: 0 0% 3.9%;
@@ -37,13 +133,8 @@
   }
 
   .dark {
-    /* Dark theme variables */
     --background: 0 0% 3.9%;
-    --background-secondary: 17 24 39;
     --card: 0 0% 3.9%;
-    --text-primary: 241 250 238;
-    --text-secondary: 168 218 220;
-    --text-muted: 156 163 175;
     --border: 0 0% 14.9%;
     --foreground: 0 0% 98%;
     --card-foreground: 0 0% 98%;
@@ -69,55 +160,39 @@
   }
 }
 
-@layer components {
-  /* Button styles */
-  .btn-primary {
-    @apply rounded-lg bg-secondary px-4 py-2 text-white transition-colors duration-200 hover:bg-secondary-hover disabled:cursor-not-allowed disabled:opacity-50;
-  }
-
-  .btn-secondary {
-    @apply rounded-lg bg-highlight px-4 py-2 text-navy transition-colors duration-200 hover:bg-highlight-hover disabled:cursor-not-allowed disabled:opacity-50;
-  }
-
-  /* Card styles */
-  /*.card {*/
-  /*  @apply border-border-light dark:border-border-dark rounded-lg border bg-card-light shadow-sm dark:bg-card-dark;*/
-  /*}*/
-
-  /* Input styles */
-  /*.input {*/
-  /*  @apply border-border-light bg-background-light dark:border-border-dark dark:bg-background-dark rounded-lg border px-3 py-2 text-text-primary-light focus:border-transparent focus:ring-2 focus:ring-highlight dark:text-text-primary-dark;*/
-  /*}*/
-
-  /* Link styles */
-  .link {
-    @apply text-navy transition-colors duration-200 hover:text-secondary dark:text-highlight dark:hover:text-secondary;
-  }
+@utility btn-primary {
+  @apply bg-secondary hover:bg-secondary-hover rounded-lg px-4 py-2 text-white transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-50;
 }
 
-/* Smooth transitions for theme switching */
-.transition-theme {
+@utility btn-secondary {
+  @apply bg-highlight text-navy hover:bg-highlight-hover rounded-lg px-4 py-2 transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-50;
+}
+
+@utility link {
+  @apply text-navy hover:text-secondary dark:text-highlight dark:hover:text-secondary transition-colors duration-200;
+}
+
+@utility transition-theme {
   @apply transition-colors duration-200;
 }
 
-/* Typography styles */
-h1 {
-  @apply text-4xl font-bold text-text-primary-light dark:text-text-primary-dark;
-}
-
-h2 {
-  @apply text-3xl font-semibold text-text-primary-light dark:text-text-primary-dark;
-}
-
-h3 {
-  @apply text-2xl font-semibold text-text-primary-light dark:text-text-primary-dark;
-}
-
-p {
-  @apply text-text-primary-light dark:text-text-primary-dark;
-}
-
 @layer base {
+  h1 {
+    @apply text-text-primary-light dark:text-text-primary-dark text-4xl font-bold;
+  }
+
+  h2 {
+    @apply text-text-primary-light dark:text-text-primary-dark text-3xl font-semibold;
+  }
+
+  h3 {
+    @apply text-text-primary-light dark:text-text-primary-dark text-2xl font-semibold;
+  }
+
+  p {
+    @apply text-text-primary-light dark:text-text-primary-dark;
+  }
+
   * {
     @apply border-border;
   }
