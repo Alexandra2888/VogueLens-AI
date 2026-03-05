@@ -25,11 +25,11 @@ export default function Component() {
       <div className="mx-auto max-w-3xl">
         <h1
           data-testid="terms-title"
-          className="mb-8 text-3xl font-bold text-primary"
+          className="text-primary mb-8 text-3xl font-bold"
         >
           Terms and Conditions for VogueStyle AI
         </h1>
-        <div data-testid="last-modified" className="mb-6 text-sm text-primary">
+        <div data-testid="last-modified" className="text-primary mb-6 text-sm">
           <span>Last modified: </span>
           {mounted && <span>5/11/2024</span>}
         </div>
@@ -47,14 +47,14 @@ export default function Component() {
               >
                 <h3
                   data-testid={`section-title-${index}`}
-                  className="text-lg font-medium leading-6 text-primary"
+                  className="text-primary text-lg leading-6 font-medium"
                 >
                   {section.title}
                 </h3>
                 {expandedSections.includes(index) ? (
-                  <ChevronUpIcon className="h-5 w-5 text-primary" />
+                  <ChevronUpIcon className="text-primary h-5 w-5" />
                 ) : (
-                  <ChevronDownIcon className="h-5 w-5 text-primary" />
+                  <ChevronDownIcon className="text-primary h-5 w-5" />
                 )}
               </button>
               {expandedSections.includes(index) && (
@@ -62,7 +62,7 @@ export default function Component() {
                   data-testid={`section-content-${index}`}
                   className="px-4 py-5 sm:px-6"
                 >
-                  <p className="whitespace-pre-wrap text-sm text-primary">
+                  <p className="text-primary text-sm whitespace-pre-wrap">
                     {section.content}
                   </p>
                 </div>
@@ -71,7 +71,7 @@ export default function Component() {
           ))}
         </div>
 
-        <div data-testid="last-updated" className="mt-8 text-sm text-primary">
+        <div data-testid="last-updated" className="text-primary mt-8 text-sm">
           <span>Last Updated: </span>
           {mounted && <span>5/11/2024</span>}
         </div>

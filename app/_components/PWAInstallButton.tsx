@@ -12,14 +12,15 @@ const PWAInstallButton = () => {
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
   const [isInstallable, setIsInstallable] = useState(false);
-  const [isInstalled, setIsInstalled] = useState(false);
+  const [isInstalled, setIsInstalled] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.matchMedia('(display-mode: standalone)').matches;
+    }
+    return false;
+  });
 
   useEffect(() => {
-    // Check if already installed
-    if (window.matchMedia('(display-mode: standalone)').matches) {
-      setIsInstalled(true);
-      return;
-    }
+    if (isInstalled) return;
 
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
@@ -74,7 +75,7 @@ const PWAInstallButton = () => {
       {isInstallable && (
         <Button
           onClick={handleInstallClick}
-          className="flex items-center gap-2 bg-primary text-secondary hover:bg-secondary-hover"
+          className="bg-primary text-secondary hover:bg-secondary-hover flex items-center gap-2"
         >
           <Download className="h-4 w-4" />
           Install App

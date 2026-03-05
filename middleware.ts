@@ -30,7 +30,7 @@ export default clerkMiddleware(
       }
 
       return NextResponse.next();
-    } catch (error) {
+    } catch {
       return NextResponse.redirect(new URL('/sign-in', req.url));
     }
   }

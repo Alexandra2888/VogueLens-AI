@@ -1,13 +1,13 @@
-import { SignInButton, UserButton, SignedIn, SignedOut } from '@clerk/nextjs';
-import { motion } from 'framer-motion';
+import { SignInButton, UserButton, Show } from '@clerk/nextjs';
+import { motion } from 'motion/react';
 
 const AuthNavButton = ({ isMobile = false }) => {
   return (
     <>
-      <SignedOut>
+      <Show when="signed-out">
         <SignInButton mode="modal">
           <motion.div
-            className={`relative font-medium text-foreground transition-colors hover:text-secondary-hover ${
+            className={`text-foreground hover:text-secondary-hover relative font-medium transition-colors ${
               isMobile ? 'text-base' : 'text-xl'
             }`}
             whileHover={{ y: -2 }}
@@ -15,7 +15,7 @@ const AuthNavButton = ({ isMobile = false }) => {
           >
             Sign In
             <motion.div
-              className={`absolute left-0 h-[2px] bg-secondary-hover ${
+              className={`bg-secondary-hover absolute left-0 h-[2px] ${
                 isMobile ? 'bottom-0 w-[60%]' : '-bottom-1 w-full'
               }`}
               initial={{ scaleX: 0 }}
@@ -24,16 +24,14 @@ const AuthNavButton = ({ isMobile = false }) => {
             />
           </motion.div>
         </SignInButton>
-      </SignedOut>
-      <SignedIn>
+      </Show>
+      <Show when="signed-in">
         <UserButton
           appearance={{
-            elements: {
-              avatarBox: isMobile ? 'w-8 h-8' : 'w-10 h-10',
-            },
+            elements: { avatarBox: isMobile ? 'w-8 h-8' : 'w-10 h-10' },
           }}
         />
-      </SignedIn>
+      </Show>
     </>
   );
 };

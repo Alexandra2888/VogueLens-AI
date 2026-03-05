@@ -1,25 +1,17 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 
 import { steps } from '../../data/data';
 
 const containerVariants = {
   hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.2,
-    },
-  },
+  visible: { opacity: 1, transition: { staggerChildren: 0.2 } },
 };
 
 const itemVariants = {
   hidden: { x: -20, opacity: 0 },
-  visible: {
-    x: 0,
-    opacity: 1,
-  },
+  visible: { x: 0, opacity: 1 },
 };
 
 export default function HowItWorks() {
@@ -37,13 +29,13 @@ export default function HowItWorks() {
         >
           <div className="mb-16 text-center" data-testid="how-it-works-header">
             <h2
-              className="my-12 text-4xl font-bold text-primary md:text-5xl"
+              className="text-primary my-12 text-4xl font-bold md:text-5xl"
               data-testid="how-it-works-title"
             >
               How It Works
             </h2>
             <p
-              className="mx-auto max-w-3xl text-xl text-primary/60"
+              className="text-primary/60 mx-auto max-w-3xl text-xl"
               data-testid="how-it-works-subtitle"
             >
               Experience fashion advice like never before with our easy-to-use
@@ -67,13 +59,13 @@ export default function HowItWorks() {
                 >
                   <div className="flex-1 md:pr-24 md:text-right">
                     <h3
-                      className="mb-3 text-xl font-semibold text-primary md:text-2xl"
+                      className="text-primary mb-3 text-xl font-semibold md:text-2xl"
                       data-testid={`step-title-${index}`}
                     >
                       {step.title}
                     </h3>
                     <p
-                      className="text-base text-primary/70 md:text-lg"
+                      className="text-primary/70 text-base md:text-lg"
                       data-testid={`step-description-${index}`}
                     >
                       {step.description}
@@ -83,7 +75,7 @@ export default function HowItWorks() {
                     className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-white shadow-lg md:absolute md:left-1/2 md:h-16 md:w-16 md:-translate-x-1/2"
                     data-testid={`step-icon-${index}`}
                   >
-                    <Icon className="h-6 w-6 text-highlight md:h-8 md:w-8" />
+                    <Icon className="text-highlight h-6 w-6 md:h-8 md:w-8" />
                   </div>
                   <div className="hidden flex-1 md:block md:pl-24"></div>
                 </motion.div>

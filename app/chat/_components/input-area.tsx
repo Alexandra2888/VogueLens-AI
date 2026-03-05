@@ -47,7 +47,6 @@ const InputArea = ({
           onChange={(e) => setInput(e.target.value)}
           placeholder="Ask for fashion advice..."
           className="flex-1 text-zinc-900"
-          // eslint-disable-next-line no-unused-vars
           onKeyPress={(e) => e.key === 'Enter' && !isLoading && onSend()}
         />
         <div className="flex-none">

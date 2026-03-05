@@ -1,15 +1,15 @@
 import { OpenAI } from 'openai';
 import { NextResponse } from 'next/server';
 
-const openai = new OpenAI({
-  apiKey: process.env.NEXT_OPENAI_API_KEY,
-});
+function getOpenAIClient() {
+  return new OpenAI({ apiKey: process.env.NEXT_OPENAI_API_KEY });
+}
 
 export async function POST(req: Request) {
   try {
+    const openai = getOpenAIClient();
     const { prompt, imageAnalysis, generateImage } = await req.json();
 
-    // Handle image generation request
     if (generateImage) {
       const imageResponse = await openai.images.generate({
         model: 'dall-e-3',
@@ -20,11 +20,10 @@ export async function POST(req: Request) {
 
       return NextResponse.json({
         response: 'Image generated successfully',
-        imageUrl: imageResponse.data[0].url,
+        imageUrl: imageResponse.data?.[0]?.url,
       });
     }
 
-    // Handle regular chat request
     const systemMessage = imageAnalysis
       ? `You are a helpful fashion assistant. Analyze the following image description and provide fashion advice: ${imageAnalysis}`
       : 'You are a helpful fashion assistant. Provide fashion advice based on user queries.';

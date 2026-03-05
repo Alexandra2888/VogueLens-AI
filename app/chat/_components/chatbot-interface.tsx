@@ -320,7 +320,7 @@ export default function ChatbotInterface() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="absolute -right-2 -top-2"
+                  className="absolute -top-2 -right-2"
                   onClick={clearSelectedImage}
                 >
                   <X className="h-4 w-4" />
@@ -358,7 +358,7 @@ export default function ChatbotInterface() {
               <button
                 onClick={handleImageGeneration}
                 disabled={!currentConversation || !input.trim() || isLoading}
-                className="hover:cursor-pointer hover:text-secondary-hover dark:bg-gray-700 dark:text-white"
+                className="hover:text-secondary-hover hover:cursor-pointer dark:bg-gray-700 dark:text-white"
                 title="Generate Image"
               >
                 <Wand2 className="h-5 w-5" />
@@ -370,7 +370,7 @@ export default function ChatbotInterface() {
                   (!input.trim() && !selectedImage) ||
                   isLoading
                 }
-                className="hover:cursor-pointer hover:text-secondary-hover dark:bg-blue-600 dark:text-white"
+                className="hover:text-secondary-hover hover:cursor-pointer dark:bg-blue-600 dark:text-white"
               >
                 {isLoading ? (
                   <Loader2 className="h-5 w-5 animate-spin" />

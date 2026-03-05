@@ -23,7 +23,7 @@ export default function PrivacyPolicy() {
       <Card>
         <CardHeader>
           <CardTitle
-            className="text-3xl font-bold text-primary"
+            className="text-primary text-3xl font-bold"
             data-testid="privacy-policy-title"
           >
             Privacy Policy
@@ -33,12 +33,12 @@ export default function PrivacyPolicy() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="mb-4 text-primary" data-testid="privacy-policy-intro">
+          <p className="text-primary mb-4" data-testid="privacy-policy-intro">
             This document explains how VogueLens AI collects and processes data.
             This policy applies to all data collection and processing activities
             carried out by VogueLens AI.
           </p>
-          <p className="mb-4 text-primary" data-testid="privacy-policy-scope">
+          <p className="text-primary mb-4" data-testid="privacy-policy-scope">
             This document is relevant to you regardless of your position:
             client, partner - individual, representative of a partner - legal
             entity, applicant for an offer, or person contacting us for other
@@ -89,16 +89,16 @@ export default function PrivacyPolicy() {
                   VogueLens AI collects and processes data through the Service
                   each time the User:
                 </p>
-                <ul className="mt-2 list-disc pl-6 text-primary">
+                <ul className="text-primary mt-2 list-disc pl-6">
                   <li>
                     Adds a Client to the system, the Service collects the number
                     of existing clients in the system;
                   </li>
                 </ul>
-                <p className="mt-2 text-primary">Data format collected: JSON</p>
+                <p className="text-primary mt-2">Data format collected: JSON</p>
                 <p>Example of collected data:</p>
                 <pre
-                  className="mt-2 rounded p-2 text-primary"
+                  className="text-primary mt-2 rounded p-2"
                   data-testid="json-example"
                 >
                   {`{
@@ -106,7 +106,7 @@ export default function PrivacyPolicy() {
   clients: 123
 }`}
                 </pre>
-                <ul className="mt-2 list-disc pl-6 text-primary">
+                <ul className="text-primary mt-2 list-disc pl-6">
                   <li>
                     uuid represents a randomly generated string used to group
                     and aggregate collected data;
@@ -135,7 +135,7 @@ export default function PrivacyPolicy() {
             </AccordionItem>
           </Accordion>
 
-          <p className="mt-6 text-primary" data-testid="contact-info">
+          <p className="text-primary mt-6" data-testid="contact-info">
             For any questions or concerns regarding this privacy policy, please
             contact us at moldovan.alexandra28@gmail.com.
           </p>

@@ -70,15 +70,15 @@ const PWAInstallBanner = () => {
   if (!isVisible) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background p-4 pb-36 shadow-lg md:pb-0">
+    <div className="bg-background fixed right-0 bottom-0 left-0 z-50 border-t p-4 pb-36 shadow-lg md:pb-0">
       <div className="container mx-auto flex max-w-5xl items-center justify-around py-6">
         <div className="mr-4 flex-1">
           <h3 className="text-lg font-semibold">Install VogueLens AI</h3>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             Get quick access to your AI fashion stylist with our app-like
             experience
           </p>
-          <ul className="mt-2 text-sm text-muted-foreground">
+          <ul className="text-muted-foreground mt-2 text-sm">
             <li>✨ Faster loading times</li>
             <li>📱 Works offline</li>
             <li>🔄 Regular style updates</li>
@@ -87,7 +87,7 @@ const PWAInstallBanner = () => {
         <div className="flex items-center gap-4">
           <Button
             onClick={handleInstall}
-            className="flex items-center gap-2 text-secondary hover:bg-secondary-hover"
+            className="text-secondary hover:bg-secondary-hover flex items-center gap-2"
             disabled={!installPrompt}
           >
             <Download className="h-4 w-4" />
@@ -95,7 +95,7 @@ const PWAInstallBanner = () => {
           </Button>
           <button
             onClick={handleDismiss}
-            className="rounded-full p-2 hover:bg-accent"
+            className="hover:bg-accent rounded-full p-2"
             aria-label="Dismiss banner"
           >
             <X className="h-5 w-5" />

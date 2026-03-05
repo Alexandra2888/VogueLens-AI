@@ -1,7 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { Button } from '@/components/ui/button';
 
 import { images } from '../../data/data';
@@ -21,15 +21,15 @@ const Hero = () => {
             transition={{ duration: 0.5 }}
           >
             <div className="space-y-2">
-              <h1 className="text-3xl font-bold tracking-tighter text-primary sm:text-5xl xl:text-6xl/none">
+              <h1 className="text-primary text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
                 Your AI Fashion Stylist
               </h1>
-              <p className="max-w-[600px] text-primary/50 md:text-xl">
+              <p className="text-primary/50 max-w-[600px] md:text-xl">
                 Get personalized fashion advice, outfit recommendations and
                 style tips from our AI-powered chatbot.
               </p>
               <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                <Button className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-8 text-sm font-medium text-secondary hover:bg-secondary-hover">
+                <Button className="bg-primary text-secondary hover:bg-secondary-hover inline-flex h-10 items-center justify-center rounded-md px-8 text-sm font-medium">
                   Try Now
                 </Button>
                 <Button
@@ -42,7 +42,7 @@ const Hero = () => {
             </div>
           </motion.div>
           <motion.div
-            className="relative pt-8 lg:pl-10 lg:pt-0"
+            className="relative pt-8 lg:pt-0 lg:pl-10"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}

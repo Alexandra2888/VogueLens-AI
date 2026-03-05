@@ -1,25 +1,17 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 
 import { features } from '../../data/data';
 
 const containerVariants = {
   hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
+  visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
 };
 
 const itemVariants = {
   hidden: { y: 20, opacity: 0 },
-  visible: {
-    y: 0,
-    opacity: 1,
-  },
+  visible: { y: 0, opacity: 1 },
 };
 
 export default function FeaturesSection() {
@@ -34,13 +26,13 @@ export default function FeaturesSection() {
         >
           <div className="mb-16 text-center" data-testid="features-header">
             <h2
-              className="my-12 text-4xl font-bold text-primary md:text-5xl"
+              className="text-primary my-12 text-4xl font-bold md:text-5xl"
               data-testid="features-title"
             >
               Features
             </h2>
             <p
-              className="mx-auto max-w-3xl text-xl text-primary/60"
+              className="text-primary/60 mx-auto max-w-3xl text-xl"
               data-testid="features-subtitle"
             >
               Discover our powerful tools designed to enhance your fashion
@@ -62,19 +54,19 @@ export default function FeaturesSection() {
                   data-testid={`feature-card-${index}`}
                 >
                   <div
-                    className="mb-6 rounded-full bg-zinc-100 p-4 transition-colors duration-300 group-hover:text-highlight"
+                    className="group-hover:text-highlight mb-6 rounded-full bg-zinc-100 p-4 transition-colors duration-300"
                     data-testid={`feature-icon-${index}`}
                   >
-                    <Icon className="h-8 w-8 text-secondary-hover" />
+                    <Icon className="text-secondary-hover h-8 w-8" />
                   </div>
                   <h3
-                    className="mb-4 text-xl font-semibold text-primary"
+                    className="text-primary mb-4 text-xl font-semibold"
                     data-testid={`feature-title-${index}`}
                   >
                     {feature.title}
                   </h3>
                   <p
-                    className="leading-relaxed text-primary/70"
+                    className="text-primary/70 leading-relaxed"
                     data-testid={`feature-description-${index}`}
                   >
                     {feature.description}

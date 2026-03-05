@@ -2,7 +2,7 @@
 
 import { Instagram } from 'lucide-react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import MinimalLogo from './logo/minimal-logo';
 
 import { footerLinks, socialLinks } from '../../data/data';
@@ -11,12 +11,12 @@ const FooterLink = ({ href, label }: { href: string; label: string }) => {
   return (
     <Link
       href={href}
-      className="text-md relative text-foreground transition-colors hover:text-secondary-hover md:text-xl"
+      className="text-md text-foreground hover:text-secondary-hover relative transition-colors md:text-xl"
     >
       <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.2 }}>
         {label}
         <motion.div
-          className="absolute -bottom-1 left-0 h-[2px] w-full bg-secondary-hover"
+          className="bg-secondary-hover absolute -bottom-1 left-0 h-[2px] w-full"
           initial={{ scaleX: 0 }}
           whileHover={{ scaleX: 1 }}
           transition={{ duration: 0.2 }}
@@ -40,7 +40,7 @@ const SocialLink = ({
       <motion.div
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
-        className="text-foreground transition-colors hover:text-secondary-hover"
+        className="text-foreground hover:text-secondary-hover transition-colors"
       >
         <Icon className="h-5 w-5" />
       </motion.div>
@@ -50,7 +50,7 @@ const SocialLink = ({
 
 const Footer = () => {
   return (
-    <footer className="border-t border-border bg-background/95 px-4 py-6 backdrop-blur-md">
+    <footer className="border-border bg-background/95 border-t px-4 py-6 backdrop-blur-md">
       <div className="mx-auto flex max-w-7xl flex-col items-center gap-6 sm:flex-row sm:justify-between">
         {/* Logo */}
         <motion.div
@@ -90,7 +90,7 @@ const Footer = () => {
 
       {/* Copyright */}
       <motion.div
-        className="mt-6 text-center text-sm text-muted-foreground"
+        className="text-muted-foreground mt-6 text-center text-sm"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3, delay: 0.3 }}
