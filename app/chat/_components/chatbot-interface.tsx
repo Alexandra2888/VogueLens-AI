@@ -163,7 +163,7 @@ export default function ChatbotInterface() {
     setIsLoading(true);
 
     try {
-      let userMessage: MessageProps = {
+      const userMessage: MessageProps = {
         id: Date.now(),
         text: input.trim() || "Here's an outfit I'd like you to analyze",
         sender: 'user',

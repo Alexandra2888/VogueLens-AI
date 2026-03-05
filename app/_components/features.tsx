@@ -44,36 +44,45 @@ export default function FeaturesSection() {
             className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4"
             data-testid="features-grid"
           >
-            {features.map((feature: any, index: number) => {
-              const Icon = feature.icon;
-              return (
-                <motion.div
-                  key={index}
-                  variants={itemVariants}
-                  className="group relative flex flex-col items-center rounded-2xl border border-zinc-200 p-8 text-center shadow-lg transition-shadow duration-300 hover:shadow-xl"
-                  data-testid={`feature-card-${index}`}
-                >
-                  <div
-                    className="group-hover:text-highlight mb-6 rounded-full bg-zinc-100 p-4 transition-colors duration-300"
-                    data-testid={`feature-icon-${index}`}
+            {features.map(
+              (
+                feature: {
+                  icon: React.ElementType;
+                  title: string;
+                  description: string;
+                },
+                index: number
+              ) => {
+                const Icon = feature.icon;
+                return (
+                  <motion.div
+                    key={index}
+                    variants={itemVariants}
+                    className="group relative flex flex-col items-center rounded-2xl border border-zinc-200 p-8 text-center shadow-lg transition-shadow duration-300 hover:shadow-xl"
+                    data-testid={`feature-card-${index}`}
                   >
-                    <Icon className="text-secondary-hover h-8 w-8" />
-                  </div>
-                  <h3
-                    className="text-primary mb-4 text-xl font-semibold"
-                    data-testid={`feature-title-${index}`}
-                  >
-                    {feature.title}
-                  </h3>
-                  <p
-                    className="text-primary/70 leading-relaxed"
-                    data-testid={`feature-description-${index}`}
-                  >
-                    {feature.description}
-                  </p>
-                </motion.div>
-              );
-            })}
+                    <div
+                      className="group-hover:text-highlight mb-6 rounded-full bg-zinc-100 p-4 transition-colors duration-300"
+                      data-testid={`feature-icon-${index}`}
+                    >
+                      <Icon className="text-secondary-hover h-8 w-8" />
+                    </div>
+                    <h3
+                      className="text-primary mb-4 text-xl font-semibold"
+                      data-testid={`feature-title-${index}`}
+                    >
+                      {feature.title}
+                    </h3>
+                    <p
+                      className="text-primary/70 leading-relaxed"
+                      data-testid={`feature-description-${index}`}
+                    >
+                      {feature.description}
+                    </p>
+                  </motion.div>
+                );
+              }
+            )}
           </div>
         </motion.div>
       </div>

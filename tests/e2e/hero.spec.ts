@@ -20,7 +20,6 @@ test.describe('Hero Component', () => {
     expect(images.length).toBe(3);
 
     // Verify each image's attributes and visibility
-    // @ts-ignore
     for (const [_index, expectedImage] of HERO_IMAGES.entries()) {
       const image = page.locator(`img[alt="${expectedImage.alt}"]`);
       await expect(image).toBeVisible();

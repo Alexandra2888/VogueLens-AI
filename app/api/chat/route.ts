@@ -18,9 +18,17 @@ export async function POST(req: Request) {
         size: '1024x1024',
       });
 
+      const imageUrl = imageResponse.data?.[0]?.url;
+      if (!imageUrl) {
+        return NextResponse.json(
+          { error: 'Failed to generate image' },
+          { status: 502 }
+        );
+      }
+
       return NextResponse.json({
         response: 'Image generated successfully',
-        imageUrl: imageResponse.data?.[0]?.url,
+        imageUrl,
       });
     }
 

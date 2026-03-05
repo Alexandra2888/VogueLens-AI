@@ -7,9 +7,8 @@ import { Button } from '@/components/ui/button';
 import { images } from '../../data/data';
 
 const Hero = () => {
-  const [hoveredIndex, setHoveredIndex] = useState(null);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
-  // @ts-ignore
   return (
     <section className="container mx-auto flex max-w-7xl items-center justify-center overflow-hidden pt-12 lg:pt-28">
       <div className="container px-4 md:px-6">
@@ -60,7 +59,6 @@ const Hero = () => {
                     right: `${index * 10}%`,
                     top: `${index * 10}%`,
                   }}
-                  //@ts-ignore
                   onMouseEnter={() => setHoveredIndex(index)}
                   onMouseLeave={() => setHoveredIndex(null)}
                   whileHover={{ scale: 1.05 }}

@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 // Set test environment
-// @ts-ignore
+// @ts-expect-error NODE_ENV is read-only in types
 process.env.NODE_ENV = 'test';
 process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = 'pk_test_dummy-key-for-testing';
 process.env.CLERK_SECRET_KEY = 'sk_test_dummy-key-for-testing';

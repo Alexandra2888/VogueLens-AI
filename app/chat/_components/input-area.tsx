@@ -12,11 +12,11 @@ const InputArea = ({
   onImageUpload,
 }: {
   input: string;
-  // eslint-disable-next-line no-unused-vars
+
   setInput: (value: string) => void;
   isLoading: boolean;
   onSend: () => void;
-  // eslint-disable-next-line no-unused-vars
+
   onImageUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);

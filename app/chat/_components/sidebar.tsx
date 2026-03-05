@@ -14,7 +14,7 @@ const Sidebar = ({
 }: {
   conversations: ConversationProps[];
   currentConversation: ConversationProps | null;
-  // eslint-disable-next-line no-unused-vars
+
   onConversationSelect: (conv: ConversationProps) => void;
   onNewConversation: () => void;
 }) => (
