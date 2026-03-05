@@ -50,11 +50,7 @@ export function ThemeToggle() {
               <circle cx="12" cy="12" r="4" />
               <motion.g
                 animate={{ rotate: 360 }}
-                transition={{
-                  duration: 10,
-                  repeat: Infinity,
-                  ease: 'linear',
-                }}
+                transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
               >
                 <path d="M12 2v2" />
                 <path d="M12 20v2" />

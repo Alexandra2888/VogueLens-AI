@@ -3,13 +3,9 @@ const IconLogo = ({ className = '' }: { className?: string }) => {
     <div
       className={`relative flex h-9 w-9 items-center justify-center ${className}`}
     >
-      <div className="absolute inset-0 rounded-xl bg-brand-red" />
-      <div className="absolute inset-[3px] rounded-[9px] bg-brand-red-light/30" />
-      <svg
-        viewBox="0 0 24 24"
-        className="relative z-10 h-5 w-5"
-        fill="none"
-      >
+      <div className="bg-brand-red absolute inset-0 rounded-xl" />
+      <div className="bg-brand-red-light/30 absolute inset-[3px] rounded-[9px]" />
+      <svg viewBox="0 0 24 24" className="relative z-10 h-5 w-5" fill="none">
         <path
           d="M5 6L12 18L19 6"
           stroke="white"

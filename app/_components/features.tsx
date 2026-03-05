@@ -17,7 +17,7 @@ export default function FeaturesSection() {
       data-testid="features-section"
     >
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-1/2 top-0 h-px w-2/3 -translate-x-1/2 bg-gradient-to-r from-transparent via-border to-transparent" />
+        <div className="via-border absolute top-0 left-1/2 h-px w-2/3 -translate-x-1/2 bg-gradient-to-r from-transparent to-transparent" />
       </div>
 
       <div className="container mx-auto max-w-7xl px-6">
@@ -27,7 +27,7 @@ export default function FeaturesSection() {
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6 }}
           >
-            <span className="mb-4 inline-block text-sm font-medium tracking-widest text-brand-red uppercase">
+            <span className="text-brand-red mb-4 inline-block text-sm font-medium tracking-widest uppercase">
               Features
             </span>
             <h2
@@ -38,7 +38,7 @@ export default function FeaturesSection() {
               <span className="gradient-text">elevate your style</span>
             </h2>
             <p
-              className="mx-auto mt-6 max-w-xl text-lg text-foreground/50"
+              className="text-foreground/50 mx-auto mt-6 max-w-xl text-lg"
               data-testid="features-subtitle"
             >
               Powerful AI tools designed to transform how you think about
@@ -74,33 +74,33 @@ export default function FeaturesSection() {
                   data-testid={`feature-card-${index}`}
                 >
                   <motion.div
-                    className="group relative flex h-full flex-col rounded-2xl border border-border/50 bg-card/50 p-8 backdrop-blur-sm transition-colors duration-300 hover:border-brand-red/20 hover:bg-card"
+                    className="group border-border/50 bg-card/50 hover:border-brand-red/20 hover:bg-card relative flex h-full flex-col rounded-2xl border p-8 backdrop-blur-sm transition-colors duration-300"
                     whileHover={{ y: -4, transition: { duration: 0.2 } }}
                   >
-                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-brand-red/0 to-brand-teal/0 opacity-0 transition-opacity duration-300 group-hover:opacity-[0.03]" />
+                    <div className="from-brand-red/0 to-brand-teal/0 absolute inset-0 rounded-2xl bg-gradient-to-br opacity-0 transition-opacity duration-300 group-hover:opacity-[0.03]" />
 
                     <div
-                      className="relative mb-6 flex h-12 w-12 items-center justify-center rounded-xl bg-brand-red/5 transition-colors duration-300 group-hover:bg-brand-red/10 dark:bg-brand-red/10 dark:group-hover:bg-brand-red/20"
+                      className="bg-brand-red/5 group-hover:bg-brand-red/10 dark:bg-brand-red/10 dark:group-hover:bg-brand-red/20 relative mb-6 flex h-12 w-12 items-center justify-center rounded-xl transition-colors duration-300"
                       data-testid={`feature-icon-${index}`}
                     >
-                      <Icon className="h-6 w-6 text-brand-red" />
+                      <Icon className="text-brand-red h-6 w-6" />
                     </div>
 
                     <h3
-                      className="relative mb-3 text-lg font-semibold text-foreground"
+                      className="text-foreground relative mb-3 text-lg font-semibold"
                       data-testid={`feature-title-${index}`}
                     >
                       {feature.title}
                     </h3>
 
                     <p
-                      className="relative text-sm leading-relaxed text-foreground/50"
+                      className="text-foreground/50 relative text-sm leading-relaxed"
                       data-testid={`feature-description-${index}`}
                     >
                       {feature.description}
                     </p>
 
-                    <div className="mt-6 flex items-center text-sm font-medium text-brand-red opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                    <div className="text-brand-red mt-6 flex items-center text-sm font-medium opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                       Learn more
                       <svg
                         className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1"

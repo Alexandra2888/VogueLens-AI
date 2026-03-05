@@ -11,8 +11,8 @@ const Logo = ({ className = '' }: { className?: string }) => {
         transition={{ duration: 0.5 }}
       >
         <div className="relative flex h-9 w-9 items-center justify-center">
-          <div className="absolute inset-0 rounded-xl bg-brand-red" />
-          <div className="absolute inset-[3px] rounded-[9px] bg-brand-red-light/30" />
+          <div className="bg-brand-red absolute inset-0 rounded-xl" />
+          <div className="bg-brand-red-light/30 absolute inset-[3px] rounded-[9px]" />
           <svg
             viewBox="0 0 24 24"
             className="relative z-10 h-5 w-5"
@@ -40,7 +40,7 @@ const Logo = ({ className = '' }: { className?: string }) => {
       <div className="text-[22px] font-bold tracking-tight">
         <span className="text-foreground">Vogue</span>
         <span className="text-brand-red">Lens</span>
-        <span className="ml-1 text-xs font-semibold tracking-wider text-brand-teal uppercase">
+        <span className="text-brand-teal ml-1 text-xs font-semibold tracking-wider uppercase">
           AI
         </span>
       </div>

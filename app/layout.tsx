@@ -54,11 +54,7 @@ const jsonLd = {
     'Instant Styling Tips',
     'Outfit Generator',
   ],
-  offers: {
-    '@type': 'Offer',
-    price: '0',
-    priceCurrency: 'USD',
-  },
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
   browserRequirements: 'Requires JavaScript. Requires HTML5.',
   operatingSystem: 'All',
   mainEntity: {
@@ -155,9 +151,7 @@ export default function RootLayout({
             <Script
               id="website-schema"
               type="application/ld+json"
-              dangerouslySetInnerHTML={{
-                __html: JSON.stringify(jsonLd),
-              }}
+              dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
             <ClerkProvider
               dynamic

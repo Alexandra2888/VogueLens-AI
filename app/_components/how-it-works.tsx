@@ -16,7 +16,7 @@ export default function HowItWorks() {
       data-testid="how-it-works-section"
     >
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-1/2 top-0 h-px w-2/3 -translate-x-1/2 bg-gradient-to-r from-transparent via-border to-transparent" />
+        <div className="via-border absolute top-0 left-1/2 h-px w-2/3 -translate-x-1/2 bg-gradient-to-r from-transparent to-transparent" />
       </div>
 
       <div className="container mx-auto max-w-7xl px-6">
@@ -26,7 +26,7 @@ export default function HowItWorks() {
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6 }}
           >
-            <span className="mb-4 inline-block text-sm font-medium tracking-widest text-brand-teal-dark dark:text-brand-teal uppercase">
+            <span className="text-brand-teal-dark dark:text-brand-teal mb-4 inline-block text-sm font-medium tracking-widest uppercase">
               How It Works
             </span>
             <h2
@@ -37,7 +37,7 @@ export default function HowItWorks() {
               <span className="gradient-text">four simple steps</span>
             </h2>
             <p
-              className="mx-auto mt-6 max-w-xl text-lg text-foreground/50"
+              className="text-foreground/50 mx-auto mt-6 max-w-xl text-lg"
               data-testid="how-it-works-subtitle"
             >
               From conversation to confidence — your style journey starts here
@@ -50,13 +50,13 @@ export default function HowItWorks() {
           data-testid="how-it-works-steps"
         >
           <motion.div
-            className="absolute left-8 top-0 hidden h-full w-px md:left-1/2 md:block md:-translate-x-px"
+            className="absolute top-0 left-8 hidden h-full w-px md:left-1/2 md:block md:-translate-x-px"
             initial={{ scaleY: 0 }}
             animate={isInView ? { scaleY: 1 } : {}}
             transition={{ duration: 1.5, ease: [0.25, 0.1, 0, 1] }}
             style={{ originY: 0 }}
           >
-            <div className="h-full w-full bg-gradient-to-b from-brand-red via-brand-red/50 to-brand-teal" />
+            <div className="from-brand-red via-brand-red/50 to-brand-teal h-full w-full bg-gradient-to-b" />
           </motion.div>
 
           {steps.map((step, index) => {
@@ -90,11 +90,11 @@ export default function HowItWorks() {
                       whileHover={{ x: isEven ? -4 : 4 }}
                       transition={{ duration: 0.2 }}
                     >
-                      <div className="mb-2 text-xs font-medium tracking-widest text-brand-red/60 uppercase">
+                      <div className="text-brand-red/60 mb-2 text-xs font-medium tracking-widest uppercase">
                         Step {index + 1}
                       </div>
                       <h3
-                        className="mb-3 text-xl font-semibold text-foreground"
+                        className="text-foreground mb-3 text-xl font-semibold"
                         data-testid={`step-title-${index}`}
                       >
                         {step.title}
@@ -111,26 +111,22 @@ export default function HowItWorks() {
                   <motion.div
                     className="relative z-10 flex-shrink-0"
                     whileHover={{ scale: 1.1 }}
-                    transition={{
-                      type: 'spring',
-                      stiffness: 400,
-                      damping: 15,
-                    }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 15 }}
                     data-testid={`step-icon-${index}`}
                   >
-                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-brand-red/20 bg-background shadow-lg shadow-brand-red/5 md:h-16 md:w-16">
-                      <Icon className="h-6 w-6 text-brand-red md:h-7 md:w-7" />
+                    <div className="border-brand-red/20 bg-background shadow-brand-red/5 flex h-14 w-14 items-center justify-center rounded-2xl border shadow-lg md:h-16 md:w-16">
+                      <Icon className="text-brand-red h-6 w-6 md:h-7 md:w-7" />
                     </div>
                   </motion.div>
 
                   <div className="flex-1 md:hidden">
-                    <div className="mb-1 text-xs font-medium tracking-widest text-brand-red/60 uppercase">
+                    <div className="text-brand-red/60 mb-1 text-xs font-medium tracking-widest uppercase">
                       Step {index + 1}
                     </div>
-                    <h3 className="mb-2 text-lg font-semibold text-foreground">
+                    <h3 className="text-foreground mb-2 text-lg font-semibold">
                       {step.title}
                     </h3>
-                    <p className="text-sm text-foreground/50">
+                    <p className="text-foreground/50 text-sm">
                       {step.description}
                     </p>
                   </div>

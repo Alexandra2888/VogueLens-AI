@@ -10,12 +10,8 @@ const MinimalLogo = ({ className = '' }: { className?: string }) => {
         whileHover={{ scale: 1.1 }}
         transition={{ type: 'spring', stiffness: 400, damping: 15 }}
       >
-        <div className="absolute inset-0 rounded-lg bg-brand-red" />
-        <svg
-          viewBox="0 0 24 24"
-          className="relative z-10 h-4 w-4"
-          fill="none"
-        >
+        <div className="bg-brand-red absolute inset-0 rounded-lg" />
+        <svg viewBox="0 0 24 24" className="relative z-10 h-4 w-4" fill="none">
           <path
             d="M5 6L12 18L19 6"
             stroke="white"
@@ -28,7 +24,7 @@ const MinimalLogo = ({ className = '' }: { className?: string }) => {
 
       <div className="text-sm font-bold tracking-tight">
         <span className="text-foreground">VL</span>
-        <span className="ml-0.5 text-[10px] font-semibold tracking-wider text-brand-teal uppercase">
+        <span className="text-brand-teal ml-0.5 text-[10px] font-semibold tracking-wider uppercase">
           AI
         </span>
       </div>

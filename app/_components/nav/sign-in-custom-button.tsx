@@ -5,7 +5,7 @@ const StyledSignInButton = ({ isMobile = false }) => {
   return (
     <SignInButton mode="modal">
       <motion.button
-        className="rounded-xl bg-brand-red px-5 py-2 text-sm font-medium text-white shadow-sm shadow-brand-red/20 transition-all hover:bg-brand-red-dark hover:shadow-md hover:shadow-brand-red/30"
+        className="bg-brand-red shadow-brand-red/20 hover:bg-brand-red-dark hover:shadow-brand-red/30 rounded-xl px-5 py-2 text-sm font-medium text-white shadow-sm transition-all hover:shadow-md"
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
       >

@@ -3,7 +3,12 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
-import { motion, AnimatePresence, useMotionValueEvent, useScroll } from 'motion/react';
+import {
+  motion,
+  AnimatePresence,
+  useMotionValueEvent,
+  useScroll,
+} from 'motion/react';
 import { usePathname } from 'next/navigation';
 
 import { ThemeToggle } from './theme-toggle';
@@ -106,9 +111,7 @@ export default function Header() {
         <Show when="signed-in">
           <UserButton
             appearance={{
-              elements: {
-                avatarBox: isMobile ? 'w-8 h-8' : 'w-10 h-10',
-              },
+              elements: { avatarBox: isMobile ? 'w-8 h-8' : 'w-10 h-10' },
             }}
           />
         </Show>
@@ -164,7 +167,7 @@ export default function Header() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.4, delay: 0.4 }}
           >
-            <div className="h-5 w-px bg-border" />
+            <div className="bg-border h-5 w-px" />
             {renderAuthButtons(false)}
             <ThemeToggle />
           </motion.div>

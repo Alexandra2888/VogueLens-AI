@@ -11,7 +11,7 @@ const FooterLink = ({ href, label }: { href: string; label: string }) => {
   return (
     <Link
       href={href}
-      className="text-sm text-foreground/50 transition-colors duration-300 hover:text-foreground"
+      className="text-foreground/50 hover:text-foreground text-sm transition-colors duration-300"
     >
       {label}
     </Link>
@@ -32,7 +32,7 @@ const SocialLink = ({
       <motion.div
         whileHover={{ y: -2 }}
         whileTap={{ scale: 0.9 }}
-        className="flex h-9 w-9 items-center justify-center rounded-xl text-foreground/40 transition-colors duration-300 hover:bg-foreground/5 hover:text-foreground"
+        className="text-foreground/40 hover:bg-foreground/5 hover:text-foreground flex h-9 w-9 items-center justify-center rounded-xl transition-colors duration-300"
       >
         <Icon className="h-4 w-4" />
       </motion.div>
@@ -46,7 +46,7 @@ const Footer = () => {
 
   return (
     <footer
-      className="relative border-t border-border/50 px-6 py-12"
+      className="border-border/50 relative border-t px-6 py-12"
       ref={footerRef}
     >
       <div className="mx-auto max-w-7xl">
@@ -74,16 +74,15 @@ const Footer = () => {
         </motion.div>
 
         <motion.div
-          className="mt-10 flex flex-col items-center gap-4 border-t border-border/30 pt-8 sm:flex-row sm:justify-between"
+          className="border-border/30 mt-10 flex flex-col items-center gap-4 border-t pt-8 sm:flex-row sm:justify-between"
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
-          <p className="text-xs text-foreground/30">
-            &copy; {new Date().getFullYear()} VogueLens AI. All rights
-            reserved.
+          <p className="text-foreground/30 text-xs">
+            &copy; {new Date().getFullYear()} VogueLens AI. All rights reserved.
           </p>
-          <p className="text-xs text-foreground/30">
+          <p className="text-foreground/30 text-xs">
             Crafted with AI &middot; Designed for you
           </p>
         </motion.div>

@@ -7,7 +7,7 @@ import { ArrowLeft } from 'lucide-react';
 
 export default function NotFound() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4">
+    <div className="bg-background flex min-h-screen flex-col items-center justify-center px-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -31,7 +31,7 @@ export default function NotFound() {
             delay: 0.1,
           }}
         >
-          <span className="gradient-text text-[120px] font-bold leading-none tracking-tighter">
+          <span className="gradient-text text-[120px] leading-none font-bold tracking-tighter">
             404
           </span>
         </motion.div>
@@ -41,10 +41,8 @@ export default function NotFound() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3, duration: 0.5 }}
         >
-          <p className="text-xl font-medium text-foreground">
-            Page not found
-          </p>
-          <p className="mt-2 text-foreground/50">
+          <p className="text-foreground text-xl font-medium">Page not found</p>
+          <p className="text-foreground/50 mt-2">
             The page you&apos;re looking for doesn&apos;t exist or has been
             moved.
           </p>
@@ -57,7 +55,7 @@ export default function NotFound() {
         >
           <Link
             href="/"
-            className="inline-flex items-center gap-2 rounded-xl bg-brand-red px-6 py-3 text-sm font-medium text-white shadow-lg shadow-brand-red/20 transition-all hover:bg-brand-red-dark hover:shadow-xl hover:shadow-brand-red/30"
+            className="bg-brand-red shadow-brand-red/20 hover:bg-brand-red-dark hover:shadow-brand-red/30 inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-medium text-white shadow-lg transition-all hover:shadow-xl"
           >
             <ArrowLeft className="h-4 w-4" />
             Return Home

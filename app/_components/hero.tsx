@@ -41,12 +41,15 @@ const Hero = () => {
       onMouseMove={handleMouseMove}
     >
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -left-40 -top-40 h-[500px] w-[500px] rounded-full bg-brand-red/5 blur-[120px] dark:bg-brand-red/10" />
-        <div className="absolute -bottom-20 -right-20 h-[400px] w-[400px] rounded-full bg-brand-teal/5 blur-[100px] dark:bg-brand-teal/10" />
+        <div className="bg-brand-red/5 dark:bg-brand-red/10 absolute -top-40 -left-40 h-[500px] w-[500px] rounded-full blur-[120px]" />
+        <div className="bg-brand-teal/5 dark:bg-brand-teal/10 absolute -right-20 -bottom-20 h-[400px] w-[400px] rounded-full blur-[100px]" />
       </div>
 
       <div className="container mx-auto max-w-7xl px-6">
-        <motion.div style={{ y }} className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
+        <motion.div
+          style={{ y }}
+          className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20"
+        >
           <div className="relative z-10 flex flex-col justify-center">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -55,7 +58,7 @@ const Hero = () => {
               className="mb-6"
             >
               <motion.div
-                className="mb-8 inline-flex items-center gap-2 rounded-full border border-brand-red/20 bg-brand-red/5 px-4 py-1.5 text-sm font-medium text-brand-red dark:border-brand-red/30 dark:bg-brand-red/10"
+                className="border-brand-red/20 bg-brand-red/5 text-brand-red dark:border-brand-red/30 dark:bg-brand-red/10 mb-8 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-medium"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.3, duration: 0.4 }}
@@ -66,7 +69,7 @@ const Hero = () => {
 
               <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
                 <motion.span
-                  className="block text-foreground"
+                  className="text-foreground block"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1, duration: 0.6 }}
@@ -74,7 +77,7 @@ const Hero = () => {
                   Your Personal
                 </motion.span>
                 <motion.span
-                  className="mt-1 block gradient-text"
+                  className="gradient-text mt-1 block"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2, duration: 0.6 }}
@@ -85,7 +88,7 @@ const Hero = () => {
             </motion.div>
 
             <motion.p
-              className="mb-10 max-w-lg text-lg leading-relaxed text-foreground/60"
+              className="text-foreground/60 mb-10 max-w-lg text-lg leading-relaxed"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.6 }}
@@ -106,7 +109,7 @@ const Hero = () => {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  <Button className="group h-12 rounded-xl bg-brand-red px-8 text-sm font-medium text-white shadow-lg shadow-brand-red/20 transition-all hover:bg-brand-red-dark hover:shadow-xl hover:shadow-brand-red/30">
+                  <Button className="group bg-brand-red shadow-brand-red/20 hover:bg-brand-red-dark hover:shadow-brand-red/30 h-12 rounded-xl px-8 text-sm font-medium text-white shadow-lg transition-all hover:shadow-xl">
                     Start Styling
                     <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </Button>
@@ -119,7 +122,7 @@ const Hero = () => {
                 >
                   <Button
                     variant="outline"
-                    className="h-12 rounded-xl border-border/50 px-8 text-sm font-medium backdrop-blur-sm hover:bg-foreground/5"
+                    className="border-border/50 hover:bg-foreground/5 h-12 rounded-xl px-8 text-sm font-medium backdrop-blur-sm"
                   >
                     Explore Features
                   </Button>
@@ -144,10 +147,10 @@ const Hero = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.8 + i * 0.1, duration: 0.4 }}
                 >
-                  <div className="text-xl font-bold text-foreground">
+                  <div className="text-foreground text-xl font-bold">
                     {stat.value}
                   </div>
-                  <div className="text-xs text-foreground/40">{stat.label}</div>
+                  <div className="text-foreground/40 text-xs">{stat.label}</div>
                 </motion.div>
               ))}
             </motion.div>
@@ -161,7 +164,7 @@ const Hero = () => {
             style={{ x: springX, y: springY }}
           >
             <div className="relative h-[550px] w-full">
-              <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-brand-red/5 via-transparent to-brand-teal/5" />
+              <div className="from-brand-red/5 to-brand-teal/5 absolute inset-0 rounded-3xl bg-gradient-to-br via-transparent" />
               {images.map((image, index) => (
                 <motion.div
                   key={index}
@@ -176,11 +179,7 @@ const Hero = () => {
                   onMouseEnter={() => setHoveredIndex(index)}
                   onMouseLeave={() => setHoveredIndex(null)}
                   initial={{ opacity: 0, y: 40, rotate: index * 2 - 2 }}
-                  animate={{
-                    opacity: 1,
-                    y: 0,
-                    rotate: index * 2 - 2,
-                  }}
+                  animate={{ opacity: 1, y: 0, rotate: index * 2 - 2 }}
                   whileHover={{
                     scale: 1.05,
                     rotate: 0,
@@ -211,14 +210,14 @@ const Hero = () => {
                 transition={{ delay: 1.2, duration: 0.5, ease: 'easeOut' }}
               >
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-red/10">
-                    <Sparkles className="h-5 w-5 text-brand-red" />
+                  <div className="bg-brand-red/10 flex h-10 w-10 items-center justify-center rounded-xl">
+                    <Sparkles className="text-brand-red h-5 w-5" />
                   </div>
                   <div>
-                    <div className="text-sm font-semibold text-foreground">
+                    <div className="text-foreground text-sm font-semibold">
                       Style Match
                     </div>
-                    <div className="text-xs text-foreground/50">
+                    <div className="text-foreground/50 text-xs">
                       98% Confidence
                     </div>
                   </div>
