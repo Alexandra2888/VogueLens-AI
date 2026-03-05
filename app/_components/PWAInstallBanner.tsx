@@ -9,6 +9,12 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
 }
 
+function subscribeToDisplayMode(callback: () => void) {
+  const mediaQuery = window.matchMedia('(display-mode: standalone)');
+  mediaQuery.addEventListener('change', callback);
+  return () => mediaQuery.removeEventListener('change', callback);
+}
+
 const emptySubscribe = () => () => {};
 
 function getIsStandalone() {
@@ -23,25 +29,31 @@ const PWAInstallBanner = () => {
   const [installPrompt, setInstallPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
   const [dismissed, setDismissed] = useState(false);
-  const isStandalone = useSyncExternalStore(
+  const wasPreviouslyDismissed = useSyncExternalStore(
     emptySubscribe,
+    () => localStorage.getItem('pwaBannerDismissed') === 'true',
+    () => false
+  );
+  const isStandalone = useSyncExternalStore(
+    subscribeToDisplayMode,
     getIsStandalone,
     () => true
   );
 
   useEffect(() => {
-    localStorage.removeItem('pwaBannerDismissed');
-
     const handleInstallPrompt = (e: Event) => {
       e.preventDefault();
       setInstallPrompt(e as BeforeInstallPromptEvent);
     };
 
+    const handleAppInstalled = () => setDismissed(true);
+
     window.addEventListener('beforeinstallprompt', handleInstallPrompt);
-    window.addEventListener('appinstalled', () => setDismissed(true));
+    window.addEventListener('appinstalled', handleAppInstalled);
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handleInstallPrompt);
+      window.removeEventListener('appinstalled', handleAppInstalled);
     };
   }, []);
 
@@ -65,7 +77,7 @@ const PWAInstallBanner = () => {
     localStorage.setItem('pwaBannerDismissed', 'true');
   };
 
-  if (isStandalone || dismissed) return null;
+  if (isStandalone || dismissed || wasPreviouslyDismissed) return null;
 
   return (
     <div className="bg-background fixed right-0 bottom-0 left-0 z-50 border-t p-4 pb-36 shadow-lg md:pb-0">
