@@ -3,32 +3,34 @@
 import { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Coins } from 'lucide-react';
 
 export default function ProfilePage() {
   const { user, isLoaded } = useUser();
   const router = useRouter();
+  const locale = useLocale();
   const t = useTranslations('profile');
   const [credits, setCredits] = useState<number | null>(null);
 
   useEffect(() => {
-    fetch('/api/user/credits')
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.credits !== undefined) setCredits(data.credits);
-        else console.error('[credits] unexpected response:', data);
-      })
-      .catch((e) => console.error('[credits] fetch failed:', e));
-  }, []);
+    if (isLoaded && !user) {
+      router.push(`/${locale}/sign-in`);
+      return;
+    }
+    if (isLoaded && user) {
+      fetch('/api/user/credits')
+        .then((r) => r.json())
+        .then((data) => {
+          if (data.credits !== undefined) setCredits(data.credits);
+          else console.error('[credits] unexpected response:', data);
+        })
+        .catch((e) => console.error('[credits] fetch failed:', e));
+    }
+  }, [isLoaded, user, router, locale]);
 
-  if (!isLoaded) {
+  if (!isLoaded || !user) {
     return <div>{t('loading')}</div>;
-  }
-
-  if (!user) {
-    router.push('/sign-in');
-    return null;
   }
 
   return (

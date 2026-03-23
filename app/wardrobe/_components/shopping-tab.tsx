@@ -53,26 +53,30 @@ export function ShoppingTab({ wardrobeItems }: ShoppingTabProps) {
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
-    if (!file || !user) return;
+    if (!file || !user || isChecking) return;
     e.target.value = '';
 
-    setPreviewUrl(URL.createObjectURL(file));
+    setPreviewUrl((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return URL.createObjectURL(file);
+    });
     setResult(null);
     setError(null);
     setIsChecking(true);
 
+    let storagePath: string | null = null;
     try {
       const ext = file.name.split('.').pop();
-      const path = `check/${user.id}/${crypto.randomUUID()}.${ext}`;
+      storagePath = `check/${user.id}/${crypto.randomUUID()}.${ext}`;
       const { error: uploadError } = await supabase.storage
         .from(WARDROBE_BUCKET)
-        .upload(path, file, { upsert: false });
+        .upload(storagePath, file, { upsert: false });
 
       if (uploadError) throw uploadError;
 
       const {
         data: { publicUrl },
-      } = supabase.storage.from(WARDROBE_BUCKET).getPublicUrl(path);
+      } = supabase.storage.from(WARDROBE_BUCKET).getPublicUrl(storagePath);
 
       const res = await fetch('/api/wardrobe/shopping-check', {
         method: 'POST',
@@ -80,9 +84,16 @@ export function ShoppingTab({ wardrobeItems }: ShoppingTabProps) {
         body: JSON.stringify({ imageUrl: publicUrl }),
       });
       if (!res.ok) throw new Error('Analysis failed');
+      storagePath = null;
       const data = await res.json();
       setResult(data);
     } catch {
+      if (storagePath) {
+        supabase.storage
+          .from(WARDROBE_BUCKET)
+          .remove([storagePath])
+          .catch(() => {});
+      }
       setError(t('analyzeError'));
     } finally {
       setIsChecking(false);
@@ -97,8 +108,12 @@ export function ShoppingTab({ wardrobeItems }: ShoppingTabProps) {
     <div className="space-y-6">
       {/* Upload area */}
       <div
-        className="border-border hover:border-primary/50 hover:bg-muted/20 flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed p-10 transition-colors"
-        onClick={() => fileInputRef.current?.click()}
+        className={`flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed p-10 transition-colors ${
+          isChecking
+            ? 'border-border cursor-not-allowed opacity-50'
+            : 'border-border hover:border-primary/50 hover:bg-muted/20'
+        }`}
+        onClick={() => !isChecking && fileInputRef.current?.click()}
       >
         <input
           ref={fileInputRef}

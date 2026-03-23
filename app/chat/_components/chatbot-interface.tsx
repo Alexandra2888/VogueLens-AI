@@ -163,11 +163,12 @@ export default function ChatbotInterface() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [currentConversation?.messages, isLoading]);
 
+  // Track blob URLs so they can all be revoked on unmount
+  const blobUrlsRef = useRef<string[]>([]);
   useEffect(() => {
-    return () => {
-      if (selectedImage) URL.revokeObjectURL(selectedImage.preview);
-    };
-  }, [selectedImage]);
+    const urls = blobUrlsRef.current;
+    return () => urls.forEach((u) => URL.revokeObjectURL(u));
+  }, []);
 
   const startNewConversation = useCallback(async () => {
     const greetingText = t('greeting');
@@ -225,7 +226,9 @@ export default function ChatbotInterface() {
   const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
-    setSelectedImage({ file, preview: URL.createObjectURL(file) });
+    const url = URL.createObjectURL(file);
+    blobUrlsRef.current.push(url);
+    setSelectedImage({ file, preview: url });
   };
 
   const clearSelectedImage = () => {
@@ -281,7 +284,8 @@ export default function ChatbotInterface() {
       );
       setCurrentConversation(withUser);
       setInput('');
-      clearSelectedImage();
+      setSelectedImage(null);
+      if (fileInputRef.current) fileInputRef.current.value = '';
 
       const chatResponse = await fetch('/api/chat', {
         method: 'POST',

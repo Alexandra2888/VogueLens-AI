@@ -30,7 +30,7 @@ import {
 } from '../../wardrobe/_components/item-card';
 import { WeatherTab } from '../../wardrobe/_components/weather-tab';
 import { ShoppingTab } from '../../wardrobe/_components/shopping-tab';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 
 type ActiveTab = 'wardrobe' | 'weather' | 'shopping';
 
@@ -38,6 +38,7 @@ export default function WardrobePage() {
   const { user, isLoaded } = useUser();
   const { toast } = useToast();
   const router = useRouter();
+  const locale = useLocale();
   const t = useTranslations('wardrobe');
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -59,6 +60,7 @@ export default function WardrobePage() {
     setIsFetching(true);
     try {
       const res = await fetch('/api/wardrobe');
+      if (!res.ok) throw new Error();
       const data = await res.json();
       setItems(data.items ?? []);
     } catch {
@@ -73,8 +75,14 @@ export default function WardrobePage() {
   }, [toast, t]);
 
   useEffect(() => {
-    fetchItems();
-  }, [fetchItems]);
+    if (isLoaded && !user) {
+      router.push(`/${locale}/sign-in`);
+      return;
+    }
+    if (isLoaded && user) {
+      fetchItems();
+    }
+  }, [isLoaded, user, fetchItems, router, locale]);
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -82,18 +90,19 @@ export default function WardrobePage() {
     e.target.value = '';
 
     setIsSaving(true);
+    let storagePath: string | null = null;
     try {
       const ext = file.name.split('.').pop();
-      const path = `${user!.id}/${crypto.randomUUID()}.${ext}`;
+      storagePath = `${user!.id}/${crypto.randomUUID()}.${ext}`;
       const { error: uploadError } = await supabase.storage
         .from(WARDROBE_BUCKET)
-        .upload(path, file, { upsert: false });
+        .upload(storagePath, file, { upsert: false });
 
       if (uploadError) throw uploadError;
 
       const {
         data: { publicUrl },
-      } = supabase.storage.from(WARDROBE_BUCKET).getPublicUrl(path);
+      } = supabase.storage.from(WARDROBE_BUCKET).getPublicUrl(storagePath);
 
       const res = await fetch('/api/wardrobe', {
         method: 'POST',
@@ -101,6 +110,7 @@ export default function WardrobePage() {
         body: JSON.stringify({ imageUrl: publicUrl }),
       });
       if (!res.ok) throw new Error();
+      storagePath = null;
       const data = await res.json();
       setItems((prev) => [data.item, ...prev]);
       toast({
@@ -108,6 +118,12 @@ export default function WardrobePage() {
         description: t('toast.itemAddedDesc'),
       });
     } catch {
+      if (storagePath) {
+        supabase.storage
+          .from(WARDROBE_BUCKET)
+          .remove([storagePath])
+          .catch(() => {});
+      }
       toast({
         title: t('toast.error'),
         description: t('toast.uploadError'),
@@ -146,6 +162,7 @@ export default function WardrobePage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ occasion }),
       });
+      if (!res.ok) throw new Error();
       const data = await res.json();
       setRecommendation({
         text: data.recommendation,
@@ -162,16 +179,12 @@ export default function WardrobePage() {
     }
   }
 
-  if (!isLoaded)
+  if (!isLoaded || !user)
     return (
       <div className="flex h-[80vh] items-center justify-center">
         <Loader2 className="animate-spin" />
       </div>
     );
-  if (!user) {
-    router.push('/sign-in');
-    return null;
-  }
 
   const filtered = items.filter((item) => {
     if (categoryFilter !== 'all' && item.category !== categoryFilter)
