@@ -5,7 +5,7 @@ import { db } from '@/lib/db';
 import { wardrobeItems } from '@/db/schema';
 import { openai } from '@/lib/openai';
 import { generateEmbedding } from '@/lib/embeddings';
-import { wardrobeRatelimit } from '@/lib/rate-limit';
+import { wardrobeLimit } from '@/lib/rate-limit';
 import {
   wardrobePostSchema,
   sanitizeText,
@@ -51,10 +51,7 @@ export async function POST(req: Request) {
     if (!userId) return unauthorizedResponse();
 
     // Per-user rate limit for expensive wardrobe POST (calls GPT-4o vision)
-    if (wardrobeRatelimit) {
-      const { success } = await wardrobeRatelimit.limit(`wardrobe:${userId}`);
-      if (!success) return rateLimitExceeded();
-    }
+    if (!wardrobeLimit(userId)) return rateLimitExceeded();
 
     // Validate + parse body
     let body: unknown;

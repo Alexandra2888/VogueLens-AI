@@ -74,6 +74,7 @@ export default async function LocaleLayout({
               }}
             />
             <ClerkProvider
+              dynamic
               publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
             >
               <NextIntlClientProvider messages={messages}>

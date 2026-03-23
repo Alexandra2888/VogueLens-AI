@@ -14,8 +14,11 @@ export default function ProfilePage() {
   useEffect(() => {
     fetch('/api/user/credits')
       .then((r) => r.json())
-      .then((data) => setCredits(data.credits))
-      .catch(() => {});
+      .then((data) => {
+        if (data.credits !== undefined) setCredits(data.credits);
+        else console.error('[credits] unexpected response:', data);
+      })
+      .catch((e) => console.error('[credits] fetch failed:', e));
   }, []);
 
   if (!isLoaded) {

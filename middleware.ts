@@ -7,7 +7,7 @@ import {
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { routing } from './src/i18n/routing';
-import { apiRatelimit } from './src/lib/rate-limit';
+import { ipLimit } from './src/lib/rate-limit';
 
 const handleI18nRouting = createMiddleware(routing);
 
@@ -15,6 +15,13 @@ const isProtectedRoute = createRouteMatcher([
   '/:locale/chat(.*)',
   '/:locale/wardrobe(.*)',
   '/:locale/profile(.*)',
+]);
+
+// Only rate-limit routes that consume credits or call AI
+const isExpensiveRoute = createRouteMatcher([
+  '/api/chat(.*)',
+  '/api/analyze-image(.*)',
+  '/api/wardrobe(.*)',
 ]);
 
 const MUTATING_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
@@ -51,14 +58,13 @@ export default clerkMiddleware(
         return new NextResponse('Forbidden', { status: 403 });
       }
 
-      // IP-level rate limiting (DDoS / brute-force protection)
-      if (apiRatelimit) {
+      // IP-level rate limiting — only for AI/credit routes, not all API calls
+      if (isExpensiveRoute(req)) {
         const ip =
           req.headers.get('x-real-ip') ??
           req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
           'anonymous';
-        const { success } = await apiRatelimit.limit(`ip:${ip}`);
-        if (!success) {
+        if (!ipLimit(ip)) {
           return new NextResponse('Too Many Requests', {
             status: 429,
             headers: { 'Retry-After': '60' },

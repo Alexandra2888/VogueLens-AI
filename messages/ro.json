@@ -97,7 +97,8 @@
     "gateTitle": "Ne bucurăm că îți place VogueLens AI!",
     "gateSubtitle": "Înregistrează-te pentru funcții complete.",
     "outOfCreditsTitle": "Ai folosit toate creditele",
-    "outOfCreditsSubtitle": "Fă upgrade pentru a continua."
+    "outOfCreditsSubtitle": "Fă upgrade pentru a continua.",
+    "errorMessage": "Ceva a mers greșit. Încearcă din nou."
   },
   "wardrobe": {
     "title": "Garderoba Mea",
@@ -107,6 +108,7 @@
       "shopping": "Verificare Cumpărături"
     },
     "addItem": "Adaugă Articol",
+    "itemsUsed": "articole",
     "analyzing": "Se analizează...",
     "categoryFilter": "Categorie",
     "seasonFilter": "Sezon",

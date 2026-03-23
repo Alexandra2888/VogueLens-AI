@@ -1,13 +1,12 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
-import { Send, ImagePlus, Bot, Loader2, Wand2, X } from 'lucide-react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { Send, ImagePlus, Bot, Loader2, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import LoadingMessage from './loading-message';
-
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Sidebar from './sidebar';
 import Message from './message';
@@ -15,17 +14,80 @@ import Message from './message';
 import { ConversationProps } from '../../../types/conversation';
 import { MessageProps } from '../../../types/message';
 
+// ── DB helpers ────────────────────────────────────────────────────────────────
+
+async function apiCreateConversation(title: string): Promise<string | null> {
+  try {
+    const res = await fetch('/api/conversations', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title }),
+    });
+    const data = await res.json();
+    return data.conversation?.id ?? null;
+  } catch {
+    return null;
+  }
+}
+
+async function apiSaveMessage(
+  conversationId: string,
+  role: 'user' | 'bot',
+  content: string,
+  imageUrl?: string
+): Promise<string | null> {
+  try {
+    const res = await fetch(`/api/conversations/${conversationId}/messages`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ role, content, imageUrl }),
+    });
+    const data = await res.json();
+    return data.message?.id ?? null;
+  } catch {
+    return null;
+  }
+}
+
+async function apiUpdateTitle(conversationId: string, title: string) {
+  try {
+    await fetch(`/api/conversations/${conversationId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title }),
+    });
+  } catch {
+    // best-effort
+  }
+}
+
+async function apiLoadMessages(conversationId: string): Promise<MessageProps[]> {
+  try {
+    const res = await fetch(`/api/conversations/${conversationId}/messages`);
+    const data = await res.json();
+    return (data.messages ?? []).map(
+      (m: { id: string; role: string; content: string; imageUrl?: string }) => ({
+        id: m.id,
+        text: m.content,
+        sender: m.role as 'user' | 'bot',
+        imageUrl: m.imageUrl ?? undefined,
+      })
+    );
+  } catch {
+    return [];
+  }
+}
+
+// ── Component ─────────────────────────────────────────────────────────────────
+
 export default function ChatbotInterface() {
   const t = useTranslations('chat');
   const [conversations, setConversations] = useState<ConversationProps[]>([]);
-  const [currentConversation, setCurrentConversation] =
-    useState<ConversationProps | null>(null);
+  const [currentConversation, setCurrentConversation] = useState<ConversationProps | null>(null);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedImage, setSelectedImage] = useState<{
-    file: File;
-    preview: string;
-  } | null>(null);
+  const [isLoadingConversations, setIsLoadingConversations] = useState(true);
+  const [selectedImage, setSelectedImage] = useState<{ file: File; preview: string } | null>(null);
   const [credits, setCredits] = useState<number | null>(null);
   const [earlyAccess, setEarlyAccess] = useState<boolean | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -33,23 +95,11 @@ export default function ChatbotInterface() {
   const initializedRef = useRef(false);
 
   const generateChatTitle = (message: string): string => {
-    const cleanMessage = message.replace(/^Generate image:\s*/i, '');
-    return cleanMessage.length > 30
-      ? `${cleanMessage.substring(0, 27)}...`
-      : cleanMessage;
+    const clean = message.replace(/^Generate image:\s*/i, '');
+    return clean.length > 30 ? `${clean.substring(0, 27)}...` : clean;
   };
 
-  const updateConversationTitle = (
-    conversationId: number,
-    newTitle: string
-  ) => {
-    setConversations((prevConversations) =>
-      prevConversations.map((conv) =>
-        conv.id === conversationId ? { ...conv, title: newTitle } : conv
-      )
-    );
-  };
-
+  // Load credits
   useEffect(() => {
     fetch('/api/user/credits')
       .then((r) => r.json())
@@ -60,11 +110,37 @@ export default function ChatbotInterface() {
       .catch(() => {});
   }, []);
 
+  // Load conversations from DB
   useEffect(() => {
     if (initializedRef.current) return;
     initializedRef.current = true;
-    startNewConversation();
-  }, []);
+
+    fetch('/api/conversations')
+      .then((r) => r.json())
+      .then(async (data) => {
+        const list: ConversationProps[] = (data.conversations ?? []).map(
+          (c: { id: string; title: string }) => ({ id: c.id, title: c.title, messages: [] })
+        );
+        setConversations(list);
+        setIsLoadingConversations(false);
+
+        if (list.length > 0) {
+          // Load the most recent conversation's messages
+          const first = list[0];
+          const msgs = await apiLoadMessages(first.id);
+          const loaded = { ...first, messages: msgs };
+          setConversations((prev) => prev.map((c) => (c.id === first.id ? loaded : c)));
+          setCurrentConversation(loaded);
+        } else {
+          // No conversations yet — start a fresh one
+          startNewConversation();
+        }
+      })
+      .catch(() => {
+        setIsLoadingConversations(false);
+        startNewConversation();
+      });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -72,79 +148,41 @@ export default function ChatbotInterface() {
 
   useEffect(() => {
     return () => {
-      if (selectedImage) {
-        URL.revokeObjectURL(selectedImage.preview);
-      }
+      if (selectedImage) URL.revokeObjectURL(selectedImage.preview);
     };
   }, [selectedImage]);
 
-  const handleImageGeneration = async () => {
-    if (!input.trim() || !currentConversation) return;
+  const startNewConversation = useCallback(async () => {
+    const greetingText = t('greeting');
+    const tempId = crypto.randomUUID();
 
-    setIsLoading(true);
-    try {
-      const userMessage: MessageProps = {
-        id: Date.now(),
-        text: `Generate image: ${input.trim()}`,
-        sender: 'user',
-      };
+    const greetingMsg: MessageProps = { id: crypto.randomUUID(), text: greetingText, sender: 'bot' };
+    const tempConv: ConversationProps = { id: tempId, title: t('newConversation'), messages: [greetingMsg] };
 
-      const userMessages = currentConversation.messages.filter(
-        (m) => m.sender === 'user'
-      );
-      if (userMessages.length === 0) {
-        updateConversationTitle(
-          currentConversation.id,
-          generateChatTitle(userMessage.text)
-        );
-      }
+    setConversations((prev) => [tempConv, ...prev]);
+    setCurrentConversation(tempConv);
 
-      const updatedConversation = {
-        ...currentConversation,
-        messages: [...currentConversation.messages, userMessage],
-      };
-
-      setConversations(
-        conversations.map((conv) =>
-          conv.id === currentConversation.id ? updatedConversation : conv
-        )
-      );
-      setCurrentConversation(updatedConversation);
-      setInput('');
-
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: input.trim(), generateImage: true }),
-      });
-
-      const data = await response.json();
-      if (data.creditsRemaining !== undefined) setCredits(data.creditsRemaining);
-
-      const botMessage: MessageProps = {
-        id: Date.now() + 1,
-        text: t('generatedImageResponse'),
-        sender: 'bot',
-        imageUrl: data.imageUrl,
-      };
-
-      const finalConversation = {
-        ...updatedConversation,
-        messages: [...updatedConversation.messages, botMessage],
-      };
-
-      setConversations(
-        conversations.map((conv) =>
-          conv.id === currentConversation.id ? finalConversation : conv
-        )
-      );
-      setCurrentConversation(finalConversation);
-    } catch (error) {
-      console.error('Error generating image:', error);
-    } finally {
-      setIsLoading(false);
+    // Persist to DB
+    const dbId = await apiCreateConversation(t('newConversation'));
+    if (dbId) {
+      await apiSaveMessage(dbId, 'bot', greetingText);
+      const realConv: ConversationProps = { id: dbId, title: t('newConversation'), messages: [{ ...greetingMsg }] };
+      setConversations((prev) => prev.map((c) => (c.id === tempId ? realConv : c)));
+      setCurrentConversation((cur) => (cur?.id === tempId ? realConv : cur));
     }
-  };
+  }, [t]);
+
+  const handleConversationSelect = useCallback(async (conv: ConversationProps) => {
+    if (conv.messages.length > 0) {
+      setCurrentConversation(conv);
+      return;
+    }
+    // Lazy-load messages
+    const msgs = await apiLoadMessages(conv.id);
+    const loaded = { ...conv, messages: msgs };
+    setConversations((prev) => prev.map((c) => (c.id === conv.id ? loaded : c)));
+    setCurrentConversation(loaded);
+  }, []);
 
   const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -153,120 +191,78 @@ export default function ChatbotInterface() {
   };
 
   const clearSelectedImage = () => {
-    if (selectedImage) {
-      URL.revokeObjectURL(selectedImage.preview);
-      setSelectedImage(null);
-    }
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
+    if (selectedImage) URL.revokeObjectURL(selectedImage.preview);
+    setSelectedImage(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   const handleSend = async () => {
-    if ((!input.trim() && !selectedImage) || !currentConversation || isLoading)
-      return;
+    if ((!input.trim() && !selectedImage) || !currentConversation || isLoading) return;
 
+    const promptText = input.trim();
     setIsLoading(true);
 
     try {
-      const userMessage: MessageProps = {
-        id: Date.now(),
-        text: input.trim() || t('defaultImageMessage'),
+      const userMsg: MessageProps = {
+        id: crypto.randomUUID(),
+        text: promptText || t('defaultImageMessage'),
         sender: 'user',
+        imageUrl: selectedImage?.preview,
       };
 
-      const userMessages = currentConversation.messages.filter(
-        (m) => m.sender === 'user'
-      );
-      if (userMessages.length === 0) {
-        updateConversationTitle(
-          currentConversation.id,
-          generateChatTitle(userMessage.text)
-        );
-      }
+      const isFirstUserMessage = !currentConversation.messages.some((m) => m.sender === 'user');
+      const newTitle = isFirstUserMessage ? generateChatTitle(userMsg.text) : currentConversation.title;
 
-      let imageAnalysis = null;
+      let imageAnalysis: string | null = null;
 
       if (selectedImage) {
-        userMessage.imageUrl = selectedImage.preview;
-
         const formData = new FormData();
         formData.append('image', selectedImage.file);
-
-        const imageResponse = await fetch('/api/analyze-image', {
-          method: 'POST',
-          body: formData,
-        });
-
+        const imageResponse = await fetch('/api/analyze-image', { method: 'POST', body: formData });
         const imageData = await imageResponse.json();
         if (imageData.creditsRemaining !== undefined) setCredits(imageData.creditsRemaining);
-        imageAnalysis = imageData.description;
+        imageAnalysis = imageData.description ?? null;
       }
 
-      const updatedConversation = {
+      const withUser: ConversationProps = {
         ...currentConversation,
-        messages: [...currentConversation.messages, userMessage],
+        title: newTitle,
+        messages: [...currentConversation.messages, userMsg],
       };
-
-      setConversations(
-        conversations.map((conv) =>
-          conv.id === currentConversation.id ? updatedConversation : conv
-        )
-      );
-      setCurrentConversation(updatedConversation);
+      setConversations((prev) => prev.map((c) => (c.id === currentConversation.id ? withUser : c)));
+      setCurrentConversation(withUser);
       setInput('');
       clearSelectedImage();
 
       const chatResponse = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          prompt: input.trim() || t('defaultImagePrompt'),
-          imageAnalysis,
-        }),
+        body: JSON.stringify({ prompt: promptText || t('defaultImagePrompt'), imageAnalysis }),
       });
-
       const chatData = await chatResponse.json();
       if (chatData.creditsRemaining !== undefined) setCredits(chatData.creditsRemaining);
 
-      const botMessage: MessageProps = {
-        id: Date.now() + 1,
-        text: chatData.response,
+      const botMsg: MessageProps = {
+        id: crypto.randomUUID(),
+        text: chatData.response ?? chatData.error ?? t('errorMessage'),
         sender: 'bot',
-        imageAnalysis,
+        imageUrl: chatData.imageUrl,
+        imageAnalysis: imageAnalysis ?? undefined,
       };
 
-      const finalConversation = {
-        ...updatedConversation,
-        messages: [...updatedConversation.messages, botMessage],
-      };
+      const withBot: ConversationProps = { ...withUser, messages: [...withUser.messages, botMsg] };
+      setConversations((prev) => prev.map((c) => (c.id === currentConversation.id ? withBot : c)));
+      setCurrentConversation(withBot);
 
-      setConversations(
-        conversations.map((conv) =>
-          conv.id === currentConversation.id ? finalConversation : conv
-        )
-      );
-      setCurrentConversation(finalConversation);
+      // Persist
+      await apiSaveMessage(currentConversation.id, 'user', userMsg.text, userMsg.imageUrl);
+      await apiSaveMessage(currentConversation.id, 'bot', botMsg.text, botMsg.imageUrl);
+      if (isFirstUserMessage) await apiUpdateTitle(currentConversation.id, newTitle);
     } catch (error) {
       console.error('Error processing message:', error);
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const startNewConversation = () => {
-    const greetingMessage: MessageProps = {
-      id: Date.now(),
-      text: t('greeting'),
-      sender: 'bot',
-    };
-    const newConversation: ConversationProps = {
-      id: Date.now() + 1,
-      title: t('newConversation'),
-      messages: [greetingMessage],
-    };
-    setConversations((prev) => [...prev, newConversation]);
-    setCurrentConversation(newConversation);
   };
 
   if (earlyAccess === false) {
@@ -301,8 +297,9 @@ export default function ChatbotInterface() {
         <Sidebar
           conversations={conversations}
           currentConversation={currentConversation}
-          onConversationSelect={setCurrentConversation}
+          onConversationSelect={handleConversationSelect}
           onNewConversation={startNewConversation}
+          isLoading={isLoadingConversations}
         />
       </div>
 
@@ -321,9 +318,7 @@ export default function ChatbotInterface() {
               <div className="space-y-2 text-center">
                 <Bot className="text-muted-foreground mx-auto h-12 w-12" />
                 <h3 className="text-lg font-semibold">{t('welcome')}</h3>
-                <p className="text-muted-foreground text-sm">
-                  {t('welcomeSubtitle')}
-                </p>
+                <p className="text-muted-foreground text-sm">{t('welcomeSubtitle')}</p>
               </div>
             </div>
           )}
@@ -338,24 +333,13 @@ export default function ChatbotInterface() {
                   alt="Selected"
                   className="h-20 w-20 rounded-md object-cover"
                 />
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="absolute -top-2 -right-2"
-                  onClick={clearSelectedImage}
-                >
+                <Button variant="ghost" size="icon" className="absolute -top-2 -right-2" onClick={clearSelectedImage}>
                   <X className="h-4 w-4" />
                 </Button>
               </div>
             )}
             <div className="flex items-center space-x-2">
-              <input
-                type="file"
-                accept="image/*"
-                className="hidden"
-                ref={fileInputRef}
-                onChange={handleImageSelect}
-              />
+              <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={handleImageSelect} />
               <Button
                 variant="outline"
                 size="icon"
@@ -370,34 +354,21 @@ export default function ChatbotInterface() {
                 onChange={(e) => setInput(e.target.value)}
                 placeholder={t('placeholder')}
                 className="flex-1"
-                onKeyPress={(e) =>
-                  e.key === 'Enter' && !isLoading && !outOfCredits && handleSend()
-                }
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey && !isLoading && !outOfCredits) {
+                    e.preventDefault();
+                    handleSend();
+                  }
+                }}
                 disabled={!currentConversation || isLoading || outOfCredits}
               />
               <button
-                onClick={handleImageGeneration}
-                disabled={!currentConversation || !input.trim() || isLoading || outOfCredits}
-                className="text-muted-foreground hover:text-brand-red disabled:opacity-40 transition-colors hover:cursor-pointer"
-                title={t('generateImageTitle')}
-              >
-                <Wand2 className="h-5 w-5" />
-              </button>
-              <button
+                type="button"
                 onClick={handleSend}
-                disabled={
-                  !currentConversation ||
-                  (!input.trim() && !selectedImage) ||
-                  isLoading ||
-                  outOfCredits
-                }
+                disabled={!currentConversation || (!input.trim() && !selectedImage) || isLoading || outOfCredits}
                 className="text-muted-foreground hover:text-brand-red disabled:opacity-40 transition-colors hover:cursor-pointer"
               >
-                {isLoading ? (
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                ) : (
-                  <Send className="h-5 w-5" />
-                )}
+                {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
                 <span className="sr-only">{t('sendMessage')}</span>
               </button>
             </div>

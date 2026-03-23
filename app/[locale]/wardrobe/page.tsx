@@ -211,19 +211,30 @@ export default function WardrobePage() {
                 accept="image/*"
                 className="hidden"
                 onChange={handleFileChange}
+                disabled={items.length >= 10}
               />
-              <Button
-                onClick={() => fileInputRef.current?.click()}
-                disabled={isSaving}
-                className="gap-2"
+              <div
+                onClick={() => items.length < 10 && !isSaving && fileInputRef.current?.click()}
+                className={`flex cursor-pointer items-center gap-3 rounded-xl border-2 border-dashed px-5 py-3 transition-colors ${
+                  items.length >= 10
+                    ? 'cursor-not-allowed border-border opacity-50'
+                    : 'border-border hover:border-primary/50 hover:bg-muted/20'
+                }`}
               >
                 {isSaving ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
                 ) : (
-                  <Upload className="h-4 w-4" />
+                  <Upload className="h-5 w-5 text-muted-foreground" />
                 )}
-                {isSaving ? t('analyzing') : t('addItem')}
-              </Button>
+                <div>
+                  <p className="text-sm font-medium">
+                    {isSaving ? t('analyzing') : t('addItem')}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {items.length}/10 {t('itemsUsed')}
+                  </p>
+                </div>
+              </div>
               <Select value={categoryFilter} onValueChange={setCategoryFilter}>
                 <SelectTrigger className="w-40">
                   <SelectValue placeholder={t('categoryFilter')} />

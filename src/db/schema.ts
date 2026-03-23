@@ -36,6 +36,33 @@ export const wardrobeItems = pgTable('wardrobe_items', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
+export const conversations = pgTable('conversations', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  userId: text('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  title: text('title').notNull().default('New Conversation'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const messages = pgTable('messages', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  conversationId: text('conversation_id')
+    .notNull()
+    .references(() => conversations.id, { onDelete: 'cascade' }),
+  role: text('role').notNull(), // 'user' | 'bot'
+  content: text('content').notNull(),
+  imageUrl: text('image_url'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
 export type User = typeof users.$inferSelect;
 export type WardrobeItem = typeof wardrobeItems.$inferSelect;
 export type NewWardrobeItem = typeof wardrobeItems.$inferInsert;
+export type Conversation = typeof conversations.$inferSelect;
+export type Message = typeof messages.$inferSelect;

@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Skeleton } from '@/components/ui/skeleton';
 
 import { ConversationProps } from '../../../types/conversation';
 
@@ -12,11 +13,13 @@ const Sidebar = ({
   currentConversation,
   onConversationSelect,
   onNewConversation,
+  isLoading,
 }: {
   conversations: ConversationProps[];
   currentConversation: ConversationProps | null;
   onConversationSelect: (conv: ConversationProps) => void;
   onNewConversation: () => void;
+  isLoading: boolean;
 }) => {
   const t = useTranslations('chat');
 
@@ -29,7 +32,16 @@ const Sidebar = ({
           </h2>
         </div>
         <ScrollArea className="flex-1 px-2 py-2">
-          {conversations.length === 0 ? (
+          {isLoading ? (
+            <div className="space-y-1 p-2">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="flex items-center gap-2 rounded-lg px-3 py-2">
+                  <Skeleton className="h-4 w-4 rounded flex-shrink-0" />
+                  <Skeleton className="h-4 flex-1 rounded" />
+                </div>
+              ))}
+            </div>
+          ) : conversations.length === 0 ? (
             <p className="p-4 text-center text-sm text-muted-foreground">
               {t('noConversations')}
             </p>
@@ -55,11 +67,7 @@ const Sidebar = ({
           )}
         </ScrollArea>
         <div className="border-t border-border p-4">
-          <Button
-            onClick={onNewConversation}
-            variant="outline"
-            className="w-full gap-2"
-          >
+          <Button onClick={onNewConversation} variant="outline" className="w-full gap-2">
             <Plus className="h-4 w-4" />
             {t('newChat')}
           </Button>
@@ -68,4 +76,5 @@ const Sidebar = ({
     </aside>
   );
 };
+
 export default Sidebar;

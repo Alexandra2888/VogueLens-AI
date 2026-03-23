@@ -97,7 +97,8 @@
     "gateTitle": "Happy you like VogueLens AI!",
     "gateSubtitle": "Register for full features.",
     "outOfCreditsTitle": "You've used all your credits",
-    "outOfCreditsSubtitle": "Upgrade to keep styling."
+    "outOfCreditsSubtitle": "Upgrade to keep styling.",
+    "errorMessage": "Something went wrong. Please try again."
   },
   "wardrobe": {
     "title": "My Wardrobe",
@@ -107,6 +108,7 @@
       "shopping": "Shopping Check"
     },
     "addItem": "Add Item",
+    "itemsUsed": "items",
     "analyzing": "Analyzing...",
     "categoryFilter": "Category",
     "seasonFilter": "Season",

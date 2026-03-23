@@ -4,7 +4,7 @@ import { auth } from '@clerk/nextjs/server';
 import { eq } from 'drizzle-orm';
 import { db } from '@/lib/db';
 import { users } from '@/db/schema';
-import { imageRatelimit } from '@/lib/rate-limit';
+import { imageLimit } from '@/lib/rate-limit';
 import {
   MAX_IMAGE_SIZE_BYTES,
   ALLOWED_IMAGE_TYPES,
@@ -38,10 +38,7 @@ export async function POST(req: Request) {
     if (!userId) return unauthorizedResponse();
 
     // Per-user rate limit
-    if (imageRatelimit) {
-      const { success } = await imageRatelimit.limit(`image:${userId}`);
-      if (!success) return rateLimitExceeded();
-    }
+    if (!imageLimit(userId)) return rateLimitExceeded();
 
     // Credit check (5 credits per image analysis)
     const cost = 5;

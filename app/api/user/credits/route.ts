@@ -3,18 +3,13 @@ import { NextResponse } from 'next/server';
 import { eq, count } from 'drizzle-orm';
 import { db } from '@/lib/db';
 import { users } from '@/db/schema';
-import { creditsRatelimit } from '@/lib/rate-limit';
-import { rateLimitExceeded, unauthorizedResponse, internalErrorResponse } from '@/lib/security';
 
 export async function GET() {
   try {
     const { userId } = await auth();
-    if (!userId) return unauthorizedResponse();
-
-    // Rate limit per user
-    if (creditsRatelimit) {
-      const { success } = await creditsRatelimit.limit(`credits:${userId}`);
-      if (!success) return rateLimitExceeded();
+    console.log('[credits] userId:', userId);
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     let user = await db.query.users.findFirst({ where: eq(users.id, userId) });
@@ -43,12 +38,11 @@ export async function GET() {
       user = newUser;
     }
 
-    return NextResponse.json({
-      credits: user.credits,
-      earlyAccess: user.earlyAccess,
-    });
+    return NextResponse.json({ credits: user.credits, earlyAccess: user.earlyAccess });
   } catch (error) {
-    console.error('[credits] Error:', error instanceof Error ? error.message : 'unknown');
-    return internalErrorResponse();
+    const msg = error instanceof Error ? error.message : String(error);
+    console.error('[credits] Error:', msg);
+    console.error('[credits] Full error:', JSON.stringify(error, Object.getOwnPropertyNames(error)));
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
