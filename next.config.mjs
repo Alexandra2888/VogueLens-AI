@@ -26,6 +26,11 @@ const nextConfig = {
         hostname: 'res.cloudinary.com',
         pathname: '/dblgunawk/**',
       },
+      {
+        protocol: 'https',
+        hostname: '*.supabase.co',
+        pathname: '/storage/v1/object/public/**',
+      },
     ],
   },
 
@@ -67,7 +72,7 @@ const nextConfig = {
               "img-src 'self' data: blob: https:",
               "font-src 'self' data: https://client.crisp.chat",
               "worker-src blob: 'self'",
-              "connect-src 'self' https://api.openai.com https://*.clerk.com https://*.clerk.accounts.dev https://accounts.google.com wss://*.clerk.com https://*.crisp.chat wss://relay.crisp.chat https://va.vercel-scripts.com https://vitals.vercel-insights.com",
+              "connect-src 'self' https://api.openai.com https://*.clerk.com https://*.clerk.accounts.dev https://accounts.google.com wss://*.clerk.com https://*.crisp.chat wss://relay.crisp.chat https://va.vercel-scripts.com https://vitals.vercel-insights.com https://*.supabase.co",
               'frame-src https://client.crisp.chat https://game.crisp.chat',
               "frame-ancestors 'none'",
               "object-src 'none'",
