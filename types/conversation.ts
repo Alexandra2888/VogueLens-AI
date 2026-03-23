@@ -1,7 +1,7 @@
 import { MessageProps } from './message';
 
 export type ConversationProps = {
-  id: number;
+  id: string;
   title: string;
   messages: MessageProps[];
 };

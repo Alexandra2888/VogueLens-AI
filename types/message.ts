@@ -1,5 +1,5 @@
 export type MessageProps = {
-  id: number;
+  id: string;
   text: string;
   sender: 'user' | 'bot';
   imageUrl?: string;

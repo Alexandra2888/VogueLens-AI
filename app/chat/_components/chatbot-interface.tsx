@@ -1,13 +1,12 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
-import { Send, ImagePlus, Bot, Loader2, Menu, Wand2, X } from 'lucide-react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { Send, ImagePlus, Bot, Loader2, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import LoadingMessage from './loading-message';
-
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Sidebar from './sidebar';
 import Message from './message';
@@ -15,230 +14,326 @@ import Message from './message';
 import { ConversationProps } from '../../../types/conversation';
 import { MessageProps } from '../../../types/message';
 
+// ── DB helpers ────────────────────────────────────────────────────────────────
+
+async function apiCreateConversation(title: string): Promise<string | null> {
+  try {
+    const res = await fetch('/api/conversations', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title }),
+    });
+    const data = await res.json();
+    return data.conversation?.id ?? null;
+  } catch {
+    return null;
+  }
+}
+
+async function apiSaveMessage(
+  conversationId: string,
+  role: 'user' | 'bot',
+  content: string,
+  imageUrl?: string
+): Promise<string | null> {
+  try {
+    const res = await fetch(`/api/conversations/${conversationId}/messages`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ role, content, imageUrl }),
+    });
+    const data = await res.json();
+    return data.message?.id ?? null;
+  } catch {
+    return null;
+  }
+}
+
+async function apiUpdateTitle(conversationId: string, title: string) {
+  try {
+    await fetch(`/api/conversations/${conversationId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title }),
+    });
+  } catch {
+    // best-effort
+  }
+}
+
+async function apiLoadMessages(
+  conversationId: string
+): Promise<MessageProps[]> {
+  try {
+    const res = await fetch(`/api/conversations/${conversationId}/messages`);
+    const data = await res.json();
+    return (data.messages ?? []).map(
+      (m: {
+        id: string;
+        role: string;
+        content: string;
+        imageUrl?: string;
+      }) => ({
+        id: m.id,
+        text: m.content,
+        sender: m.role as 'user' | 'bot',
+        imageUrl: m.imageUrl ?? undefined,
+      })
+    );
+  } catch {
+    return [];
+  }
+}
+
+// ── Component ─────────────────────────────────────────────────────────────────
+
 export default function ChatbotInterface() {
+  const t = useTranslations('chat');
   const [conversations, setConversations] = useState<ConversationProps[]>([]);
   const [currentConversation, setCurrentConversation] =
     useState<ConversationProps | null>(null);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingConversations, setIsLoadingConversations] = useState(true);
   const [selectedImage, setSelectedImage] = useState<{
     file: File;
     preview: string;
   } | null>(null);
+  const [credits, setCredits] = useState<number | null>(null);
+  const [earlyAccess, setEarlyAccess] = useState<boolean | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const initializedRef = useRef(false);
 
-  // Helper function to generate a chat title from the first message
   const generateChatTitle = (message: string): string => {
-    // Remove 'Generate image: ' prefix if present
-    const cleanMessage = message.replace(/^Generate image:\s*/i, '');
-    // Take first 30 characters and add ellipsis if needed
-    return cleanMessage.length > 30
-      ? `${cleanMessage.substring(0, 27)}...`
-      : cleanMessage;
+    const clean = message.replace(/^Generate image:\s*/i, '');
+    return clean.length > 30 ? `${clean.substring(0, 27)}...` : clean;
   };
 
-  // update conversation title
-  const updateConversationTitle = (
-    conversationId: number,
-    newTitle: string
-  ) => {
-    setConversations((prevConversations) =>
-      prevConversations.map((conv) =>
-        conv.id === conversationId ? { ...conv, title: newTitle } : conv
-      )
-    );
-  };
-
+  // Load credits
   useEffect(() => {
-    if (conversations.length === 0) {
-      startNewConversation();
-    }
+    fetch('/api/user/credits')
+      .then((r) => r.json())
+      .then((data) => {
+        setCredits(data.credits);
+        setEarlyAccess(data.earlyAccess);
+      })
+      .catch(() => {});
   }, []);
+
+  // Load conversations from DB
+  useEffect(() => {
+    if (initializedRef.current) return;
+    initializedRef.current = true;
+
+    fetch('/api/conversations')
+      .then((r) => r.json())
+      .then(async (data) => {
+        const list: ConversationProps[] = (data.conversations ?? []).map(
+          (c: { id: string; title: string }) => ({
+            id: c.id,
+            title: c.title,
+            messages: [],
+          })
+        );
+        setConversations(list);
+        setIsLoadingConversations(false);
+
+        if (list.length > 0) {
+          // Load the most recent conversation's messages
+          const first = list[0];
+          const msgs = await apiLoadMessages(first.id);
+          const loaded = { ...first, messages: msgs };
+          setConversations((prev) =>
+            prev.map((c) => (c.id === first.id ? loaded : c))
+          );
+          setCurrentConversation(loaded);
+        } else {
+          // No conversations yet — start a fresh one
+          startNewConversation();
+        }
+      })
+      .catch(() => {
+        setIsLoadingConversations(false);
+        startNewConversation();
+      });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [currentConversation?.messages, isLoading]);
 
+  // Track blob URLs so they can all be revoked on unmount
+  const blobUrlsRef = useRef<string[]>([]);
   useEffect(() => {
-    return () => {
-      if (selectedImage) {
-        URL.revokeObjectURL(selectedImage.preview);
-      }
+    const urls = blobUrlsRef.current;
+    return () => urls.forEach((u) => URL.revokeObjectURL(u));
+  }, []);
+
+  const startNewConversation = useCallback(async () => {
+    const greetingText = t('greeting');
+    const tempId = crypto.randomUUID();
+
+    const greetingMsg: MessageProps = {
+      id: crypto.randomUUID(),
+      text: greetingText,
+      sender: 'bot',
     };
-  }, [selectedImage]);
+    const tempConv: ConversationProps = {
+      id: tempId,
+      title: t('newConversation'),
+      messages: [greetingMsg],
+    };
 
-  const handleImageGeneration = async () => {
-    if (!input.trim() || !currentConversation) return;
+    setConversations((prev) => [tempConv, ...prev]);
+    setCurrentConversation(tempConv);
 
-    setIsLoading(true);
-    try {
-      const userMessage: MessageProps = {
-        id: Date.now(),
-        text: `Generate image: ${input.trim()}`,
-        sender: 'user',
+    const dbId = await apiCreateConversation(t('newConversation'));
+    if (dbId) {
+      await apiSaveMessage(dbId, 'bot', greetingText);
+      const realConv: ConversationProps = {
+        id: dbId,
+        title: t('newConversation'),
+        messages: [{ ...greetingMsg }],
       };
-
-      // update title if this is the first message
-      if (currentConversation.messages.length === 0) {
-        const newTitle = generateChatTitle(userMessage.text);
-        updateConversationTitle(currentConversation.id, newTitle);
-      }
-
-      const updatedConversation = {
-        ...currentConversation,
-        messages: [...currentConversation.messages, userMessage],
-      };
-
-      setConversations(
-        conversations.map((conv) =>
-          conv.id === currentConversation.id ? updatedConversation : conv
-        )
+      setConversations((prev) =>
+        prev.map((c) => (c.id === tempId ? realConv : c))
       );
-      setCurrentConversation(updatedConversation);
-      setInput('');
-
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          prompt: input.trim(),
-          generateImage: true,
-        }),
-      });
-
-      const data = await response.json();
-
-      const botMessage: MessageProps = {
-        id: Date.now() + 1,
-        text: "Here's the generated image based on your request:",
-        sender: 'bot',
-        imageUrl: data.imageUrl,
-      };
-
-      const finalConversation = {
-        ...updatedConversation,
-        messages: [...updatedConversation.messages, botMessage],
-      };
-
-      setConversations(
-        conversations.map((conv) =>
-          conv.id === currentConversation.id ? finalConversation : conv
-        )
-      );
-      setCurrentConversation(finalConversation);
-    } catch (error) {
-      console.error('Error generating image:', error);
-    } finally {
-      setIsLoading(false);
+      setCurrentConversation((cur) => (cur?.id === tempId ? realConv : cur));
+    } else {
+      setConversations((prev) => prev.filter((c) => c.id !== tempId));
+      setCurrentConversation(null);
     }
-  };
+  }, [t]);
+
+  const handleConversationSelect = useCallback(
+    async (conv: ConversationProps) => {
+      if (conv.messages.length > 0) {
+        setCurrentConversation(conv);
+        return;
+      }
+      // Lazy-load messages
+      const msgs = await apiLoadMessages(conv.id);
+      const loaded = { ...conv, messages: msgs };
+      setConversations((prev) =>
+        prev.map((c) => (c.id === conv.id ? loaded : c))
+      );
+      setCurrentConversation(loaded);
+    },
+    []
+  );
 
   const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
-
-    setSelectedImage({
-      file,
-      preview: URL.createObjectURL(file),
-    });
+    const url = URL.createObjectURL(file);
+    blobUrlsRef.current.push(url);
+    setSelectedImage({ file, preview: url });
   };
 
   const clearSelectedImage = () => {
-    if (selectedImage) {
-      URL.revokeObjectURL(selectedImage.preview);
-      setSelectedImage(null);
-    }
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
+    if (selectedImage) URL.revokeObjectURL(selectedImage.preview);
+    setSelectedImage(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   const handleSend = async () => {
     if ((!input.trim() && !selectedImage) || !currentConversation || isLoading)
       return;
 
+    const promptText = input.trim();
     setIsLoading(true);
 
     try {
-      const userMessage: MessageProps = {
-        id: Date.now(),
-        text: input.trim() || "Here's an outfit I'd like you to analyze",
+      const userMsg: MessageProps = {
+        id: crypto.randomUUID(),
+        text: promptText || t('defaultImageMessage'),
         sender: 'user',
+        imageUrl: selectedImage?.preview,
       };
 
-      // Update title if this is the first message
-      if (currentConversation.messages.length === 0) {
-        const newTitle = generateChatTitle(userMessage.text);
-        updateConversationTitle(currentConversation.id, newTitle);
-      }
+      const isFirstUserMessage = !currentConversation.messages.some(
+        (m) => m.sender === 'user'
+      );
+      const newTitle = isFirstUserMessage
+        ? generateChatTitle(userMsg.text)
+        : currentConversation.title;
 
-      let imageAnalysis = null;
+      let imageAnalysis: string | null = null;
 
       if (selectedImage) {
-        userMessage.imageUrl = selectedImage.preview;
-
         const formData = new FormData();
         formData.append('image', selectedImage.file);
-
         const imageResponse = await fetch('/api/analyze-image', {
           method: 'POST',
           body: formData,
         });
-
         const imageData = await imageResponse.json();
-        imageAnalysis = imageData.description;
+        if (imageData.creditsRemaining !== undefined)
+          setCredits(imageData.creditsRemaining);
+        imageAnalysis = imageData.description ?? null;
       }
 
-      const updatedConversation = {
+      const withUser: ConversationProps = {
         ...currentConversation,
-        messages: [...currentConversation.messages, userMessage],
+        title: newTitle,
+        messages: [...currentConversation.messages, userMsg],
       };
-
-      setConversations(
-        conversations.map((conv) =>
-          conv.id === currentConversation.id ? updatedConversation : conv
-        )
+      setConversations((prev) =>
+        prev.map((c) => (c.id === currentConversation.id ? withUser : c))
       );
-      setCurrentConversation(updatedConversation);
+      setCurrentConversation(withUser);
       setInput('');
-      clearSelectedImage();
+      setSelectedImage(null);
+      if (fileInputRef.current) fileInputRef.current.value = '';
 
       const chatResponse = await fetch('/api/chat', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          prompt:
-            input.trim() ||
-            'What fashion advice can you give based on this image?',
+          prompt: promptText || t('defaultImagePrompt'),
           imageAnalysis,
         }),
       });
-
       const chatData = await chatResponse.json();
+      if (chatData.creditsRemaining !== undefined)
+        setCredits(chatData.creditsRemaining);
 
-      const botMessage: MessageProps = {
-        id: Date.now() + 1,
-        text: chatData.response,
+      const botMsg: MessageProps = {
+        id: crypto.randomUUID(),
+        text: chatData.response ?? chatData.error ?? t('errorMessage'),
         sender: 'bot',
-        imageAnalysis,
+        imageUrl: chatData.imageUrl,
+        imageAnalysis: imageAnalysis ?? undefined,
       };
 
-      const finalConversation = {
-        ...updatedConversation,
-        messages: [...updatedConversation.messages, botMessage],
+      const withBot: ConversationProps = {
+        ...withUser,
+        messages: [...withUser.messages, botMsg],
       };
-
-      setConversations(
-        conversations.map((conv) =>
-          conv.id === currentConversation.id ? finalConversation : conv
-        )
+      setConversations((prev) =>
+        prev.map((c) => (c.id === currentConversation.id ? withBot : c))
       );
-      setCurrentConversation(finalConversation);
+      setCurrentConversation(withBot);
+
+      // Persist — skip blob: URLs which are ephemeral local previews
+      const persistableUserImageUrl = userMsg.imageUrl?.startsWith('blob:')
+        ? undefined
+        : userMsg.imageUrl;
+      await apiSaveMessage(
+        currentConversation.id,
+        'user',
+        userMsg.text,
+        persistableUserImageUrl
+      );
+      await apiSaveMessage(
+        currentConversation.id,
+        'bot',
+        botMsg.text,
+        botMsg.imageUrl
+      );
+      if (isFirstUserMessage)
+        await apiUpdateTitle(currentConversation.id, newTitle);
     } catch (error) {
       console.error('Error processing message:', error);
     } finally {
@@ -246,44 +341,45 @@ export default function ChatbotInterface() {
     }
   };
 
-  const startNewConversation = () => {
-    const newConversation: ConversationProps = {
-      id: Date.now(),
-      title: 'Last Fashion Message',
-      messages: [],
-    };
-    setConversations([...conversations, newConversation]);
-    setCurrentConversation(newConversation);
-  };
+  if (earlyAccess === false) {
+    return (
+      <div className="border-border bg-background flex h-full items-center justify-center rounded-xl border shadow-sm">
+        <div className="max-w-sm space-y-4 px-6 text-center">
+          <Bot className="text-brand-red mx-auto h-14 w-14" />
+          <h2 className="text-2xl font-bold">{t('gateTitle')}</h2>
+          <p className="text-muted-foreground">{t('gateSubtitle')}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (earlyAccess === true && credits === 0) {
+    return (
+      <div className="border-border bg-background flex h-full items-center justify-center rounded-xl border shadow-sm">
+        <div className="max-w-sm space-y-4 px-6 text-center">
+          <Bot className="text-muted-foreground mx-auto h-14 w-14" />
+          <h2 className="text-2xl font-bold">{t('outOfCreditsTitle')}</h2>
+          <p className="text-muted-foreground">{t('outOfCreditsSubtitle')}</p>
+        </div>
+      </div>
+    );
+  }
+
+  const outOfCredits = credits === 0;
 
   return (
-    <div className="mx-auto mt-4 flex h-[70vh] max-w-7xl dark:bg-gray-900">
-      <Sheet>
-        <SheetTrigger asChild>
-          <Button variant="outline" size="icon" className="md:hidden">
-            <Menu className="h-5 w-5" />
-          </Button>
-        </SheetTrigger>
-        <SheetContent side="left" className="w-[300px] p-0">
-          <Sidebar
-            conversations={conversations}
-            currentConversation={currentConversation}
-            onConversationSelect={setCurrentConversation}
-            onNewConversation={startNewConversation}
-          />
-        </SheetContent>
-      </Sheet>
-
+    <div className="border-border bg-background flex h-full overflow-hidden rounded-xl border shadow-sm">
       <div className="hidden md:block">
         <Sidebar
           conversations={conversations}
           currentConversation={currentConversation}
-          onConversationSelect={setCurrentConversation}
+          onConversationSelect={handleConversationSelect}
           onNewConversation={startNewConversation}
+          isLoading={isLoadingConversations}
         />
       </div>
 
-      <main className="flex flex-1 flex-col overflow-hidden dark:bg-gray-800">
+      <main className="flex flex-1 flex-col overflow-hidden">
         <ScrollArea className="flex-1 p-4">
           {currentConversation ? (
             <>
@@ -296,19 +392,17 @@ export default function ChatbotInterface() {
           ) : (
             <div className="flex h-full items-center justify-center">
               <div className="space-y-2 text-center">
-                <Bot className="mx-auto h-12 w-12 text-zinc-300 dark:text-zinc-600" />
-                <h3 className="text-lg font-semibold dark:text-white">
-                  Welcome to AI Fashion Assistant
-                </h3>
-                <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                  Start a new conversation to get personalized fashion advice
+                <Bot className="text-muted-foreground mx-auto h-12 w-12" />
+                <h3 className="text-lg font-semibold">{t('welcome')}</h3>
+                <p className="text-muted-foreground text-sm">
+                  {t('welcomeSubtitle')}
                 </p>
               </div>
             </div>
           )}
         </ScrollArea>
 
-        <div className="border-t p-4 dark:border-gray-700">
+        <div className="border-border border-t p-4">
           <div className="flex flex-col space-y-2">
             {selectedImage && (
               <div className="relative inline-block">
@@ -339,8 +433,7 @@ export default function ChatbotInterface() {
                 variant="outline"
                 size="icon"
                 onClick={() => fileInputRef.current?.click()}
-                disabled={!currentConversation || isLoading}
-                className="dark:bg-gray-700 dark:text-white"
+                disabled={!currentConversation || isLoading || outOfCredits}
               >
                 <ImagePlus className="h-5 w-5" />
               </Button>
@@ -348,36 +441,38 @@ export default function ChatbotInterface() {
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask for fashion advice or describe an image to generate..."
-                className="flex-1 text-zinc-900 dark:bg-gray-700 dark:text-white"
-                onKeyPress={(e) =>
-                  e.key === 'Enter' && !isLoading && handleSend()
-                }
-                disabled={!currentConversation || isLoading}
+                placeholder={t('placeholder')}
+                className="flex-1"
+                onKeyDown={(e) => {
+                  if (
+                    e.key === 'Enter' &&
+                    !e.shiftKey &&
+                    !isLoading &&
+                    !outOfCredits
+                  ) {
+                    e.preventDefault();
+                    handleSend();
+                  }
+                }}
+                disabled={!currentConversation || isLoading || outOfCredits}
               />
               <button
-                onClick={handleImageGeneration}
-                disabled={!currentConversation || !input.trim() || isLoading}
-                className="hover:text-secondary-hover hover:cursor-pointer dark:bg-gray-700 dark:text-white"
-                title="Generate Image"
-              >
-                <Wand2 className="h-5 w-5" />
-              </button>
-              <button
+                type="button"
                 onClick={handleSend}
                 disabled={
                   !currentConversation ||
                   (!input.trim() && !selectedImage) ||
-                  isLoading
+                  isLoading ||
+                  outOfCredits
                 }
-                className="hover:text-secondary-hover hover:cursor-pointer dark:bg-blue-600 dark:text-white"
+                className="text-muted-foreground hover:text-brand-red transition-colors hover:cursor-pointer disabled:opacity-40"
               >
                 {isLoading ? (
                   <Loader2 className="h-5 w-5 animate-spin" />
                 ) : (
                   <Send className="h-5 w-5" />
                 )}
-                <span className="sr-only">Send message</span>
+                <span className="sr-only">{t('sendMessage')}</span>
               </button>
             </div>
           </div>

@@ -2,10 +2,19 @@
 
 import { motion, useInView } from 'motion/react';
 import { useRef } from 'react';
+import { useTranslations } from 'next-intl';
+import { MessageSquare, Search, Lightbulb, Sparkles } from 'lucide-react';
 
-import { steps } from '../../data/data';
+const stepIcons = [MessageSquare, Search, Lightbulb, Sparkles];
+const stepKeys = [
+  'startChat',
+  'describeNeeds',
+  'receiveAdvice',
+  'refineStyle',
+] as const;
 
 export default function HowItWorks() {
+  const t = useTranslations('howItWorks');
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: '-100px' });
 
@@ -27,20 +36,20 @@ export default function HowItWorks() {
             transition={{ duration: 0.6 }}
           >
             <span className="text-brand-teal-dark dark:text-brand-teal mb-4 inline-block text-sm font-medium tracking-widest uppercase">
-              How It Works
+              {t('label')}
             </span>
             <h2
               className="mx-auto max-w-2xl text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl"
               data-testid="how-it-works-title"
             >
-              Get styled in{' '}
-              <span className="gradient-text">four simple steps</span>
+              {t('title')}{' '}
+              <span className="gradient-text">{t('titleGradient')}</span>
             </h2>
             <p
               className="text-foreground/50 mx-auto mt-6 max-w-xl text-lg"
               data-testid="how-it-works-subtitle"
             >
-              From conversation to confidence — your style journey starts here
+              {t('subtitle')}
             </p>
           </motion.div>
         </div>
@@ -59,13 +68,13 @@ export default function HowItWorks() {
             <div className="from-brand-red via-brand-red/50 to-brand-teal h-full w-full bg-gradient-to-b" />
           </motion.div>
 
-          {steps.map((step, index) => {
-            const Icon = step.icon;
+          {stepKeys.map((key, index) => {
+            const Icon = stepIcons[index];
             const isEven = index % 2 === 0;
 
             return (
               <motion.div
-                key={index}
+                key={key}
                 initial={{ opacity: 0, y: 30 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{
@@ -91,19 +100,19 @@ export default function HowItWorks() {
                       transition={{ duration: 0.2 }}
                     >
                       <div className="text-brand-red/60 mb-2 text-xs font-medium tracking-widest uppercase">
-                        Step {index + 1}
+                        {t('step')} {index + 1}
                       </div>
                       <h3
                         className="text-foreground mb-3 text-xl font-semibold"
                         data-testid={`step-title-${index}`}
                       >
-                        {step.title}
+                        {t(`steps.${key}.title`)}
                       </h3>
                       <p
                         className="text-foreground/50"
                         data-testid={`step-description-${index}`}
                       >
-                        {step.description}
+                        {t(`steps.${key}.description`)}
                       </p>
                     </motion.div>
                   </div>
@@ -121,13 +130,13 @@ export default function HowItWorks() {
 
                   <div className="flex-1 md:hidden">
                     <div className="text-brand-red/60 mb-1 text-xs font-medium tracking-widest uppercase">
-                      Step {index + 1}
+                      {t('step')} {index + 1}
                     </div>
                     <h3 className="text-foreground mb-2 text-lg font-semibold">
-                      {step.title}
+                      {t(`steps.${key}.title`)}
                     </h3>
                     <p className="text-foreground/50 text-sm">
-                      {step.description}
+                      {t(`steps.${key}.description`)}
                     </p>
                   </div>
 

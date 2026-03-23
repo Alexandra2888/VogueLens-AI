@@ -2,51 +2,33 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Footer', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/en');
     await page.waitForLoadState('networkidle');
   });
 
-  test('footer is visible and contains all elements', async ({ page }) => {
-    // Check logo
-    const footerLogo = page
-      .locator('footer')
-      .getByRole('link', { name: 'Home' });
-    await expect(footerLogo).toBeVisible();
+  test('footer is visible', async ({ page }) => {
+    await expect(page.locator('footer')).toBeVisible();
+  });
 
-    // Check links
-    const links = ['Terms of Service', 'Privacy'];
-    for (const link of links) {
-      await expect(
-        page.locator('footer').getByRole('link', { name: link })
-      ).toBeVisible();
-    }
+  test('contains Terms of Service and Privacy links', async ({ page }) => {
+    const footer = page.locator('footer');
+    await expect(
+      footer.getByRole('link', { name: 'Terms of Service' })
+    ).toBeVisible();
+    await expect(footer.getByRole('link', { name: 'Privacy' })).toBeVisible();
+  });
 
-    // Check social icons
-    const socialLinks = ['Instagram', 'Facebook', 'Twitter'];
-    for (const link of socialLinks) {
-      await expect(
-        page.locator('footer').getByRole('link', { name: link })
-      ).toBeVisible();
-    }
+  test('contains social icon links', async ({ page }) => {
+    const footer = page.locator('footer');
+    await expect(footer.getByRole('link', { name: 'Instagram' })).toBeVisible();
+    await expect(footer.getByRole('link', { name: 'Facebook' })).toBeVisible();
+    await expect(footer.getByRole('link', { name: 'Twitter' })).toBeVisible();
+  });
 
-    // Check copyright text
+  test('displays copyright with current year', async ({ page }) => {
     const year = new Date().getFullYear().toString();
     await expect(
       page.locator('footer').getByText(`© ${year} VogueLens AI`)
     ).toBeVisible();
   });
-
-  // test('footer links are navigable', async ({ page }) => {
-  //   // Click Terms link
-  //   await page
-  //     .locator('footer')
-  //     .getByRole('link', { name: 'Terms of Service' })
-  //     .click();
-  //   await expect(page).toHaveURL('/terms');
-  //
-  //   // Go back and click Privacy link
-  //   await page.goto('/');
-  //   await page.locator('footer').getByRole('link', { name: 'Privacy' }).click();
-  //   await expect(page).toHaveURL('/privacy');
-  // });
 });

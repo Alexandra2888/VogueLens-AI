@@ -3,9 +3,15 @@
 import Link from 'next/link';
 import { motion, useInView } from 'motion/react';
 import { useRef } from 'react';
+import { useTranslations } from 'next-intl';
 import MinimalLogo from './logo/minimal-logo';
+import { Instagram, Facebook, Twitter } from 'lucide-react';
 
-import { footerLinks, socialLinks } from '../../data/data';
+const socialLinks = [
+  { href: '#', icon: Instagram, label: 'Instagram' },
+  { href: '#', icon: Facebook, label: 'Facebook' },
+  { href: '#', icon: Twitter, label: 'Twitter' },
+];
 
 const FooterLink = ({ href, label }: { href: string; label: string }) => {
   return (
@@ -41,8 +47,14 @@ const SocialLink = ({
 };
 
 const Footer = () => {
+  const t = useTranslations('footer');
   const footerRef = useRef(null);
   const isInView = useInView(footerRef, { once: true, margin: '-50px' });
+
+  const footerLinks = [
+    { href: '/terms', label: t('links.terms') },
+    { href: '/privacy', label: t('links.privacy') },
+  ];
 
   return (
     <footer
@@ -80,11 +92,9 @@ const Footer = () => {
           transition={{ duration: 0.6, delay: 0.2 }}
         >
           <p className="text-foreground/30 text-xs">
-            &copy; {new Date().getFullYear()} VogueLens AI. All rights reserved.
+            &copy; {new Date().getFullYear()} VogueLens AI. {t('rights')}
           </p>
-          <p className="text-foreground/30 text-xs">
-            Crafted with AI &middot; Designed for you
-          </p>
+          <p className="text-foreground/30 text-xs">{t('crafted')}</p>
         </motion.div>
       </div>
     </footer>

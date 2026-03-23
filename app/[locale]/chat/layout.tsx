@@ -1,12 +1,10 @@
-import Header from '../_components/nav/header';
-import Footer from '../_components/footer';
+import Header from '../../_components/nav/header';
 
 const ChatLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
       <Header />
-      <main>{children}</main>
-      <Footer />
+      {children}
     </>
   );
 };

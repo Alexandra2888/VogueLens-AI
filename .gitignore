@@ -42,3 +42,5 @@ public/sw.js
 public/sw.js.map
 
 .env
+# clerk configuration (can include secrets)
+/.clerk/

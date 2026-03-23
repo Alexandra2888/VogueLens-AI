@@ -28,6 +28,10 @@ export default defineConfig({
     port: 3000,
     timeout: 120000,
     reuseExistingServer: !isCI,
+    env: {
+      NEXT_PUBLIC_CLERK_BYPASS_AUTH: 'true',
+      NODE_ENV: 'test',
+    },
   },
 
   projects: [

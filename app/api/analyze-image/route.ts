@@ -1,5 +1,19 @@
 import { ImageAnnotatorClient } from '@google-cloud/vision';
 import { NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
+import { eq, sql, gte, and } from 'drizzle-orm';
+import { db } from '@/lib/db';
+import { users } from '@/db/schema';
+import { imageLimit } from '@/lib/rate-limit';
+import { getOrCreateUser } from '@/lib/get-or-create-user';
+import {
+  MAX_IMAGE_SIZE_BYTES,
+  ALLOWED_IMAGE_TYPES,
+  rateLimitExceeded,
+  unauthorizedResponse,
+  badRequestResponse,
+  internalErrorResponse,
+} from '@/lib/security';
 
 let vision: ImageAnnotatorClient | null;
 
@@ -13,53 +27,105 @@ try {
   }
 
   vision = new ImageAnnotatorClient({ credentials: credentials });
-} catch (error) {
-  console.error('Error initializing Google Cloud Vision:', error);
+} catch {
   vision = null;
 }
 
 export async function POST(req: Request) {
   try {
+    // Auth
+    const { userId } = await auth();
+    if (!userId) return unauthorizedResponse();
+
+    // Per-user rate limit
+    if (!imageLimit(userId)) return rateLimitExceeded();
+
+    // Bootstrap user row (handles first-time users)
+    await getOrCreateUser(userId);
+
+    const cost = 5;
+
     if (!vision) {
-      throw new Error('Google Cloud Vision client not initialized');
+      return NextResponse.json(
+        { error: 'Image analysis unavailable' },
+        { status: 503 }
+      );
     }
 
     const formData = await req.formData();
-    const image = formData.get('image') as File;
+    const image = formData.get('image') as File | null;
 
-    if (!image) {
-      return NextResponse.json({ error: 'No image provided' }, { status: 400 });
+    if (!image) return badRequestResponse('No image provided');
+
+    if (!ALLOWED_IMAGE_TYPES.includes(image.type)) {
+      return badRequestResponse(
+        'Unsupported image type. Use JPEG, PNG, WebP, or GIF.'
+      );
     }
 
-    const buffer = Buffer.from(await image.arrayBuffer());
-    const [result] = await vision.annotateImage({
-      image: { content: buffer },
-      features: [
-        { type: 'LABEL_DETECTION', maxResults: 5 },
-        { type: 'OBJECT_LOCALIZATION', maxResults: 5 },
-        { type: 'IMAGE_PROPERTIES' },
-      ],
-    });
+    if (image.size > MAX_IMAGE_SIZE_BYTES) {
+      return badRequestResponse('Image exceeds 5 MB limit.');
+    }
+
+    // Atomic credit deduction: decrement only if balance is sufficient
+    const [updated] = await db
+      .update(users)
+      .set({
+        credits: sql`${users.credits} - ${cost}`,
+        updatedAt: new Date(),
+      })
+      .where(and(eq(users.id, userId), gte(users.credits, cost)))
+      .returning({ creditsRemaining: users.credits });
+
+    if (!updated) {
+      return NextResponse.json(
+        { error: 'Insufficient credits' },
+        { status: 402 }
+      );
+    }
+
+    let result;
+    try {
+      const buffer = Buffer.from(await image.arrayBuffer());
+      [result] = await vision.annotateImage({
+        image: { content: buffer },
+        features: [
+          { type: 'LABEL_DETECTION', maxResults: 5 },
+          { type: 'OBJECT_LOCALIZATION', maxResults: 5 },
+          { type: 'IMAGE_PROPERTIES' },
+        ],
+      });
+    } catch (visionError) {
+      // Refund credits on Vision API failure
+      await db
+        .update(users)
+        .set({
+          credits: sql`${users.credits} + ${cost}`,
+          updatedAt: new Date(),
+        })
+        .where(eq(users.id, userId));
+      throw visionError;
+    }
 
     const labels =
       result.labelAnnotations
-        ?.filter((label) => label.score && label.score > 0.7)
-        ?.map((label) => label.description)
+        ?.filter((l) => l.score && l.score > 0.7)
+        ?.map((l) => l.description)
         ?.join(', ') || 'no labels detected';
 
     const objects =
       result.localizedObjectAnnotations
-        ?.filter((obj) => obj.score && obj.score > 0.7)
-        ?.map((obj) => obj.name)
+        ?.filter((o) => o.score && o.score > 0.7)
+        ?.map((o) => o.name)
         ?.join(', ') || 'no objects detected';
 
     const colors =
       result.imagePropertiesAnnotation?.dominantColors?.colors
         ?.slice(0, 3)
-        ?.map((color) => {
-          const r = Math.round(color.color?.red || 0);
-          const g = Math.round(color.color?.green || 0);
-          const b = Math.round(color.color?.blue || 0);
+        ?.map((c) => {
+          const r = Math.round(c.color?.red || 0);
+          const g = Math.round(c.color?.green || 0);
+          const b = Math.round(c.color?.blue || 0);
           return `rgb(${r},${g},${b})`;
         })
         ?.join(', ') || 'no colors detected';
@@ -72,15 +138,11 @@ export async function POST(req: Request) {
       .filter(Boolean)
       .join('. ');
 
-    return NextResponse.json({ description });
-  } catch (error) {
-    console.error('Error in analyze-image route:', error);
-    return NextResponse.json(
-      {
-        error:
-          error instanceof Error ? error.message : 'Failed to analyze image',
-      },
-      { status: 500 }
-    );
+    return NextResponse.json({
+      description,
+      creditsRemaining: updated.creditsRemaining,
+    });
+  } catch {
+    return internalErrorResponse();
   }
 }

@@ -1,0 +1,264 @@
+{
+  "nav": {
+    "home": "Home",
+    "chat": "Chat",
+    "wardrobe": "Wardrobe",
+    "profile": "Profile",
+    "toggleMenu": "Toggle menu"
+  },
+  "hero": {
+    "badge": "AI-Powered Fashion Intelligence",
+    "titleLine1": "Your Personal",
+    "titleLine2": "AI Stylist",
+    "description": "Intelligent outfit recommendations, color coordination, and personalized style tips — all powered by advanced AI that understands your unique aesthetic.",
+    "cta": "Start Styling",
+    "explore": "Explore Features",
+    "stats": {
+      "users": "Active Users",
+      "outfits": "Outfits Created",
+      "rating": "User Rating"
+    },
+    "styleMatch": "Style Match",
+    "confidence": "98% Confidence"
+  },
+  "features": {
+    "label": "Features",
+    "title": "Everything you need to",
+    "titleGradient": "elevate your style",
+    "subtitle": "Powerful AI tools designed to transform how you think about fashion",
+    "learnMore": "Learn more",
+    "items": {
+      "aiRecommendations": {
+        "title": "AI-Powered Recommendations",
+        "description": "Get personalized fashion advice tailored to your style and preferences."
+      },
+      "colorCoordination": {
+        "title": "Color Coordination",
+        "description": "Discover perfect color combinations that complement your wardrobe."
+      },
+      "instantTips": {
+        "title": "Instant Styling Tips",
+        "description": "Receive quick and practical styling advice for any occasion."
+      },
+      "outfitGenerator": {
+        "title": "Outfit Generator",
+        "description": "Create complete outfits from your existing wardrobe or with new pieces."
+      }
+    }
+  },
+  "howItWorks": {
+    "label": "How It Works",
+    "title": "Get styled in",
+    "titleGradient": "four simple steps",
+    "subtitle": "From conversation to confidence — your style journey starts here",
+    "step": "Step",
+    "steps": {
+      "startChat": {
+        "title": "Start a Chat",
+        "description": "Begin your fashion journey by starting a conversation with our AI assistant."
+      },
+      "describeNeeds": {
+        "title": "Describe Your Needs",
+        "description": "Tell us about your style preferences, body type, or specific fashion questions."
+      },
+      "receiveAdvice": {
+        "title": "Receive Personalized Advice",
+        "description": "Get tailored recommendations and styling tips based on your input."
+      },
+      "refineStyle": {
+        "title": "Refine Your Style",
+        "description": "Iterate and explore different options to perfect your fashion choices."
+      }
+    }
+  },
+  "footer": {
+    "rights": "All rights reserved.",
+    "crafted": "Designed for you",
+    "links": {
+      "terms": "Terms of Service",
+      "privacy": "Privacy"
+    }
+  },
+  "chat": {
+    "welcome": "Welcome to AI Fashion Assistant",
+    "welcomeSubtitle": "Start a new conversation to get personalized fashion advice",
+    "newConversation": "Last Fashion Message",
+    "placeholder": "Ask for fashion advice or describe an image to generate...",
+    "generateImageTitle": "Generate Image",
+    "sendMessage": "Send message",
+    "generatedImageResponse": "Here's the generated image based on your request:",
+    "defaultImageMessage": "Here's an outfit I'd like you to analyze",
+    "defaultImagePrompt": "What fashion advice can you give based on this image?",
+    "greeting": "Hi! How can I help you today?",
+    "chatHistory": "Latest Fashion Chats",
+    "newChat": "New Fashion Chat",
+    "noConversations": "No conversations yet",
+    "creditsRemaining": "{count} credits",
+    "gateTitle": "Happy you like VogueLens AI!",
+    "gateSubtitle": "Register for full features.",
+    "outOfCreditsTitle": "You've used all your credits",
+    "outOfCreditsSubtitle": "Upgrade to keep styling.",
+    "errorMessage": "Something went wrong. Please try again."
+  },
+  "wardrobe": {
+    "title": "My Wardrobe",
+    "tabs": {
+      "wardrobe": "My Wardrobe",
+      "weather": "Weather Outfit",
+      "shopping": "Shopping Check"
+    },
+    "addItem": "Add Item",
+    "itemsUsed": "items",
+    "analyzing": "Analyzing...",
+    "categoryFilter": "Category",
+    "seasonFilter": "Season",
+    "categories": {
+      "all": "All Categories",
+      "top": "Top",
+      "bottom": "Bottom",
+      "shoes": "Shoes",
+      "outerwear": "Outerwear",
+      "accessories": "Accessories"
+    },
+    "seasons": {
+      "all": "All Seasons",
+      "spring": "Spring",
+      "summer": "Summer",
+      "fall": "Fall",
+      "winter": "Winter"
+    },
+    "empty": "Your wardrobe is empty.",
+    "noMatch": "No items match the selected filters.",
+    "addItemHint": "Click \"Add Item\" to get started.",
+    "recommendations": {
+      "title": "Style Recommendations",
+      "placeholder": "e.g. job interview, beach day, dinner date",
+      "getOutfit": "Get Outfit",
+      "finding": "Finding...",
+      "highlightHint": "Highlighted items above match your outfit."
+    },
+    "toast": {
+      "itemAdded": "Item added",
+      "itemAddedDesc": "Your item has been analyzed and saved.",
+      "error": "Error",
+      "loadError": "Failed to load wardrobe",
+      "uploadError": "Failed to upload item",
+      "deleteError": "Failed to delete item",
+      "recommendError": "Failed to get recommendation"
+    }
+  },
+  "weatherTab": {
+    "detecting": "Detecting your location…",
+    "locationDenied": "Location access denied. Please allow location in your browser.",
+    "loadError": "Could not load weather. Try again.",
+    "tryAgain": "Try again",
+    "refresh": "Refresh",
+    "outfitSuggestion": "Outfit suggestion",
+    "suggestedItems": "Suggested from your wardrobe"
+  },
+  "shoppingTab": {
+    "uploadTitle": "Upload a store item photo",
+    "uploadSubtitle": "We'll check if it fits your wardrobe",
+    "choosePhoto": "Choose photo",
+    "analyzing": "Analyzing compatibility…",
+    "pairsWith": "Pairs well with",
+    "recommendations": {
+      "BUY": "✅ Buy it",
+      "SKIP": "❌ Skip it",
+      "CONSIDER": "🤔 Consider it"
+    },
+    "analyzeError": "Could not analyze this item. Please try again."
+  },
+  "profile": {
+    "title": "Profile",
+    "loading": "Loading...",
+    "contactInfo": "Contact Information",
+    "email": "Email",
+    "phone": "Phone",
+    "credits": "Credits"
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "version": "Version 1.0 - Last modified on November 5, 2024",
+    "intro": "This document explains how VogueLens AI collects and processes data. This policy applies to all data collection and processing activities carried out by VogueLens AI.",
+    "scope": "This document is relevant to you regardless of your position: client, partner - individual, representative of a partner - legal entity, applicant for an offer, or person contacting us for other purposes (e.g., in connection with requests or complaints, internal, visitor to our website, etc.)",
+    "sections": {
+      "personalData": {
+        "trigger": "Personal Data Collection",
+        "p1": "VogueLens AI confirms that it does NOT collect personal data through the Service.",
+        "p2": "As VogueLens AI does not collect personal data through the Service, it has no obligation to ensure data protection, as this data is stored on the equipment used by the User to interact with the Service.",
+        "p3": "Since VogueLens AI does not collect personal data through the Service, personal data protection legislation does not apply."
+      },
+      "serviceData": {
+        "trigger": "Service Data Collection",
+        "p1": "VogueLens AI collects and processes data through the Service each time the User:",
+        "li1": "Adds a Client to the system, the Service collects the number of existing clients in the system;",
+        "format": "Data format collected: JSON",
+        "example": "Example of collected data:",
+        "li2": "uuid represents a randomly generated string used to group and aggregate collected data;",
+        "li3": "clients represents the number of existing clients in the system;"
+      },
+      "userAuth": {
+        "trigger": "User Authentication and Image Storage",
+        "p1": "VogueLens AI uses Clerk for user authentication.",
+        "p2": "We store a maximum of 3 images per user, which are stored in our web API for only 24 hours."
+      }
+    },
+    "contact": "For any questions or concerns regarding this privacy policy, please contact us at moldovan.alexandra28@gmail.com."
+  },
+  "terms": {
+    "title": "Terms and Conditions for VogueStyle AI",
+    "lastModified": "Last modified:",
+    "lastUpdated": "Last Updated:",
+    "sections": [
+      {
+        "title": "1. Contracting Parties",
+        "content": "VogueStyle AI (hereinafter \"Service Provider\", \"we\", \"us\", or \"our\") and the User of the VogueStyle AI application (hereinafter \"User\", \"you\", or \"your\")."
+      },
+      {
+        "title": "2. Agreement to Terms",
+        "content": "By accessing or using the VogueStyle AI application, you agree to be bound by these Terms and Conditions. If you disagree with any part of these terms, you may not access the service."
+      },
+      {
+        "title": "3. Service Description",
+        "content": "VogueStyle AI is an artificial intelligence-powered fashion application that provides personalized style recommendations and outfit generation."
+      },
+      {
+        "title": "4. User Rights and Obligations",
+        "content": "4.1. Users must provide accurate and complete information when using the service.\n4.2. Users are responsible for maintaining the confidentiality of their account credentials.\n4.3. Users must not use the service for any illegal or unauthorized purpose.\n4.4. Users retain ownership of their content but grant us a license to use it for service improvement."
+      },
+      {
+        "title": "5. Service Provider Rights and Obligations",
+        "content": "5.1. We strive to maintain service availability but cannot guarantee uninterrupted access.\n5.2. We reserve the right to modify or discontinue the service with reasonable notice.\n5.3. We will protect user privacy according to our Privacy Policy.\n5.4. We may collect anonymous usage data to improve our services."
+      },
+      {
+        "title": "6. Data Protection and Privacy",
+        "content": "6.1. We process personal data in accordance with applicable privacy laws.\n6.2. For detailed information about data processing, please refer to our Privacy Policy."
+      },
+      {
+        "title": "7. Intellectual Property",
+        "content": "7.1. The VogueStyle AI application, including its original content and features, is owned by us and protected by copyright laws.\n7.2. Users may not copy, modify, or reverse engineer any part of the service."
+      },
+      {
+        "title": "8. Limitation of Liability",
+        "content": "8.1. The service is provided \"as is\" without any warranties.\n8.2. We shall not be liable for any indirect, incidental, or consequential damages.\n8.3. We are not responsible for user-generated content or third-party links."
+      },
+      {
+        "title": "9. Modifications to Terms",
+        "content": "9.1. We reserve the right to modify these terms at any time.\n9.2. Users will be notified of significant changes via email or app notification.\n9.3. Continued use of the service after changes constitutes acceptance."
+      },
+      {
+        "title": "10. Termination",
+        "content": "10.1. Users may terminate their account at any time.\n10.2. We may terminate or suspend access to the service immediately without notice for violations of these terms."
+      },
+      {
+        "title": "11. Governing Law",
+        "content": "These terms shall be governed by and construed in accordance with the laws of Romania, without regard to its conflict of law provisions."
+      },
+      {
+        "title": "12. Contact Information",
+        "content": "For any questions about these Terms and Conditions, please contact us at:\nEmail: moldovan.alexandra28@gmail.com"
+      }
+    ]
+  }
+}

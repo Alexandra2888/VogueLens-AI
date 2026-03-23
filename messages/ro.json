@@ -1,0 +1,264 @@
+{
+  "nav": {
+    "home": "Acasă",
+    "chat": "Chat",
+    "wardrobe": "Garderobă",
+    "profile": "Profil",
+    "toggleMenu": "Deschide meniu"
+  },
+  "hero": {
+    "badge": "Inteligență Modă Alimentată de AI",
+    "titleLine1": "Stilistul Tău",
+    "titleLine2": "Personal AI",
+    "description": "Recomandări inteligente de ținute, coordonarea culorilor și sfaturi personalizate de stil — toate alimentate de AI avansat care înțelege estetica ta unică.",
+    "cta": "Începe Styling",
+    "explore": "Explorează Funcții",
+    "stats": {
+      "users": "Utilizatori Activi",
+      "outfits": "Ținute Create",
+      "rating": "Evaluare Utilizatori"
+    },
+    "styleMatch": "Potrivire Stil",
+    "confidence": "98% Încredere"
+  },
+  "features": {
+    "label": "Funcții",
+    "title": "Tot ce ai nevoie pentru a-ți",
+    "titleGradient": "îmbunătăți stilul",
+    "subtitle": "Instrumente AI puternice concepute pentru a transforma modul în care gândești despre modă",
+    "learnMore": "Află mai mult",
+    "items": {
+      "aiRecommendations": {
+        "title": "Recomandări Alimentate de AI",
+        "description": "Primești sfaturi de modă personalizate adaptate stilului și preferințelor tale."
+      },
+      "colorCoordination": {
+        "title": "Coordonarea Culorilor",
+        "description": "Descoperă combinații perfecte de culori care completează garderoba ta."
+      },
+      "instantTips": {
+        "title": "Sfaturi de Styling Instant",
+        "description": "Primești sfaturi practice de styling rapid pentru orice ocazie."
+      },
+      "outfitGenerator": {
+        "title": "Generator de Ținute",
+        "description": "Creează ținute complete din garderoba existentă sau cu piese noi."
+      }
+    }
+  },
+  "howItWorks": {
+    "label": "Cum Funcționează",
+    "title": "Stilizează-te în",
+    "titleGradient": "patru pași simpli",
+    "subtitle": "De la conversație la încredere — călătoria ta de stil începe aici",
+    "step": "Pasul",
+    "steps": {
+      "startChat": {
+        "title": "Începe un Chat",
+        "description": "Pornește-ți călătoria în modă prin inițierea unei conversații cu asistentul nostru AI."
+      },
+      "describeNeeds": {
+        "title": "Descrie Nevoile Tale",
+        "description": "Spune-ne despre preferințele tale de stil, tipul corpului sau întrebări specifice legate de modă."
+      },
+      "receiveAdvice": {
+        "title": "Primește Sfaturi Personalizate",
+        "description": "Obții recomandări și sfaturi de styling adaptate în funcție de răspunsul tău."
+      },
+      "refineStyle": {
+        "title": "Rafinează-ți Stilul",
+        "description": "Iterează și explorează diferite opțiuni pentru a-ți perfecționa alegerile vestimentare."
+      }
+    }
+  },
+  "footer": {
+    "rights": "Toate drepturile rezervate.",
+    "crafted": "Conceput pentru tine",
+    "links": {
+      "terms": "Termeni și Condiții",
+      "privacy": "Confidențialitate"
+    }
+  },
+  "chat": {
+    "welcome": "Bun venit la Asistentul AI de Modă",
+    "welcomeSubtitle": "Începe o conversație nouă pentru sfaturi personalizate de modă",
+    "newConversation": "Ultimul Mesaj Modă",
+    "placeholder": "Cere sfaturi de modă sau descrie o imagine pentru a genera...",
+    "generateImageTitle": "Generează Imagine",
+    "sendMessage": "Trimite mesaj",
+    "generatedImageResponse": "Iată imaginea generată pe baza solicitării tale:",
+    "defaultImageMessage": "Iată o ținută pe care aș vrea să o analizezi",
+    "defaultImagePrompt": "Ce sfaturi de modă poți oferi pe baza acestei imagini?",
+    "greeting": "Salut! Cu ce te pot ajuta astăzi?",
+    "chatHistory": "Ultimele conversații",
+    "newChat": "Conversație nouă",
+    "noConversations": "Nicio conversație încă",
+    "creditsRemaining": "{count} credite",
+    "gateTitle": "Ne bucurăm că îți place VogueLens AI!",
+    "gateSubtitle": "Înregistrează-te pentru funcții complete.",
+    "outOfCreditsTitle": "Ai folosit toate creditele",
+    "outOfCreditsSubtitle": "Fă upgrade pentru a continua.",
+    "errorMessage": "Ceva a mers greșit. Încearcă din nou."
+  },
+  "wardrobe": {
+    "title": "Garderoba Mea",
+    "tabs": {
+      "wardrobe": "Garderoba Mea",
+      "weather": "Ținută Meteo",
+      "shopping": "Verificare Cumpărături"
+    },
+    "addItem": "Adaugă Articol",
+    "itemsUsed": "articole",
+    "analyzing": "Se analizează...",
+    "categoryFilter": "Categorie",
+    "seasonFilter": "Sezon",
+    "categories": {
+      "all": "Toate Categoriile",
+      "top": "Tricou / Bluză",
+      "bottom": "Pantaloni / Fustă",
+      "shoes": "Pantofi",
+      "outerwear": "Jachetă / Haină",
+      "accessories": "Accesorii"
+    },
+    "seasons": {
+      "all": "Toate Sezoanele",
+      "spring": "Primăvară",
+      "summer": "Vară",
+      "fall": "Toamnă",
+      "winter": "Iarnă"
+    },
+    "empty": "Garderoba ta este goală.",
+    "noMatch": "Niciun articol nu corespunde filtrelor selectate.",
+    "addItemHint": "Apasă 'Adaugă Articol' pentru a începe.",
+    "recommendations": {
+      "title": "Recomandări de Stil",
+      "placeholder": "ex. interviu de muncă, zi la plajă, cină romantică",
+      "getOutfit": "Obține Ținută",
+      "finding": "Se caută...",
+      "highlightHint": "Articolele evidențiate de mai sus se potrivesc cu ținuta ta."
+    },
+    "toast": {
+      "itemAdded": "Articol adăugat",
+      "itemAddedDesc": "Articolul tău a fost analizat și salvat.",
+      "error": "Eroare",
+      "loadError": "Eroare la încărcarea garderobei",
+      "uploadError": "Eroare la încărcarea articolului",
+      "deleteError": "Eroare la ștergerea articolului",
+      "recommendError": "Eroare la obținerea recomandării"
+    }
+  },
+  "weatherTab": {
+    "detecting": "Se detectează locația ta…",
+    "locationDenied": "Acces la locație refuzat. Permite localizarea în browser.",
+    "loadError": "Nu s-a putut încărca vremea. Încearcă din nou.",
+    "tryAgain": "Încearcă din nou",
+    "refresh": "Reîmprospătează",
+    "outfitSuggestion": "Sugestie de ținută",
+    "suggestedItems": "Sugerat din garderoba ta"
+  },
+  "shoppingTab": {
+    "uploadTitle": "Încarcă o fotografie din magazin",
+    "uploadSubtitle": "Vom verifica dacă se potrivește cu garderoba ta",
+    "choosePhoto": "Alege fotografie",
+    "analyzing": "Se analizează compatibilitatea…",
+    "pairsWith": "Se potrivește bine cu",
+    "recommendations": {
+      "BUY": "✅ Cumpără",
+      "SKIP": "❌ Renunță",
+      "CONSIDER": "🤔 Ia în considerare"
+    },
+    "analyzeError": "Nu s-a putut analiza acest articol. Încearcă din nou."
+  },
+  "profile": {
+    "title": "Profil",
+    "loading": "Se încarcă...",
+    "contactInfo": "Informații de Contact",
+    "email": "Email",
+    "phone": "Telefon",
+    "credits": "Credite"
+  },
+  "privacy": {
+    "title": "Politica de Confidențialitate",
+    "version": "Versiunea 1.0 - Ultima modificare la 5 noiembrie 2024",
+    "intro": "Acest document explică modul în care VogueLens AI colectează și procesează datele. Această politică se aplică tuturor activităților de colectare și procesare a datelor efectuate de VogueLens AI.",
+    "scope": "Acest document este relevant pentru tine indiferent de poziția ta: client, partener - persoană fizică, reprezentant al unui partener - persoană juridică, solicitant al unei oferte sau persoană care ne contactează în alte scopuri.",
+    "sections": {
+      "personalData": {
+        "trigger": "Colectarea Datelor Personale",
+        "p1": "VogueLens AI confirmă că NU colectează date personale prin intermediul Serviciului.",
+        "p2": "Deoarece VogueLens AI nu colectează date personale prin Serviciu, nu are obligația de a asigura protecția datelor, deoarece acestea sunt stocate pe echipamentul utilizat de Utilizator.",
+        "p3": "Deoarece VogueLens AI nu colectează date personale prin Serviciu, legislația privind protecția datelor personale nu se aplică."
+      },
+      "serviceData": {
+        "trigger": "Colectarea Datelor de Serviciu",
+        "p1": "VogueLens AI colectează și procesează date prin Serviciu de fiecare dată când Utilizatorul:",
+        "li1": "Adaugă un Client în sistem, Serviciul colectează numărul de clienți existenți în sistem;",
+        "format": "Format date colectate: JSON",
+        "example": "Exemplu de date colectate:",
+        "li2": "uuid reprezintă un șir generat aleatoriu utilizat pentru a grupa și agrega datele colectate;",
+        "li3": "clients reprezintă numărul de clienți existenți în sistem;"
+      },
+      "userAuth": {
+        "trigger": "Autentificarea Utilizatorilor și Stocarea Imaginilor",
+        "p1": "VogueLens AI utilizează Clerk pentru autentificarea utilizatorilor.",
+        "p2": "Stocăm maximum 3 imagini per utilizator, care sunt stocate în API-ul nostru web timp de doar 24 de ore."
+      }
+    },
+    "contact": "Pentru orice întrebări sau nelămuriri legate de această politică de confidențialitate, contactați-ne la moldovan.alexandra28@gmail.com."
+  },
+  "terms": {
+    "title": "Termeni și Condiții pentru VogueStyle AI",
+    "lastModified": "Ultima modificare:",
+    "lastUpdated": "Ultima actualizare:",
+    "sections": [
+      {
+        "title": "1. Părțile Contractante",
+        "content": "VogueStyle AI (denumit in continuare 'Furnizorul de Servicii', 'noi', 'noua' sau 'nostru') si Utilizatorul aplicatiei VogueStyle AI (denumit in continuare 'Utilizator', 'tu' sau 'al tau')."
+      },
+      {
+        "title": "2. Acceptarea Termenilor",
+        "content": "Prin accesarea sau utilizarea aplicației VogueStyle AI, ești de acord să fii legat de acești Termeni și Condiții. Dacă nu ești de acord cu oricare parte a acestor termeni, nu poți accesa serviciul."
+      },
+      {
+        "title": "3. Descrierea Serviciului",
+        "content": "VogueStyle AI este o aplicație de modă alimentată de inteligență artificială care oferă recomandări personalizate de stil și generare de ținute."
+      },
+      {
+        "title": "4. Drepturile și Obligațiile Utilizatorului",
+        "content": "4.1. Utilizatorii trebuie să furnizeze informații exacte și complete atunci când folosesc serviciul.\n4.2. Utilizatorii sunt responsabili pentru menținerea confidențialității credențialelor contului lor.\n4.3. Utilizatorii nu trebuie să folosească serviciul în scopuri ilegale sau neautorizate.\n4.4. Utilizatorii păstrează proprietatea asupra conținutului lor, dar ne acordă o licență de a-l utiliza pentru îmbunătățirea serviciului."
+      },
+      {
+        "title": "5. Drepturile și Obligațiile Furnizorului de Servicii",
+        "content": "5.1. Ne străduim să menținem disponibilitatea serviciului, dar nu putem garanta accesul neîntrerupt.\n5.2. Ne rezervăm dreptul de a modifica sau întrerupe serviciul cu o notificare rezonabilă.\n5.3. Vom proteja confidențialitatea utilizatorilor conform Politicii noastre de Confidențialitate.\n5.4. Putem colecta date anonime de utilizare pentru a îmbunătăți serviciile noastre."
+      },
+      {
+        "title": "6. Protecția Datelor și Confidențialitate",
+        "content": "6.1. Procesăm datele personale în conformitate cu legile aplicabile privind confidențialitatea.\n6.2. Pentru informații detaliate despre procesarea datelor, consultați Politica noastră de Confidențialitate."
+      },
+      {
+        "title": "7. Proprietatea Intelectuală",
+        "content": "7.1. Aplicația VogueStyle AI, inclusiv conținutul și funcțiile sale originale, ne aparțin și sunt protejate de legile drepturilor de autor.\n7.2. Utilizatorii nu pot copia, modifica sau face inginerie inversă a oricărei părți a serviciului."
+      },
+      {
+        "title": "8. Limitarea Răspunderii",
+        "content": "8.1. Serviciul este furnizat 'ca atare' fara nicio garantie.\n8.2. Nu vom fi raspunzatori pentru daune indirecte, incidentale sau consecvente.\n8.3. Nu suntem responsabili pentru continutul generat de utilizatori sau pentru linkurile tertilor."
+      },
+      {
+        "title": "9. Modificări ale Termenilor",
+        "content": "9.1. Ne rezervăm dreptul de a modifica acești termeni în orice moment.\n9.2. Utilizatorii vor fi notificați cu privire la modificările semnificative prin e-mail sau notificare în aplicație.\n9.3. Utilizarea continuă a serviciului după modificări constituie acceptarea acestora."
+      },
+      {
+        "title": "10. Reziliere",
+        "content": "10.1. Utilizatorii pot rezilia contul în orice moment.\n10.2. Putem rezilia sau suspenda accesul la serviciu imediat, fără notificare, pentru încălcarea acestor termeni."
+      },
+      {
+        "title": "11. Legea Aplicabilă",
+        "content": "Acești termeni sunt guvernați și interpretați în conformitate cu legile României, fără a ține cont de prevederile privind conflictul de legi."
+      },
+      {
+        "title": "12. Informații de Contact",
+        "content": "Pentru orice întrebări despre acești Termeni și Condiții, contactați-ne la:\nEmail: moldovan.alexandra28@gmail.com"
+      }
+    ]
+  }
+}
