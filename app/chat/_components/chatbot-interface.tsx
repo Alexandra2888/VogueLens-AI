@@ -1,11 +1,11 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, ImagePlus, Bot, Loader2, Menu, Wand2, X } from 'lucide-react';
+import { Send, ImagePlus, Bot, Loader2, Wand2, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import LoadingMessage from './loading-message';
 
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -16,6 +16,7 @@ import { ConversationProps } from '../../../types/conversation';
 import { MessageProps } from '../../../types/message';
 
 export default function ChatbotInterface() {
+  const t = useTranslations('chat');
   const [conversations, setConversations] = useState<ConversationProps[]>([]);
   const [currentConversation, setCurrentConversation] =
     useState<ConversationProps | null>(null);
@@ -25,20 +26,19 @@ export default function ChatbotInterface() {
     file: File;
     preview: string;
   } | null>(null);
+  const [credits, setCredits] = useState<number | null>(null);
+  const [earlyAccess, setEarlyAccess] = useState<boolean | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const initializedRef = useRef(false);
 
-  // Helper function to generate a chat title from the first message
   const generateChatTitle = (message: string): string => {
-    // Remove 'Generate image: ' prefix if present
     const cleanMessage = message.replace(/^Generate image:\s*/i, '');
-    // Take first 30 characters and add ellipsis if needed
     return cleanMessage.length > 30
       ? `${cleanMessage.substring(0, 27)}...`
       : cleanMessage;
   };
 
-  // update conversation title
   const updateConversationTitle = (
     conversationId: number,
     newTitle: string
@@ -51,9 +51,19 @@ export default function ChatbotInterface() {
   };
 
   useEffect(() => {
-    if (conversations.length === 0) {
-      startNewConversation();
-    }
+    fetch('/api/user/credits')
+      .then((r) => r.json())
+      .then((data) => {
+        setCredits(data.credits);
+        setEarlyAccess(data.earlyAccess);
+      })
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (initializedRef.current) return;
+    initializedRef.current = true;
+    startNewConversation();
   }, []);
 
   useEffect(() => {
@@ -79,10 +89,14 @@ export default function ChatbotInterface() {
         sender: 'user',
       };
 
-      // update title if this is the first message
-      if (currentConversation.messages.length === 0) {
-        const newTitle = generateChatTitle(userMessage.text);
-        updateConversationTitle(currentConversation.id, newTitle);
+      const userMessages = currentConversation.messages.filter(
+        (m) => m.sender === 'user'
+      );
+      if (userMessages.length === 0) {
+        updateConversationTitle(
+          currentConversation.id,
+          generateChatTitle(userMessage.text)
+        );
       }
 
       const updatedConversation = {
@@ -100,20 +114,16 @@ export default function ChatbotInterface() {
 
       const response = await fetch('/api/chat', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          prompt: input.trim(),
-          generateImage: true,
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: input.trim(), generateImage: true }),
       });
 
       const data = await response.json();
+      if (data.creditsRemaining !== undefined) setCredits(data.creditsRemaining);
 
       const botMessage: MessageProps = {
         id: Date.now() + 1,
-        text: "Here's the generated image based on your request:",
+        text: t('generatedImageResponse'),
         sender: 'bot',
         imageUrl: data.imageUrl,
       };
@@ -139,11 +149,7 @@ export default function ChatbotInterface() {
   const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
-
-    setSelectedImage({
-      file,
-      preview: URL.createObjectURL(file),
-    });
+    setSelectedImage({ file, preview: URL.createObjectURL(file) });
   };
 
   const clearSelectedImage = () => {
@@ -165,14 +171,18 @@ export default function ChatbotInterface() {
     try {
       const userMessage: MessageProps = {
         id: Date.now(),
-        text: input.trim() || "Here's an outfit I'd like you to analyze",
+        text: input.trim() || t('defaultImageMessage'),
         sender: 'user',
       };
 
-      // Update title if this is the first message
-      if (currentConversation.messages.length === 0) {
-        const newTitle = generateChatTitle(userMessage.text);
-        updateConversationTitle(currentConversation.id, newTitle);
+      const userMessages = currentConversation.messages.filter(
+        (m) => m.sender === 'user'
+      );
+      if (userMessages.length === 0) {
+        updateConversationTitle(
+          currentConversation.id,
+          generateChatTitle(userMessage.text)
+        );
       }
 
       let imageAnalysis = null;
@@ -189,6 +199,7 @@ export default function ChatbotInterface() {
         });
 
         const imageData = await imageResponse.json();
+        if (imageData.creditsRemaining !== undefined) setCredits(imageData.creditsRemaining);
         imageAnalysis = imageData.description;
       }
 
@@ -208,18 +219,15 @@ export default function ChatbotInterface() {
 
       const chatResponse = await fetch('/api/chat', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          prompt:
-            input.trim() ||
-            'What fashion advice can you give based on this image?',
+          prompt: input.trim() || t('defaultImagePrompt'),
           imageAnalysis,
         }),
       });
 
       const chatData = await chatResponse.json();
+      if (chatData.creditsRemaining !== undefined) setCredits(chatData.creditsRemaining);
 
       const botMessage: MessageProps = {
         id: Date.now() + 1,
@@ -247,33 +255,48 @@ export default function ChatbotInterface() {
   };
 
   const startNewConversation = () => {
-    const newConversation: ConversationProps = {
+    const greetingMessage: MessageProps = {
       id: Date.now(),
-      title: 'Last Fashion Message',
-      messages: [],
+      text: t('greeting'),
+      sender: 'bot',
     };
-    setConversations([...conversations, newConversation]);
+    const newConversation: ConversationProps = {
+      id: Date.now() + 1,
+      title: t('newConversation'),
+      messages: [greetingMessage],
+    };
+    setConversations((prev) => [...prev, newConversation]);
     setCurrentConversation(newConversation);
   };
 
-  return (
-    <div className="mx-auto mt-4 flex h-[70vh] max-w-7xl dark:bg-gray-900">
-      <Sheet>
-        <SheetTrigger asChild>
-          <Button variant="outline" size="icon" className="md:hidden">
-            <Menu className="h-5 w-5" />
-          </Button>
-        </SheetTrigger>
-        <SheetContent side="left" className="w-[300px] p-0">
-          <Sidebar
-            conversations={conversations}
-            currentConversation={currentConversation}
-            onConversationSelect={setCurrentConversation}
-            onNewConversation={startNewConversation}
-          />
-        </SheetContent>
-      </Sheet>
+  if (earlyAccess === false) {
+    return (
+      <div className="flex h-full items-center justify-center rounded-xl border border-border bg-background shadow-sm">
+        <div className="max-w-sm space-y-4 text-center px-6">
+          <Bot className="text-brand-red mx-auto h-14 w-14" />
+          <h2 className="text-2xl font-bold">{t('gateTitle')}</h2>
+          <p className="text-muted-foreground">{t('gateSubtitle')}</p>
+        </div>
+      </div>
+    );
+  }
 
+  if (earlyAccess === true && credits === 0) {
+    return (
+      <div className="flex h-full items-center justify-center rounded-xl border border-border bg-background shadow-sm">
+        <div className="max-w-sm space-y-4 text-center px-6">
+          <Bot className="text-muted-foreground mx-auto h-14 w-14" />
+          <h2 className="text-2xl font-bold">{t('outOfCreditsTitle')}</h2>
+          <p className="text-muted-foreground">{t('outOfCreditsSubtitle')}</p>
+        </div>
+      </div>
+    );
+  }
+
+  const outOfCredits = credits === 0;
+
+  return (
+    <div className="flex h-full overflow-hidden rounded-xl border border-border bg-background shadow-sm">
       <div className="hidden md:block">
         <Sidebar
           conversations={conversations}
@@ -283,7 +306,7 @@ export default function ChatbotInterface() {
         />
       </div>
 
-      <main className="flex flex-1 flex-col overflow-hidden dark:bg-gray-800">
+      <main className="flex flex-1 flex-col overflow-hidden">
         <ScrollArea className="flex-1 p-4">
           {currentConversation ? (
             <>
@@ -296,19 +319,17 @@ export default function ChatbotInterface() {
           ) : (
             <div className="flex h-full items-center justify-center">
               <div className="space-y-2 text-center">
-                <Bot className="mx-auto h-12 w-12 text-zinc-300 dark:text-zinc-600" />
-                <h3 className="text-lg font-semibold dark:text-white">
-                  Welcome to AI Fashion Assistant
-                </h3>
-                <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                  Start a new conversation to get personalized fashion advice
+                <Bot className="text-muted-foreground mx-auto h-12 w-12" />
+                <h3 className="text-lg font-semibold">{t('welcome')}</h3>
+                <p className="text-muted-foreground text-sm">
+                  {t('welcomeSubtitle')}
                 </p>
               </div>
             </div>
           )}
         </ScrollArea>
 
-        <div className="border-t p-4 dark:border-gray-700">
+        <div className="border-t border-border p-4">
           <div className="flex flex-col space-y-2">
             {selectedImage && (
               <div className="relative inline-block">
@@ -339,8 +360,7 @@ export default function ChatbotInterface() {
                 variant="outline"
                 size="icon"
                 onClick={() => fileInputRef.current?.click()}
-                disabled={!currentConversation || isLoading}
-                className="dark:bg-gray-700 dark:text-white"
+                disabled={!currentConversation || isLoading || outOfCredits}
               >
                 <ImagePlus className="h-5 w-5" />
               </Button>
@@ -348,18 +368,18 @@ export default function ChatbotInterface() {
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask for fashion advice or describe an image to generate..."
-                className="flex-1 text-zinc-900 dark:bg-gray-700 dark:text-white"
+                placeholder={t('placeholder')}
+                className="flex-1"
                 onKeyPress={(e) =>
-                  e.key === 'Enter' && !isLoading && handleSend()
+                  e.key === 'Enter' && !isLoading && !outOfCredits && handleSend()
                 }
-                disabled={!currentConversation || isLoading}
+                disabled={!currentConversation || isLoading || outOfCredits}
               />
               <button
                 onClick={handleImageGeneration}
-                disabled={!currentConversation || !input.trim() || isLoading}
-                className="hover:text-secondary-hover hover:cursor-pointer dark:bg-gray-700 dark:text-white"
-                title="Generate Image"
+                disabled={!currentConversation || !input.trim() || isLoading || outOfCredits}
+                className="text-muted-foreground hover:text-brand-red disabled:opacity-40 transition-colors hover:cursor-pointer"
+                title={t('generateImageTitle')}
               >
                 <Wand2 className="h-5 w-5" />
               </button>
@@ -368,16 +388,17 @@ export default function ChatbotInterface() {
                 disabled={
                   !currentConversation ||
                   (!input.trim() && !selectedImage) ||
-                  isLoading
+                  isLoading ||
+                  outOfCredits
                 }
-                className="hover:text-secondary-hover hover:cursor-pointer dark:bg-blue-600 dark:text-white"
+                className="text-muted-foreground hover:text-brand-red disabled:opacity-40 transition-colors hover:cursor-pointer"
               >
                 {isLoading ? (
                   <Loader2 className="h-5 w-5 animate-spin" />
                 ) : (
                   <Send className="h-5 w-5" />
                 )}
-                <span className="sr-only">Send message</span>
+                <span className="sr-only">{t('sendMessage')}</span>
               </button>
             </div>
           </div>

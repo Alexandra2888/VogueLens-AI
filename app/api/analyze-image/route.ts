@@ -1,5 +1,18 @@
 import { ImageAnnotatorClient } from '@google-cloud/vision';
 import { NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
+import { eq } from 'drizzle-orm';
+import { db } from '@/lib/db';
+import { users } from '@/db/schema';
+import { imageRatelimit } from '@/lib/rate-limit';
+import {
+  MAX_IMAGE_SIZE_BYTES,
+  ALLOWED_IMAGE_TYPES,
+  rateLimitExceeded,
+  unauthorizedResponse,
+  badRequestResponse,
+  internalErrorResponse,
+} from '@/lib/security';
 
 let vision: ImageAnnotatorClient | null;
 
@@ -14,22 +27,53 @@ try {
 
   vision = new ImageAnnotatorClient({ credentials: credentials });
 } catch (error) {
-  console.error('Error initializing Google Cloud Vision:', error);
+  console.error('[analyze-image] Vision client init failed:', error instanceof Error ? error.message : 'unknown');
   vision = null;
 }
 
 export async function POST(req: Request) {
   try {
+    // Auth
+    const { userId } = await auth();
+    if (!userId) return unauthorizedResponse();
+
+    // Per-user rate limit
+    if (imageRatelimit) {
+      const { success } = await imageRatelimit.limit(`image:${userId}`);
+      if (!success) return rateLimitExceeded();
+    }
+
+    // Credit check (5 credits per image analysis)
+    const cost = 5;
+    const user = await db.query.users.findFirst({ where: eq(users.id, userId) });
+    if (!user || user.credits < cost) {
+      return NextResponse.json({ error: 'Insufficient credits' }, { status: 402 });
+    }
+
     if (!vision) {
-      throw new Error('Google Cloud Vision client not initialized');
+      return NextResponse.json({ error: 'Image analysis unavailable' }, { status: 503 });
     }
 
     const formData = await req.formData();
-    const image = formData.get('image') as File;
+    const image = formData.get('image') as File | null;
 
-    if (!image) {
-      return NextResponse.json({ error: 'No image provided' }, { status: 400 });
+    if (!image) return badRequestResponse('No image provided');
+
+    // Validate file type (don't trust client-provided MIME; check header bytes via type field)
+    if (!ALLOWED_IMAGE_TYPES.includes(image.type)) {
+      return badRequestResponse('Unsupported image type. Use JPEG, PNG, WebP, or GIF.');
     }
+
+    // Validate file size
+    if (image.size > MAX_IMAGE_SIZE_BYTES) {
+      return badRequestResponse('Image exceeds 5 MB limit.');
+    }
+
+    // Deduct credits after validation, before the expensive Vision API call
+    await db
+      .update(users)
+      .set({ credits: user.credits - cost, updatedAt: new Date() })
+      .where(eq(users.id, userId));
 
     const buffer = Buffer.from(await image.arrayBuffer());
     const [result] = await vision.annotateImage({
@@ -43,23 +87,23 @@ export async function POST(req: Request) {
 
     const labels =
       result.labelAnnotations
-        ?.filter((label) => label.score && label.score > 0.7)
-        ?.map((label) => label.description)
+        ?.filter((l) => l.score && l.score > 0.7)
+        ?.map((l) => l.description)
         ?.join(', ') || 'no labels detected';
 
     const objects =
       result.localizedObjectAnnotations
-        ?.filter((obj) => obj.score && obj.score > 0.7)
-        ?.map((obj) => obj.name)
+        ?.filter((o) => o.score && o.score > 0.7)
+        ?.map((o) => o.name)
         ?.join(', ') || 'no objects detected';
 
     const colors =
       result.imagePropertiesAnnotation?.dominantColors?.colors
         ?.slice(0, 3)
-        ?.map((color) => {
-          const r = Math.round(color.color?.red || 0);
-          const g = Math.round(color.color?.green || 0);
-          const b = Math.round(color.color?.blue || 0);
+        ?.map((c) => {
+          const r = Math.round(c.color?.red || 0);
+          const g = Math.round(c.color?.green || 0);
+          const b = Math.round(c.color?.blue || 0);
           return `rgb(${r},${g},${b})`;
         })
         ?.join(', ') || 'no colors detected';
@@ -72,15 +116,9 @@ export async function POST(req: Request) {
       .filter(Boolean)
       .join('. ');
 
-    return NextResponse.json({ description });
+    return NextResponse.json({ description, creditsRemaining: user.credits - cost });
   } catch (error) {
-    console.error('Error in analyze-image route:', error);
-    return NextResponse.json(
-      {
-        error:
-          error instanceof Error ? error.message : 'Failed to analyze image',
-      },
-      { status: 500 }
-    );
+    console.error('[analyze-image] Error:', error instanceof Error ? error.message : 'unknown');
+    return internalErrorResponse();
   }
 }

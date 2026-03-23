@@ -1,9 +1,6 @@
-import ChatbotInterface from './_components/chatbot-interface';
+import { notFound } from 'next/navigation';
 
-export default function ChatPage() {
-  return (
-    <main className="pt-16">
-      <ChatbotInterface />
-    </main>
-  );
+// Superseded by app/[locale]/chat/page.tsx
+export default function Page() {
+  return notFound();
 }

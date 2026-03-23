@@ -1,209 +1,202 @@
-# VogueLens AI 🎭
+# VogueLens AI
 
-VogueLens AI is an intelligent fashion advisor that helps users make better style choices through AI-powered analysis. Upload your clothing items, get color palette insights, style recommendations, and create your perfect wardrobe.
+VogueLens AI is an intelligent fashion advisor that helps users make better style choices through AI-powered analysis. Upload clothing items, get color palette insights, style recommendations, and build your perfect wardrobe — in English or Romanian.
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Next.js](https://img.shields.io/badge/Next.js-14-black)](https://nextjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)](https://www.typescriptlang.org/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.0-38B2AC)](https://tailwindcss.com/)
+[![Next.js](https://img.shields.io/badge/Next.js-16-black)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.x-38B2AC)](https://tailwindcss.com/)
 
-## ✨ Features
+## Features
 
-- 🤖 AI-powered style analysis
-- 🎨 Color palette extraction
-- 👗 Style classification
-- 📅 Occasion-based recommendations
-- 📱 Responsive design
-- 🌓 Dark mode support
-- ⚡️ Performance optimized
+- AI-powered style analysis and outfit recommendations
+- Image upload with Google Cloud Vision analysis
+- AI image generation via DALL-E 3
+- Virtual wardrobe management with weather-based suggestions
+- Shopping compatibility checker
+- Credits system — first 100 users get 100 free credits (1 per text message, 5 per image)
+- English / Romanian i18n with URL-based locale switching (`/en`, `/ro`)
+- Dark / light mode
+- Responsive design
 
-## 🛠 Tech Stack
+## Tech Stack
 
-### Frontend
+| Layer | Technology |
+|---|---|
+| Framework | Next.js 16 (App Router), TypeScript 5.x |
+| Styling | Tailwind CSS 4.x, shadcn/ui, motion/react |
+| Auth | Clerk (SSO + Google) |
+| AI | OpenAI GPT-4 / GPT-4o, DALL-E 3, Google Cloud Vision |
+| Database | Supabase (PostgreSQL), Drizzle ORM |
+| Rate limiting | Upstash Redis + @upstash/ratelimit |
+| i18n | next-intl |
+| Testing | Jest + React Testing Library, Playwright |
+| Deployment | Vercel |
 
-- Next.js 14 with TypeScript
-- Tailwind CSS + shadcn/ui
-- Zustand for state management
-- Next.js Image optimization
-- Code splitting and lazy loading
-
-### AI & APIs
-
-- OpenAI API for style recommendations
-- Google Cloud Vision API for image analysis
-- Clerk for authentication
-- Web API for image handling
-
-### Infrastructure
-
-- Vercel hosting
-- CDN for static assets
-- Vercel's Built-in Error Monitoring
-
-### Testing
-
-- Jest + React Testing Library for unit tests
-- Playwright for E2E testing
-
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
-```bash
+```
 node >= 18.0.0
 npm >= 9.0.0
 ```
 
 ### Installation
 
-1. Clone the repository
-
 ```bash
 git clone git@github.com:Alexandra2888/VogueLens-AI.git
-cd voguelens-ai
-```
-
-2. Install dependencies
-
-```bash
+cd VogueLens-AI
 npm install
-```
-
-3. Set up environment variables
-
-```bash
-cp .env.example .env.local
-```
-
-Fill in your environment variables:
-
-```env
-# Authentication
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
-CLERK_SECRET_KEY=
-
-# OpenAI
-OPENAI_API_KEY=
-
-# Google Cloud Vision
-GOOGLE_APPLICATION_CREDENTIALS=
-```
-
-4. Run the development server
-
-```bash
+cp .env.example .env.local   # fill in variables below
 npm run dev
 ```
 
-Visit [http://localhost:3000](http://localhost:3000)
+Visit [http://localhost:3000](http://localhost:3000) — redirects to `/en` automatically.
 
-## 📦 Project Structure
+### Environment Variables
+
+```env
+# Clerk authentication
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
+CLERK_SECRET_KEY=
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/en/sign-in
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/en/sign-up
+
+# OpenAI
+NEXT_OPENAI_API_KEY=
+
+# Google Cloud Vision (JSON credentials as string)
+NEXT_GOOGLE_CLOUD_CREDENTIALS=
+
+# Supabase
+DATABASE_URL=
+
+# Upstash Redis (rate limiting)
+UPSTASH_REDIS_REST_URL=
+UPSTASH_REDIS_REST_TOKEN=
+```
+
+> `NEXT_PUBLIC_CLERK_BYPASS_AUTH=true` is injected **only** by Playwright for E2E tests. Never set it in production.
+
+## Project Structure
 
 ```
-voguelens-ai/
+VogueLens-AI/
+├── app/                        # Next.js App Router
+│   ├── [locale]/               # i18n routes (/en/*, /ro/*)
+│   │   ├── (home)/             # Landing page
+│   │   ├── chat/               # AI chat
+│   │   ├── wardrobe/           # Wardrobe manager
+│   │   ├── profile/            # User profile + credits
+│   │   ├── privacy/
+│   │   └── terms/
+│   ├── api/                    # API routes (no locale prefix)
+│   │   ├── chat/
+│   │   ├── analyze-image/
+│   │   ├── wardrobe/
+│   │   └── user/credits/
+│   └── _components/            # Shared UI components
 ├── src/
-│   ├── app/              # Next.js 14 app directory
-│   ├── components/       # React components
-│   │   ├── ui/          # UI components
-│   │   └── features/    # Feature components
-│   ├── lib/             # Utility functions
-│   ├── styles/          # Global styles
-│   └── types/           # TypeScript types
-├── public/              # Static assets
-├── tests/               # Test files
-│   ├── unit/
-│   └── e2e/
-└── docs/               # Documentation
+│   ├── db/schema.ts            # Drizzle schema (users, wardrobe_items)
+│   ├── lib/
+│   │   ├── rate-limit.ts       # Upstash rate limiters
+│   │   ├── security.ts         # Zod schemas, sanitization, SSRF guard
+│   │   ├── db.ts
+│   │   └── openai.ts
+│   └── i18n/                   # next-intl routing config
+├── messages/
+│   ├── en.json                 # English strings
+│   └── ro.json                 # Romanian strings
+├── tests/e2e/                  # Playwright E2E tests
+├── __tests__/                  # Jest unit tests
+└── docs/rfc.md                 # Technical RFC
 ```
 
-## 🧪 Testing
+## Scripts
 
-Run unit tests:
+```bash
+npm run dev          # Development server (webpack)
+npm run build        # Production build
+npm run start        # Production server
+npm run lint         # ESLint
+npm run lint:fix     # ESLint with auto-fix
+npm run format       # Prettier
+npm run test         # Jest unit tests
+npm run test:unit    # Jest (alias)
+npm run test:e2e     # Playwright E2E tests
+npm run test:e2e:ui  # Playwright with UI
+```
+
+## Testing
+
+### Unit tests (Jest)
 
 ```bash
 npm run test
+# or run a single file:
+npx jest __tests__/lib/security.test.ts
 ```
 
-Run E2E tests:
+Tests cover:
+- `sanitizeText` — XSS/script injection stripping
+- `isPublicHttpsUrl` — SSRF prevention
+- Zod schemas (`chatSchema`, `wardrobePostSchema`)
+- Credit allocation and deduction logic
+- `generateChatTitle` utility
+- `Message` component rendering
+
+### E2E tests (Playwright)
 
 ```bash
+# Playwright starts its own dev server with auth bypass enabled automatically
 npm run test:e2e
 ```
 
-## 🔧 Scripts
+Tests cover: home, hero, features, how-it-works, footer, header, theme toggle, terms, privacy, 404, language switcher, chat page, security headers, and API auth/CSRF checks.
+
+> If reusing an existing dev server for E2E tests, add `NEXT_PUBLIC_CLERK_BYPASS_AUTH=true` to `.env.local` and restart it.
+
+## Security
+
+The app is hardened to OWASP Top 10 standards:
+
+| Threat | Mitigation |
+|---|---|
+| XSS | `sanitizeText()` strips scripts/event handlers on all API input; React JSX escapes all output |
+| CSRF | Origin header checked against Host on all mutating API requests (middleware) |
+| DDoS / brute force | Upstash sliding-window rate limits at two levels: 60 req/min/IP (middleware), per-user limits per route |
+| Clickjacking | `X-Frame-Options: DENY`, CSP `frame-ancestors 'none'` |
+| MIME sniffing | `X-Content-Type-Options: nosniff` |
+| Prompt injection | User input sanitized; `imageAnalysis` passed as user message, not interpolated into system prompt |
+| SSRF | `isPublicHttpsUrl()` blocks private IP ranges on all user-supplied URLs |
+| Info leakage | Error handlers never return stack traces; only `error.message` is logged server-side |
+| Insecure transport | `Strict-Transport-Security` (1 year, includeSubDomains, preload) |
+| LLM output trust | Wardrobe AI response fields are whitelist-validated before hitting the DB |
+| File upload abuse | MIME type whitelist + 5 MB size cap on `/api/analyze-image` |
+
+## Credits System
+
+- First 100 registered users receive **100 free credits** (`earlyAccess: true`)
+- Users 101+ see a gate screen and receive 0 credits
+- Cost: **1 credit** per text message, **5 credits** per image upload or AI image generation
+- Balance is displayed on the Profile page; chat is disabled when credits reach 0
+
+## Database
+
+Schema managed with Drizzle ORM. After schema changes:
 
 ```bash
-npm run dev          # Start development server
-npm run build        # Build for production
-npm run start        # Start production server
-npm run lint         # Run ESLint
-npm run format       # Run Prettier
-npm run test         # Run tests
-npm run test:e2e     # Run E2E tests
+npx drizzle-kit push      # push directly (dev/staging)
+# or
+npx drizzle-kit generate  # generate SQL migration files
+npx drizzle-kit migrate   # apply migrations
 ```
 
-## 🔒 Security
+## License
 
-- API rate limiting implemented
-- Secure headers configured
-- Input validation with Zod
-- Image upload restrictions
-- Authentication with Clerk
+MIT — see [LICENSE](LICENSE).
 
-## 📈 Monitoring
+## Contact
 
-- Vercel's Built-in Error Monitoring
-- Web Vitals monitoring
-- API performance monitoring
-- User analytics
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create your feature branch
-
-```bash
-git checkout -b feature/amazing-feature
-```
-
-3. Commit your changes
-
-```bash
-git commit -m 'feat: add amazing feature'
-```
-
-4. Push to the branch
-
-```bash
-git push origin feature/amazing-feature
-```
-
-5. Open a Pull Request
-
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct and development process.
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- [Next.js](https://nextjs.org/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [shadcn/ui](https://ui.shadcn.com/)
-- [Vercel](https://vercel.com/)
-- [OpenAI](https://openai.com/)
-
-## 📞 Support
-
-For support, email moldovan.alexandra28@gmail.com.
-
-## 🔮 Roadmap
-
-- [ ] Virtual wardrobe functionality
-- [ ] Outfit generator
-- [ ] Trend matching
-
-## 🌟 Show your support
-
-Give a ⭐️ if this project helped you!
+moldovan.alexandra28@gmail.com

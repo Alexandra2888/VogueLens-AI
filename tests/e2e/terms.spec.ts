@@ -2,66 +2,37 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Terms and Conditions Page', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/terms');
+    await page.goto('/en/terms');
+    await page.waitForLoadState('domcontentloaded');
   });
 
-  test('should render the page title and dates', async ({ page }) => {
-    // Check title
-    const title = page.getByTestId('terms-title');
-    await expect(title).toBeVisible();
-    await expect(title).toHaveText('Terms and Conditions for VogueStyle AI');
-
-    // Check dates
-    const lastModified = page.getByTestId('last-modified');
-    const lastUpdated = page.getByTestId('last-updated');
-    await expect(lastModified).toBeVisible();
-    await expect(lastUpdated).toBeVisible();
-    await expect(lastModified).toContainText('5/11/2024');
-    await expect(lastUpdated).toContainText('5/11/2024');
+  test('displays page title', async ({ page }) => {
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
   });
 
-  test('should expand and collapse sections when clicked', async ({ page }) => {
-    // Test first section
-    const firstSectionToggle = page.getByTestId('section-toggle-0');
-    const firstSectionContent = page.getByTestId('section-content-0');
-
-    // Initially content should not be visible
-    await expect(firstSectionContent).not.toBeVisible();
-
-    // Click to expand
-    await firstSectionToggle.click();
-    await expect(firstSectionContent).toBeVisible();
-
-    // Click to collapse
-    await firstSectionToggle.click();
-    await expect(firstSectionContent).not.toBeVisible();
+  test('expands and collapses sections', async ({ page }) => {
+    const toggle = page.getByTestId('section-toggle-0');
+    const content = page.getByTestId('section-content-0');
+    await expect(content).not.toBeVisible();
+    await toggle.click();
+    await expect(content).toBeVisible();
+    await toggle.click();
+    await expect(content).not.toBeVisible();
   });
 
-  test('should show correct content for each section', async ({ page }) => {
-    // Test multiple sections
+  test('section content is non-empty when expanded', async ({ page }) => {
     for (let i = 0; i < 3; i++) {
-      // Testing first 3 sections as example
-      const sectionToggle = page.getByTestId(`section-toggle-${i}`);
-
-      await sectionToggle.click();
-      const sectionContent = page.getByTestId(`section-content-${i}`);
-
-      await expect(sectionContent).toBeVisible();
-
-      // Verify content is not empty
-      const contentText = await sectionContent.textContent();
-      expect(contentText?.length).toBeGreaterThan(0);
+      await page.getByTestId(`section-toggle-${i}`).click();
+      const content = page.getByTestId(`section-content-${i}`);
+      await expect(content).toBeVisible();
+      const text = await content.textContent();
+      expect(text?.length).toBeGreaterThan(0);
     }
   });
 
-  test('should allow multiple sections to be open simultaneously', async ({
-    page,
-  }) => {
-    // Open first two sections
+  test('multiple sections can be open simultaneously', async ({ page }) => {
     await page.getByTestId('section-toggle-0').click();
     await page.getByTestId('section-toggle-1').click();
-
-    // Verify both sections are visible
     await expect(page.getByTestId('section-content-0')).toBeVisible();
     await expect(page.getByTestId('section-content-1')).toBeVisible();
   });

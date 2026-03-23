@@ -12,20 +12,32 @@ const Message = ({
   isLoading?: boolean;
 }) => (
   <div
-    className={`my-12 flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+    className={`my-4 flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
   >
     <div className="flex max-w-[80%] items-start gap-3">
-      <Avatar className={message.sender === 'user' ? 'order-2' : ''}>
-        <AvatarFallback>
+      <Avatar
+        className={`h-8 w-8 flex-shrink-0 ${message.sender === 'user' ? 'order-2' : ''}`}
+      >
+        <AvatarFallback
+          className={
+            message.sender === 'user'
+              ? 'bg-brand-red/10 text-brand-red'
+              : 'bg-muted text-muted-foreground'
+          }
+        >
           {message.sender === 'user' ? (
-            <User className="h-5 w-5" />
+            <User className="h-4 w-4" />
           ) : (
-            <Bot className="h-5 w-5" />
+            <Bot className="h-4 w-4" />
           )}
         </AvatarFallback>
       </Avatar>
       <Card
-        className={`p-3 ${message.sender === 'user' ? 'bg-[#86C5DA] text-black' : ''}`}
+        className={`px-4 py-3 text-sm shadow-none ${
+          message.sender === 'user'
+            ? 'bg-brand-red text-white border-transparent'
+            : 'bg-muted/50 border-border'
+        }`}
       >
         <div className="space-y-2">
           {message.text}

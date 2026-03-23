@@ -2,10 +2,14 @@
 
 import { motion, useInView } from 'motion/react';
 import { useRef } from 'react';
+import { useTranslations } from 'next-intl';
+import { Sparkles, Palette, Zap, Shirt } from 'lucide-react';
 
-import { features } from '../../data/data';
+const featureIcons = [Sparkles, Palette, Zap, Shirt];
+const featureKeys = ['aiRecommendations', 'colorCoordination', 'instantTips', 'outfitGenerator'] as const;
 
 export default function FeaturesSection() {
+  const t = useTranslations('features');
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: '-100px' });
 
@@ -28,21 +32,20 @@ export default function FeaturesSection() {
             transition={{ duration: 0.6 }}
           >
             <span className="text-brand-red mb-4 inline-block text-sm font-medium tracking-widest uppercase">
-              Features
+              {t('label')}
             </span>
             <h2
               className="mx-auto max-w-2xl text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl"
               data-testid="features-title"
             >
-              Everything you need to{' '}
-              <span className="gradient-text">elevate your style</span>
+              {t('title')}{' '}
+              <span className="gradient-text">{t('titleGradient')}</span>
             </h2>
             <p
               className="text-foreground/50 mx-auto mt-6 max-w-xl text-lg"
               data-testid="features-subtitle"
             >
-              Powerful AI tools designed to transform how you think about
-              fashion
+              {t('subtitle')}
             </p>
           </motion.div>
         </div>
@@ -51,76 +54,67 @@ export default function FeaturesSection() {
           className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4"
           data-testid="features-grid"
         >
-          {features.map(
-            (
-              feature: {
-                icon: React.ElementType;
-                title: string;
-                description: string;
-              },
-              index: number
-            ) => {
-              const Icon = feature.icon;
-              return (
+          {featureKeys.map((key, index) => {
+            const Icon = featureIcons[index];
+            return (
+              <motion.div
+                key={key}
+                initial={{ opacity: 0, y: 30 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{
+                  duration: 0.5,
+                  delay: index * 0.1,
+                  ease: [0.25, 0.1, 0, 1],
+                }}
+                data-testid={`feature-card-${index}`}
+              >
                 <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={isInView ? { opacity: 1, y: 0 } : {}}
-                  transition={{
-                    duration: 0.5,
-                    delay: index * 0.1,
-                    ease: [0.25, 0.1, 0, 1],
-                  }}
-                  data-testid={`feature-card-${index}`}
+                  className="group border-border/50 bg-card/50 hover:border-brand-red/20 hover:bg-card relative flex h-full flex-col rounded-2xl border p-8 backdrop-blur-sm transition-colors duration-300"
+                  whileHover={{ y: -4, transition: { duration: 0.2 } }}
                 >
-                  <motion.div
-                    className="group border-border/50 bg-card/50 hover:border-brand-red/20 hover:bg-card relative flex h-full flex-col rounded-2xl border p-8 backdrop-blur-sm transition-colors duration-300"
-                    whileHover={{ y: -4, transition: { duration: 0.2 } }}
+                  <div className="from-brand-red/0 to-brand-teal/0 absolute inset-0 rounded-2xl bg-gradient-to-br opacity-0 transition-opacity duration-300 group-hover:opacity-[0.03]" />
+
+                  <div
+                    className="bg-brand-red/5 group-hover:bg-brand-red/10 dark:bg-brand-red/10 dark:group-hover:bg-brand-red/20 relative mb-6 flex h-12 w-12 items-center justify-center rounded-xl transition-colors duration-300"
+                    data-testid={`feature-icon-${index}`}
                   >
-                    <div className="from-brand-red/0 to-brand-teal/0 absolute inset-0 rounded-2xl bg-gradient-to-br opacity-0 transition-opacity duration-300 group-hover:opacity-[0.03]" />
+                    <Icon className="text-brand-red h-6 w-6" />
+                  </div>
 
-                    <div
-                      className="bg-brand-red/5 group-hover:bg-brand-red/10 dark:bg-brand-red/10 dark:group-hover:bg-brand-red/20 relative mb-6 flex h-12 w-12 items-center justify-center rounded-xl transition-colors duration-300"
-                      data-testid={`feature-icon-${index}`}
+                  <h3
+                    className="text-foreground relative mb-3 text-lg font-semibold"
+                    data-testid={`feature-title-${index}`}
+                  >
+                    {t(`items.${key}.title`)}
+                  </h3>
+
+                  <p
+                    className="text-foreground/50 relative text-sm leading-relaxed"
+                    data-testid={`feature-description-${index}`}
+                  >
+                    {t(`items.${key}.description`)}
+                  </p>
+
+                  <div className="text-brand-red mt-6 flex items-center text-sm font-medium opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                    {t('learnMore')}
+                    <svg
+                      className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2}
                     >
-                      <Icon className="text-brand-red h-6 w-6" />
-                    </div>
-
-                    <h3
-                      className="text-foreground relative mb-3 text-lg font-semibold"
-                      data-testid={`feature-title-${index}`}
-                    >
-                      {feature.title}
-                    </h3>
-
-                    <p
-                      className="text-foreground/50 relative text-sm leading-relaxed"
-                      data-testid={`feature-description-${index}`}
-                    >
-                      {feature.description}
-                    </p>
-
-                    <div className="text-brand-red mt-6 flex items-center text-sm font-medium opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                      Learn more
-                      <svg
-                        className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={2}
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M9 5l7 7-7 7"
-                        />
-                      </svg>
-                    </div>
-                  </motion.div>
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                  </div>
                 </motion.div>
-              );
-            }
-          )}
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </section>

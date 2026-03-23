@@ -12,10 +12,12 @@ import {
 } from 'motion/react';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Sparkles } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { images } from '../../data/data';
 
 const Hero = () => {
+  const t = useTranslations('hero');
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const { scrollYProgress } = useScroll();
   const y = useTransform(scrollYProgress, [0, 0.3], [0, -60]);
@@ -34,6 +36,12 @@ const Hero = () => {
     mouseY.set(yVal);
   };
 
+  const stats = [
+    { value: '10K+', label: t('stats.users') },
+    { value: '50K+', label: t('stats.outfits') },
+    { value: '4.9', label: t('stats.rating') },
+  ];
+
   return (
     <motion.section
       className="relative flex min-h-[90vh] items-center overflow-hidden"
@@ -51,58 +59,33 @@ const Hero = () => {
           className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20"
         >
           <div className="relative z-10 flex flex-col justify-center">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, ease: [0.25, 0.1, 0, 1] }}
-              className="mb-6"
-            >
+            {/* LCP content — rendered immediately, no opacity:0 to avoid delaying paint */}
+            <div className="mb-6">
               <motion.div
                 className="border-brand-red/20 bg-brand-red/5 text-brand-red dark:border-brand-red/30 dark:bg-brand-red/10 mb-8 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-medium"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.3, duration: 0.4 }}
+                transition={{ delay: 0.2, duration: 0.4 }}
               >
                 <Sparkles className="h-3.5 w-3.5" />
-                AI-Powered Fashion Intelligence
+                {t('badge')}
               </motion.div>
 
               <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-                <motion.span
-                  className="text-foreground block"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1, duration: 0.6 }}
-                >
-                  Your Personal
-                </motion.span>
-                <motion.span
-                  className="gradient-text mt-1 block"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2, duration: 0.6 }}
-                >
-                  AI Stylist
-                </motion.span>
+                <span className="text-foreground block">{t('titleLine1')}</span>
+                <span className="gradient-text mt-1 block">{t('titleLine2')}</span>
               </h1>
-            </motion.div>
+            </div>
 
-            <motion.p
-              className="text-foreground/60 mb-10 max-w-lg text-lg leading-relaxed"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4, duration: 0.6 }}
-            >
-              Intelligent outfit recommendations, color coordination, and
-              personalized style tips — all powered by advanced AI that
-              understands your unique aesthetic.
-            </motion.p>
+            <p className="text-foreground/60 mb-10 max-w-lg text-lg leading-relaxed">
+              {t('description')}
+            </p>
 
             <motion.div
               className="flex flex-col gap-4 sm:flex-row"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5, duration: 0.6 }}
+              transition={{ delay: 0.3, duration: 0.5 }}
             >
               <Link href="/chat">
                 <motion.div
@@ -110,7 +93,7 @@ const Hero = () => {
                   whileTap={{ scale: 0.98 }}
                 >
                   <Button className="group bg-brand-red shadow-brand-red/20 hover:bg-brand-red-dark hover:shadow-brand-red/30 h-12 rounded-xl px-8 text-sm font-medium text-white shadow-lg transition-all hover:shadow-xl">
-                    Start Styling
+                    {t('cta')}
                     <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </Button>
                 </motion.div>
@@ -124,7 +107,7 @@ const Hero = () => {
                     variant="outline"
                     className="border-border/50 hover:bg-foreground/5 h-12 rounded-xl px-8 text-sm font-medium backdrop-blur-sm"
                   >
-                    Explore Features
+                    {t('explore')}
                   </Button>
                 </motion.div>
               </Link>
@@ -136,11 +119,7 @@ const Hero = () => {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.7, duration: 0.6 }}
             >
-              {[
-                { value: '10K+', label: 'Active Users' },
-                { value: '50K+', label: 'Outfits Created' },
-                { value: '4.9', label: 'User Rating' },
-              ].map((stat, i) => (
+              {stats.map((stat, i) => (
                 <motion.div
                   key={stat.label}
                   initial={{ opacity: 0, y: 10 }}
@@ -198,6 +177,7 @@ const Hero = () => {
                     width={image.width}
                     height={image.height}
                     className="h-full w-full object-cover"
+                    priority={index === 0}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
                 </motion.div>
@@ -215,10 +195,10 @@ const Hero = () => {
                   </div>
                   <div>
                     <div className="text-foreground text-sm font-semibold">
-                      Style Match
+                      {t('styleMatch')}
                     </div>
                     <div className="text-foreground/50 text-xs">
-                      98% Confidence
+                      {t('confidence')}
                     </div>
                   </div>
                 </div>

@@ -10,14 +10,14 @@ import {
   useScroll,
 } from 'motion/react';
 import { usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 import { ThemeToggle } from './theme-toggle';
 import Logo from '../logo/logo';
 import MinimalLogo from '../logo/minimal-logo';
 import { Show, UserButton } from '@clerk/nextjs';
 import SignInCustomButton from './sign-in-custom-button';
-
-import { navItems } from '../../../data/data';
+import { LanguageSwitcher } from '@/components/language-switcher';
 
 const isTestEnvironment = process.env.NEXT_PUBLIC_CLERK_BYPASS_AUTH === 'true';
 
@@ -33,7 +33,9 @@ const NavLink = ({
   onClick?: () => void;
 }) => {
   const pathname = usePathname();
-  const isActive = pathname === href;
+  // Match ignoring locale prefix: /en/chat and /ro/chat both match /chat
+  const pathWithoutLocale = pathname.replace(/^\/(en|ro)/, '') || '/';
+  const isActive = pathWithoutLocale === href || pathname === href;
 
   return (
     <Link
@@ -76,9 +78,17 @@ const MockUserButton = ({ isMobile = false }: { isMobile?: boolean }) => (
 );
 
 export default function Header() {
+  const t = useTranslations('nav');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { scrollY } = useScroll();
+
+  const navItems = [
+    { href: '/', label: t('home') },
+    { href: '/chat', label: t('chat') },
+    { href: '/wardrobe', label: t('wardrobe') },
+    { href: '/profile', label: t('profile') },
+  ];
 
   useMotionValueEvent(scrollY, 'change', (latest) => {
     setScrolled(latest > 20);
@@ -123,7 +133,7 @@ export default function Header() {
     <motion.header
       className={`fixed z-50 w-full transition-all duration-500 ${
         scrolled
-          ? 'bg-background/80 shadow-sm shadow-black/[0.03] backdrop-blur-2xl dark:shadow-white/[0.02]'
+          ? 'bg-background/80 shadow-sm shadow-black/3 backdrop-blur-2xl dark:shadow-white/2'
           : 'bg-transparent'
       }`}
       initial={{ y: -100 }}
@@ -169,6 +179,7 @@ export default function Header() {
           >
             <div className="bg-border h-5 w-px" />
             {renderAuthButtons(false)}
+            <LanguageSwitcher />
             <ThemeToggle />
           </motion.div>
         </nav>
@@ -178,11 +189,12 @@ export default function Header() {
           data-testid="mobile-nav"
         >
           {renderAuthButtons(true)}
+          <LanguageSwitcher />
           <ThemeToggle />
           <motion.button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className="text-foreground relative z-50 flex h-10 w-10 items-center justify-center rounded-xl"
-            aria-label="Toggle menu"
+            aria-label={t('toggleMenu')}
             whileTap={{ scale: 0.9 }}
             aria-expanded={isMenuOpen ? 'true' : 'false'}
             data-testid="mobile-menu-button"
