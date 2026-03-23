@@ -7,10 +7,15 @@ import { conversations } from '@/db/schema';
 export async function GET() {
   try {
     const { userId } = await auth();
-    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!userId)
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const list = await db
-      .select({ id: conversations.id, title: conversations.title, updatedAt: conversations.updatedAt })
+      .select({
+        id: conversations.id,
+        title: conversations.title,
+        updatedAt: conversations.updatedAt,
+      })
       .from(conversations)
       .where(eq(conversations.userId, userId))
       .orderBy(desc(conversations.updatedAt))
@@ -19,14 +24,18 @@ export async function GET() {
     return NextResponse.json({ conversations: list });
   } catch (error) {
     console.error('[conversations GET]', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }
 
 export async function POST(req: Request) {
   try {
     const { userId } = await auth();
-    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!userId)
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const { title } = await req.json();
     const [conv] = await db
@@ -37,6 +46,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ conversation: conv });
   } catch (error) {
     console.error('[conversations POST]', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }

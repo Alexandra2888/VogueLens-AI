@@ -70,9 +70,9 @@ export function ShoppingTab({ wardrobeItems }: ShoppingTabProps) {
 
       if (uploadError) throw uploadError;
 
-      const { data: { publicUrl } } = supabase.storage
-        .from(WARDROBE_BUCKET)
-        .getPublicUrl(path);
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from(WARDROBE_BUCKET).getPublicUrl(path);
 
       const res = await fetch('/api/wardrobe/shopping-check', {
         method: 'POST',
@@ -97,7 +97,7 @@ export function ShoppingTab({ wardrobeItems }: ShoppingTabProps) {
     <div className="space-y-6">
       {/* Upload area */}
       <div
-        className="flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-border p-10 transition-colors hover:border-primary/50 hover:bg-muted/20"
+        className="border-border hover:border-primary/50 hover:bg-muted/20 flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed p-10 transition-colors"
         onClick={() => fileInputRef.current?.click()}
       >
         <input
@@ -107,12 +107,19 @@ export function ShoppingTab({ wardrobeItems }: ShoppingTabProps) {
           className="hidden"
           onChange={handleFileChange}
         />
-        <ShoppingBag className="h-8 w-8 text-muted-foreground" />
+        <ShoppingBag className="text-muted-foreground h-8 w-8" />
         <div className="text-center">
           <p className="text-sm font-medium">{t('uploadTitle')}</p>
-          <p className="text-xs text-muted-foreground mt-1">{t('uploadSubtitle')}</p>
+          <p className="text-muted-foreground mt-1 text-xs">
+            {t('uploadSubtitle')}
+          </p>
         </div>
-        <Button variant="outline" size="sm" className="gap-2" onClick={(e) => e.stopPropagation()}>
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-2"
+          onClick={(e) => e.stopPropagation()}
+        >
           <Upload className="h-4 w-4" /> {t('choosePhoto')}
         </Button>
       </div>
@@ -132,21 +139,30 @@ export function ShoppingTab({ wardrobeItems }: ShoppingTabProps) {
 
           <div className="space-y-4">
             {isChecking ? (
-              <div className="flex h-64 flex-col items-center justify-center gap-3 text-muted-foreground">
+              <div className="text-muted-foreground flex h-64 flex-col items-center justify-center gap-3">
                 <Loader2 className="h-7 w-7 animate-spin" />
                 <p className="text-sm">{t('analyzing')}</p>
               </div>
             ) : result ? (
               <>
                 {/* Recommendation badge */}
-                <div className={`inline-flex items-center rounded-full border px-4 py-1.5 text-sm font-semibold ${RECOMMENDATION_STYLES[result.recommendation]}`}>
+                <div
+                  className={`inline-flex items-center rounded-full border px-4 py-1.5 text-sm font-semibold ${RECOMMENDATION_STYLES[result.recommendation]}`}
+                >
                   {t(`recommendations.${result.recommendation}`)}
                 </div>
 
                 {/* Item metadata */}
                 <div className="flex flex-wrap gap-2">
-                  {[result.analysis.category, result.analysis.style, result.analysis.season].map((tag) => (
-                    <span key={tag} className="rounded-full bg-muted px-3 py-1 text-xs capitalize">
+                  {[
+                    result.analysis.category,
+                    result.analysis.style,
+                    result.analysis.season,
+                  ].map((tag) => (
+                    <span
+                      key={tag}
+                      className="bg-muted rounded-full px-3 py-1 text-xs capitalize"
+                    >
                       {tag}
                     </span>
                   ))}
@@ -161,23 +177,25 @@ export function ShoppingTab({ wardrobeItems }: ShoppingTabProps) {
                 </div>
 
                 {/* Reasoning */}
-                <p className="text-sm text-muted-foreground">{result.reasoning}</p>
+                <p className="text-muted-foreground text-sm">
+                  {result.reasoning}
+                </p>
 
                 {/* Compatibility score */}
                 <div className="flex items-center gap-2">
-                  <div className="h-2 flex-1 rounded-full bg-muted overflow-hidden">
+                  <div className="bg-muted h-2 flex-1 overflow-hidden rounded-full">
                     <div
-                      className="h-2 rounded-full bg-primary transition-all"
+                      className="bg-primary h-2 rounded-full transition-all"
                       style={{ width: `${result.compatibilityScore}%` }}
                     />
                   </div>
-                  <span className="text-xs text-muted-foreground w-12 text-right">
+                  <span className="text-muted-foreground w-12 text-right text-xs">
                     {result.compatibilityScore}% match
                   </span>
                 </div>
               </>
             ) : error ? (
-              <p className="text-sm text-destructive">{error}</p>
+              <p className="text-destructive text-sm">{error}</p>
             ) : null}
           </div>
         </div>
@@ -193,9 +211,9 @@ export function ShoppingTab({ wardrobeItems }: ShoppingTabProps) {
                 <img
                   src={item.imageUrl}
                   alt={item.category}
-                  className="h-28 w-20 rounded-lg object-cover ring-2 ring-primary"
+                  className="ring-primary h-28 w-20 rounded-lg object-cover ring-2"
                 />
-                <p className="mt-1 text-center text-xs capitalize text-muted-foreground">
+                <p className="text-muted-foreground mt-1 text-center text-xs capitalize">
                   {item.category}
                 </p>
               </div>

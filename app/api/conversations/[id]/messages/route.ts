@@ -6,7 +6,10 @@ import { messages, conversations } from '@/db/schema';
 
 async function verifyOwnership(conversationId: string, userId: string) {
   return db.query.conversations.findFirst({
-    where: and(eq(conversations.id, conversationId), eq(conversations.userId, userId)),
+    where: and(
+      eq(conversations.id, conversationId),
+      eq(conversations.userId, userId)
+    ),
   });
 }
 
@@ -16,11 +19,13 @@ export async function GET(
 ) {
   try {
     const { userId } = await auth();
-    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!userId)
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const { id } = await params;
     const conv = await verifyOwnership(id, userId);
-    if (!conv) return NextResponse.json({ error: 'Not found' }, { status: 404 });
+    if (!conv)
+      return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
     const msgs = await db
       .select()
@@ -31,7 +36,10 @@ export async function GET(
     return NextResponse.json({ messages: msgs });
   } catch (error) {
     console.error('[messages GET]', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }
 
@@ -41,11 +49,13 @@ export async function POST(
 ) {
   try {
     const { userId } = await auth();
-    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!userId)
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const { id } = await params;
     const conv = await verifyOwnership(id, userId);
-    if (!conv) return NextResponse.json({ error: 'Not found' }, { status: 404 });
+    if (!conv)
+      return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
     const { role, content, imageUrl } = await req.json();
     const [msg] = await db
@@ -56,6 +66,9 @@ export async function POST(
     return NextResponse.json({ message: msg });
   } catch (error) {
     console.error('[messages POST]', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }

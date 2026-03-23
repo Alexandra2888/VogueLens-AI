@@ -50,7 +50,10 @@ export default function TermsPage() {
                 )}
               </button>
               {expandedSections.includes(index) && (
-                <div data-testid={`section-content-${index}`} className="px-4 py-5 sm:px-6">
+                <div
+                  data-testid={`section-content-${index}`}
+                  className="px-4 py-5 sm:px-6"
+                >
                   <p className="text-primary text-sm whitespace-pre-wrap">
                     {section.content}
                   </p>

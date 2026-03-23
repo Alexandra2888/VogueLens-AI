@@ -54,7 +54,12 @@ async function getOrCreateUser(userId: string) {
     const isEarly = Number(earlyCount) < 100;
     const [newUser] = await db
       .insert(users)
-      .values({ id: userId, email, credits: isEarly ? 100 : 0, earlyAccess: isEarly })
+      .values({
+        id: userId,
+        email,
+        credits: isEarly ? 100 : 0,
+        earlyAccess: isEarly,
+      })
       .returning();
     user = newUser;
   }
@@ -76,17 +81,25 @@ export async function POST(req: Request) {
     }
 
     const parsed = chatSchema.safeParse(body);
-    if (!parsed.success) return badRequestResponse(parsed.error.errors[0]?.message ?? 'Invalid input');
+    if (!parsed.success)
+      return badRequestResponse(
+        parsed.error.errors[0]?.message ?? 'Invalid input'
+      );
 
     const prompt = sanitizeText(parsed.data.prompt);
-    const imageAnalysis = parsed.data.imageAnalysis ? sanitizeText(parsed.data.imageAnalysis) : null;
+    const imageAnalysis = parsed.data.imageAnalysis
+      ? sanitizeText(parsed.data.imageAnalysis)
+      : null;
 
     if (!prompt) return badRequestResponse('Prompt cannot be empty');
 
     // Check user has at least 1 credit
     const user = await getOrCreateUser(userId);
     if (user.credits < 1) {
-      return NextResponse.json({ error: 'Insufficient credits' }, { status: 402 });
+      return NextResponse.json(
+        { error: 'Insufficient credits' },
+        { status: 402 }
+      );
     }
 
     const openai = getOpenAI();
@@ -102,7 +115,10 @@ export async function POST(req: Request) {
     ];
 
     if (imageAnalysis) {
-      messages.push({ role: 'user', content: `Image context: ${imageAnalysis}` });
+      messages.push({
+        role: 'user',
+        content: `Image context: ${imageAnalysis}`,
+      });
     }
     messages.push({ role: 'user', content: prompt });
 
@@ -123,10 +139,15 @@ export async function POST(req: Request) {
       if (toolCall?.function.name === 'generate_image') {
         // Image costs 5 credits — verify user has enough
         if (user.credits < 5) {
-          return NextResponse.json({ error: 'Insufficient credits for image generation' }, { status: 402 });
+          return NextResponse.json(
+            { error: 'Insufficient credits for image generation' },
+            { status: 402 }
+          );
         }
 
-        const { prompt: imagePrompt } = JSON.parse(toolCall.function.arguments) as { prompt: string };
+        const { prompt: imagePrompt } = JSON.parse(
+          toolCall.function.arguments
+        ) as { prompt: string };
 
         const imageResponse = await openai.images.generate({
           model: 'dall-e-3',
@@ -137,17 +158,30 @@ export async function POST(req: Request) {
 
         const imageUrl = imageResponse.data?.[0]?.url;
         if (!imageUrl) {
-          return NextResponse.json({ error: 'Failed to generate image' }, { status: 502 });
+          return NextResponse.json(
+            { error: 'Failed to generate image' },
+            { status: 502 }
+          );
         }
 
-        await db.update(users).set({ credits: user.credits - 5, updatedAt: new Date() }).where(eq(users.id, userId));
+        await db
+          .update(users)
+          .set({ credits: user.credits - 5, updatedAt: new Date() })
+          .where(eq(users.id, userId));
 
-        return NextResponse.json({ response: 'Here is your generated outfit:', imageUrl, creditsRemaining: user.credits - 5 });
+        return NextResponse.json({
+          response: 'Here is your generated outfit:',
+          imageUrl,
+          creditsRemaining: user.credits - 5,
+        });
       }
     }
 
     // Normal text response
-    await db.update(users).set({ credits: user.credits - 1, updatedAt: new Date() }).where(eq(users.id, userId));
+    await db
+      .update(users)
+      .set({ credits: user.credits - 1, updatedAt: new Date() })
+      .where(eq(users.id, userId));
 
     return NextResponse.json({
       response: choice.message.content,

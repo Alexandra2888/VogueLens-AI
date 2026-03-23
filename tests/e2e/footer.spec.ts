@@ -12,7 +12,9 @@ test.describe('Footer', () => {
 
   test('contains Terms of Service and Privacy links', async ({ page }) => {
     const footer = page.locator('footer');
-    await expect(footer.getByRole('link', { name: 'Terms of Service' })).toBeVisible();
+    await expect(
+      footer.getByRole('link', { name: 'Terms of Service' })
+    ).toBeVisible();
     await expect(footer.getByRole('link', { name: 'Privacy' })).toBeVisible();
   });
 
@@ -25,6 +27,8 @@ test.describe('Footer', () => {
 
   test('displays copyright with current year', async ({ page }) => {
     const year = new Date().getFullYear().toString();
-    await expect(page.locator('footer').getByText(`© ${year} VogueLens AI`)).toBeVisible();
+    await expect(
+      page.locator('footer').getByText(`© ${year} VogueLens AI`)
+    ).toBeVisible();
   });
 });

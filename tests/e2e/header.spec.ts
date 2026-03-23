@@ -37,7 +37,10 @@ test.describe('Header Component', () => {
 
   test('active link has aria-current=page on home', async ({ page }) => {
     await page.setViewportSize({ width: 1024, height: 768 });
-    await expect(page.getByTestId('nav-link-home-desktop')).toHaveAttribute('aria-current', 'page');
+    await expect(page.getByTestId('nav-link-home-desktop')).toHaveAttribute(
+      'aria-current',
+      'page'
+    );
   });
 
   test('active link changes on navigation to privacy', async ({ page }) => {
@@ -45,6 +48,9 @@ test.describe('Header Component', () => {
     await page.goto('/en/privacy');
     await page.waitForLoadState('networkidle');
     // Home link should not be active
-    await expect(page.getByTestId('nav-link-home-desktop')).not.toHaveAttribute('aria-current', 'page');
+    await expect(page.getByTestId('nav-link-home-desktop')).not.toHaveAttribute(
+      'aria-current',
+      'page'
+    );
   });
 });

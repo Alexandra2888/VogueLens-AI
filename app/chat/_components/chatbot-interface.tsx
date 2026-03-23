@@ -61,12 +61,19 @@ async function apiUpdateTitle(conversationId: string, title: string) {
   }
 }
 
-async function apiLoadMessages(conversationId: string): Promise<MessageProps[]> {
+async function apiLoadMessages(
+  conversationId: string
+): Promise<MessageProps[]> {
   try {
     const res = await fetch(`/api/conversations/${conversationId}/messages`);
     const data = await res.json();
     return (data.messages ?? []).map(
-      (m: { id: string; role: string; content: string; imageUrl?: string }) => ({
+      (m: {
+        id: string;
+        role: string;
+        content: string;
+        imageUrl?: string;
+      }) => ({
         id: m.id,
         text: m.content,
         sender: m.role as 'user' | 'bot',
@@ -83,11 +90,15 @@ async function apiLoadMessages(conversationId: string): Promise<MessageProps[]> 
 export default function ChatbotInterface() {
   const t = useTranslations('chat');
   const [conversations, setConversations] = useState<ConversationProps[]>([]);
-  const [currentConversation, setCurrentConversation] = useState<ConversationProps | null>(null);
+  const [currentConversation, setCurrentConversation] =
+    useState<ConversationProps | null>(null);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingConversations, setIsLoadingConversations] = useState(true);
-  const [selectedImage, setSelectedImage] = useState<{ file: File; preview: string } | null>(null);
+  const [selectedImage, setSelectedImage] = useState<{
+    file: File;
+    preview: string;
+  } | null>(null);
   const [credits, setCredits] = useState<number | null>(null);
   const [earlyAccess, setEarlyAccess] = useState<boolean | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -119,7 +130,11 @@ export default function ChatbotInterface() {
       .then((r) => r.json())
       .then(async (data) => {
         const list: ConversationProps[] = (data.conversations ?? []).map(
-          (c: { id: string; title: string }) => ({ id: c.id, title: c.title, messages: [] })
+          (c: { id: string; title: string }) => ({
+            id: c.id,
+            title: c.title,
+            messages: [],
+          })
         );
         setConversations(list);
         setIsLoadingConversations(false);
@@ -129,7 +144,9 @@ export default function ChatbotInterface() {
           const first = list[0];
           const msgs = await apiLoadMessages(first.id);
           const loaded = { ...first, messages: msgs };
-          setConversations((prev) => prev.map((c) => (c.id === first.id ? loaded : c)));
+          setConversations((prev) =>
+            prev.map((c) => (c.id === first.id ? loaded : c))
+          );
           setCurrentConversation(loaded);
         } else {
           // No conversations yet — start a fresh one
@@ -156,8 +173,16 @@ export default function ChatbotInterface() {
     const greetingText = t('greeting');
     const tempId = crypto.randomUUID();
 
-    const greetingMsg: MessageProps = { id: crypto.randomUUID(), text: greetingText, sender: 'bot' };
-    const tempConv: ConversationProps = { id: tempId, title: t('newConversation'), messages: [greetingMsg] };
+    const greetingMsg: MessageProps = {
+      id: crypto.randomUUID(),
+      text: greetingText,
+      sender: 'bot',
+    };
+    const tempConv: ConversationProps = {
+      id: tempId,
+      title: t('newConversation'),
+      messages: [greetingMsg],
+    };
 
     setConversations((prev) => [tempConv, ...prev]);
     setCurrentConversation(tempConv);
@@ -166,23 +191,34 @@ export default function ChatbotInterface() {
     const dbId = await apiCreateConversation(t('newConversation'));
     if (dbId) {
       await apiSaveMessage(dbId, 'bot', greetingText);
-      const realConv: ConversationProps = { id: dbId, title: t('newConversation'), messages: [{ ...greetingMsg }] };
-      setConversations((prev) => prev.map((c) => (c.id === tempId ? realConv : c)));
+      const realConv: ConversationProps = {
+        id: dbId,
+        title: t('newConversation'),
+        messages: [{ ...greetingMsg }],
+      };
+      setConversations((prev) =>
+        prev.map((c) => (c.id === tempId ? realConv : c))
+      );
       setCurrentConversation((cur) => (cur?.id === tempId ? realConv : cur));
     }
   }, [t]);
 
-  const handleConversationSelect = useCallback(async (conv: ConversationProps) => {
-    if (conv.messages.length > 0) {
-      setCurrentConversation(conv);
-      return;
-    }
-    // Lazy-load messages
-    const msgs = await apiLoadMessages(conv.id);
-    const loaded = { ...conv, messages: msgs };
-    setConversations((prev) => prev.map((c) => (c.id === conv.id ? loaded : c)));
-    setCurrentConversation(loaded);
-  }, []);
+  const handleConversationSelect = useCallback(
+    async (conv: ConversationProps) => {
+      if (conv.messages.length > 0) {
+        setCurrentConversation(conv);
+        return;
+      }
+      // Lazy-load messages
+      const msgs = await apiLoadMessages(conv.id);
+      const loaded = { ...conv, messages: msgs };
+      setConversations((prev) =>
+        prev.map((c) => (c.id === conv.id ? loaded : c))
+      );
+      setCurrentConversation(loaded);
+    },
+    []
+  );
 
   const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -197,7 +233,8 @@ export default function ChatbotInterface() {
   };
 
   const handleSend = async () => {
-    if ((!input.trim() && !selectedImage) || !currentConversation || isLoading) return;
+    if ((!input.trim() && !selectedImage) || !currentConversation || isLoading)
+      return;
 
     const promptText = input.trim();
     setIsLoading(true);
@@ -210,17 +247,25 @@ export default function ChatbotInterface() {
         imageUrl: selectedImage?.preview,
       };
 
-      const isFirstUserMessage = !currentConversation.messages.some((m) => m.sender === 'user');
-      const newTitle = isFirstUserMessage ? generateChatTitle(userMsg.text) : currentConversation.title;
+      const isFirstUserMessage = !currentConversation.messages.some(
+        (m) => m.sender === 'user'
+      );
+      const newTitle = isFirstUserMessage
+        ? generateChatTitle(userMsg.text)
+        : currentConversation.title;
 
       let imageAnalysis: string | null = null;
 
       if (selectedImage) {
         const formData = new FormData();
         formData.append('image', selectedImage.file);
-        const imageResponse = await fetch('/api/analyze-image', { method: 'POST', body: formData });
+        const imageResponse = await fetch('/api/analyze-image', {
+          method: 'POST',
+          body: formData,
+        });
         const imageData = await imageResponse.json();
-        if (imageData.creditsRemaining !== undefined) setCredits(imageData.creditsRemaining);
+        if (imageData.creditsRemaining !== undefined)
+          setCredits(imageData.creditsRemaining);
         imageAnalysis = imageData.description ?? null;
       }
 
@@ -229,7 +274,9 @@ export default function ChatbotInterface() {
         title: newTitle,
         messages: [...currentConversation.messages, userMsg],
       };
-      setConversations((prev) => prev.map((c) => (c.id === currentConversation.id ? withUser : c)));
+      setConversations((prev) =>
+        prev.map((c) => (c.id === currentConversation.id ? withUser : c))
+      );
       setCurrentConversation(withUser);
       setInput('');
       clearSelectedImage();
@@ -237,10 +284,14 @@ export default function ChatbotInterface() {
       const chatResponse = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: promptText || t('defaultImagePrompt'), imageAnalysis }),
+        body: JSON.stringify({
+          prompt: promptText || t('defaultImagePrompt'),
+          imageAnalysis,
+        }),
       });
       const chatData = await chatResponse.json();
-      if (chatData.creditsRemaining !== undefined) setCredits(chatData.creditsRemaining);
+      if (chatData.creditsRemaining !== undefined)
+        setCredits(chatData.creditsRemaining);
 
       const botMsg: MessageProps = {
         id: crypto.randomUUID(),
@@ -250,14 +301,30 @@ export default function ChatbotInterface() {
         imageAnalysis: imageAnalysis ?? undefined,
       };
 
-      const withBot: ConversationProps = { ...withUser, messages: [...withUser.messages, botMsg] };
-      setConversations((prev) => prev.map((c) => (c.id === currentConversation.id ? withBot : c)));
+      const withBot: ConversationProps = {
+        ...withUser,
+        messages: [...withUser.messages, botMsg],
+      };
+      setConversations((prev) =>
+        prev.map((c) => (c.id === currentConversation.id ? withBot : c))
+      );
       setCurrentConversation(withBot);
 
       // Persist
-      await apiSaveMessage(currentConversation.id, 'user', userMsg.text, userMsg.imageUrl);
-      await apiSaveMessage(currentConversation.id, 'bot', botMsg.text, botMsg.imageUrl);
-      if (isFirstUserMessage) await apiUpdateTitle(currentConversation.id, newTitle);
+      await apiSaveMessage(
+        currentConversation.id,
+        'user',
+        userMsg.text,
+        userMsg.imageUrl
+      );
+      await apiSaveMessage(
+        currentConversation.id,
+        'bot',
+        botMsg.text,
+        botMsg.imageUrl
+      );
+      if (isFirstUserMessage)
+        await apiUpdateTitle(currentConversation.id, newTitle);
     } catch (error) {
       console.error('Error processing message:', error);
     } finally {
@@ -267,8 +334,8 @@ export default function ChatbotInterface() {
 
   if (earlyAccess === false) {
     return (
-      <div className="flex h-full items-center justify-center rounded-xl border border-border bg-background shadow-sm">
-        <div className="max-w-sm space-y-4 text-center px-6">
+      <div className="border-border bg-background flex h-full items-center justify-center rounded-xl border shadow-sm">
+        <div className="max-w-sm space-y-4 px-6 text-center">
           <Bot className="text-brand-red mx-auto h-14 w-14" />
           <h2 className="text-2xl font-bold">{t('gateTitle')}</h2>
           <p className="text-muted-foreground">{t('gateSubtitle')}</p>
@@ -279,8 +346,8 @@ export default function ChatbotInterface() {
 
   if (earlyAccess === true && credits === 0) {
     return (
-      <div className="flex h-full items-center justify-center rounded-xl border border-border bg-background shadow-sm">
-        <div className="max-w-sm space-y-4 text-center px-6">
+      <div className="border-border bg-background flex h-full items-center justify-center rounded-xl border shadow-sm">
+        <div className="max-w-sm space-y-4 px-6 text-center">
           <Bot className="text-muted-foreground mx-auto h-14 w-14" />
           <h2 className="text-2xl font-bold">{t('outOfCreditsTitle')}</h2>
           <p className="text-muted-foreground">{t('outOfCreditsSubtitle')}</p>
@@ -292,7 +359,7 @@ export default function ChatbotInterface() {
   const outOfCredits = credits === 0;
 
   return (
-    <div className="flex h-full overflow-hidden rounded-xl border border-border bg-background shadow-sm">
+    <div className="border-border bg-background flex h-full overflow-hidden rounded-xl border shadow-sm">
       <div className="hidden md:block">
         <Sidebar
           conversations={conversations}
@@ -318,13 +385,15 @@ export default function ChatbotInterface() {
               <div className="space-y-2 text-center">
                 <Bot className="text-muted-foreground mx-auto h-12 w-12" />
                 <h3 className="text-lg font-semibold">{t('welcome')}</h3>
-                <p className="text-muted-foreground text-sm">{t('welcomeSubtitle')}</p>
+                <p className="text-muted-foreground text-sm">
+                  {t('welcomeSubtitle')}
+                </p>
               </div>
             </div>
           )}
         </ScrollArea>
 
-        <div className="border-t border-border p-4">
+        <div className="border-border border-t p-4">
           <div className="flex flex-col space-y-2">
             {selectedImage && (
               <div className="relative inline-block">
@@ -333,13 +402,24 @@ export default function ChatbotInterface() {
                   alt="Selected"
                   className="h-20 w-20 rounded-md object-cover"
                 />
-                <Button variant="ghost" size="icon" className="absolute -top-2 -right-2" onClick={clearSelectedImage}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute -top-2 -right-2"
+                  onClick={clearSelectedImage}
+                >
                   <X className="h-4 w-4" />
                 </Button>
               </div>
             )}
             <div className="flex items-center space-x-2">
-              <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={handleImageSelect} />
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                ref={fileInputRef}
+                onChange={handleImageSelect}
+              />
               <Button
                 variant="outline"
                 size="icon"
@@ -355,7 +435,12 @@ export default function ChatbotInterface() {
                 placeholder={t('placeholder')}
                 className="flex-1"
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey && !isLoading && !outOfCredits) {
+                  if (
+                    e.key === 'Enter' &&
+                    !e.shiftKey &&
+                    !isLoading &&
+                    !outOfCredits
+                  ) {
                     e.preventDefault();
                     handleSend();
                   }
@@ -365,10 +450,19 @@ export default function ChatbotInterface() {
               <button
                 type="button"
                 onClick={handleSend}
-                disabled={!currentConversation || (!input.trim() && !selectedImage) || isLoading || outOfCredits}
-                className="text-muted-foreground hover:text-brand-red disabled:opacity-40 transition-colors hover:cursor-pointer"
+                disabled={
+                  !currentConversation ||
+                  (!input.trim() && !selectedImage) ||
+                  isLoading ||
+                  outOfCredits
+                }
+                className="text-muted-foreground hover:text-brand-red transition-colors hover:cursor-pointer disabled:opacity-40"
               >
-                {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
+                {isLoading ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  <Send className="h-5 w-5" />
+                )}
                 <span className="sr-only">{t('sendMessage')}</span>
               </button>
             </div>

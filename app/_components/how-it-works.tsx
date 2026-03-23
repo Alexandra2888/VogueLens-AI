@@ -6,7 +6,12 @@ import { useTranslations } from 'next-intl';
 import { MessageSquare, Search, Lightbulb, Sparkles } from 'lucide-react';
 
 const stepIcons = [MessageSquare, Search, Lightbulb, Sparkles];
-const stepKeys = ['startChat', 'describeNeeds', 'receiveAdvice', 'refineStyle'] as const;
+const stepKeys = [
+  'startChat',
+  'describeNeeds',
+  'receiveAdvice',
+  'refineStyle',
+] as const;
 
 export default function HowItWorks() {
   const t = useTranslations('howItWorks');

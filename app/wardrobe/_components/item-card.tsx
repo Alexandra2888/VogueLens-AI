@@ -33,7 +33,7 @@ export function ItemCard({ item, onDelete, highlighted }: ItemCardProps) {
       exit={{ opacity: 0, scale: 0.9 }}
       transition={{ duration: 0.2 }}
     >
-      <Card className={highlighted ? 'ring-2 ring-primary' : ''}>
+      <Card className={highlighted ? 'ring-primary ring-2' : ''}>
         <CardContent className="relative p-0">
           <img
             src={item.imageUrl}
@@ -48,16 +48,20 @@ export function ItemCard({ item, onDelete, highlighted }: ItemCardProps) {
           >
             <X className="h-3 w-3" />
           </Button>
-          <div className="p-3 space-y-1">
+          <div className="space-y-1 p-3">
             <div className="flex items-center justify-between">
               <span className="font-medium capitalize">{item.category}</span>
-              <span className="text-xs text-muted-foreground capitalize">{item.season}</span>
+              <span className="text-muted-foreground text-xs capitalize">
+                {item.season}
+              </span>
             </div>
-            <p className="text-sm text-muted-foreground capitalize">{item.style}</p>
+            <p className="text-muted-foreground text-sm capitalize">
+              {item.style}
+            </p>
             {item.brand && (
-              <p className="text-xs text-muted-foreground">{item.brand}</p>
+              <p className="text-muted-foreground text-xs">{item.brand}</p>
             )}
-            <div className="flex gap-1 flex-wrap">
+            <div className="flex flex-wrap gap-1">
               {item.colors.map((color) => (
                 <span
                   key={color}

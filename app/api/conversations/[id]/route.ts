@@ -10,7 +10,8 @@ export async function PATCH(
 ) {
   try {
     const { userId } = await auth();
-    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!userId)
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const { id } = await params;
     const { title } = await req.json();
@@ -23,7 +24,10 @@ export async function PATCH(
     return NextResponse.json({ ok: true });
   } catch (error) {
     console.error('[conversations PATCH]', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }
 
@@ -33,7 +37,8 @@ export async function DELETE(
 ) {
   try {
     const { userId } = await auth();
-    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!userId)
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const { id } = await params;
 
@@ -44,6 +49,9 @@ export async function DELETE(
     return NextResponse.json({ ok: true });
   } catch (error) {
     console.error('[conversations DELETE]', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }

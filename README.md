@@ -21,17 +21,17 @@ VogueLens AI is an intelligent fashion advisor that helps users make better styl
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Framework | Next.js 16 (App Router), TypeScript 5.x |
-| Styling | Tailwind CSS 4.x, shadcn/ui, motion/react |
-| Auth | Clerk (SSO + Google) |
-| AI | OpenAI GPT-4 / GPT-4o, DALL-E 3, Google Cloud Vision |
-| Database | Supabase (PostgreSQL), Drizzle ORM |
-| Rate limiting | Upstash Redis + @upstash/ratelimit |
-| i18n | next-intl |
-| Testing | Jest + React Testing Library, Playwright |
-| Deployment | Vercel |
+| Layer         | Technology                                           |
+| ------------- | ---------------------------------------------------- |
+| Framework     | Next.js 16 (App Router), TypeScript 5.x              |
+| Styling       | Tailwind CSS 4.x, shadcn/ui, motion/react            |
+| Auth          | Clerk (SSO + Google)                                 |
+| AI            | OpenAI GPT-4 / GPT-4o, DALL-E 3, Google Cloud Vision |
+| Database      | Supabase (PostgreSQL), Drizzle ORM                   |
+| Rate limiting | Upstash Redis + @upstash/ratelimit                   |
+| i18n          | next-intl                                            |
+| Testing       | Jest + React Testing Library, Playwright             |
+| Deployment    | Vercel                                               |
 
 ## Getting Started
 
@@ -139,6 +139,7 @@ npx jest __tests__/lib/security.test.ts
 ```
 
 Tests cover:
+
 - `sanitizeText` — XSS/script injection stripping
 - `isPublicHttpsUrl` — SSRF prevention
 - Zod schemas (`chatSchema`, `wardrobePostSchema`)
@@ -161,19 +162,19 @@ Tests cover: home, hero, features, how-it-works, footer, header, theme toggle, t
 
 The app is hardened to OWASP Top 10 standards:
 
-| Threat | Mitigation |
-|---|---|
-| XSS | `sanitizeText()` strips scripts/event handlers on all API input; React JSX escapes all output |
-| CSRF | Origin header checked against Host on all mutating API requests (middleware) |
+| Threat             | Mitigation                                                                                              |
+| ------------------ | ------------------------------------------------------------------------------------------------------- |
+| XSS                | `sanitizeText()` strips scripts/event handlers on all API input; React JSX escapes all output           |
+| CSRF               | Origin header checked against Host on all mutating API requests (middleware)                            |
 | DDoS / brute force | Upstash sliding-window rate limits at two levels: 60 req/min/IP (middleware), per-user limits per route |
-| Clickjacking | `X-Frame-Options: DENY`, CSP `frame-ancestors 'none'` |
-| MIME sniffing | `X-Content-Type-Options: nosniff` |
-| Prompt injection | User input sanitized; `imageAnalysis` passed as user message, not interpolated into system prompt |
-| SSRF | `isPublicHttpsUrl()` blocks private IP ranges on all user-supplied URLs |
-| Info leakage | Error handlers never return stack traces; only `error.message` is logged server-side |
-| Insecure transport | `Strict-Transport-Security` (1 year, includeSubDomains, preload) |
-| LLM output trust | Wardrobe AI response fields are whitelist-validated before hitting the DB |
-| File upload abuse | MIME type whitelist + 5 MB size cap on `/api/analyze-image` |
+| Clickjacking       | `X-Frame-Options: DENY`, CSP `frame-ancestors 'none'`                                                   |
+| MIME sniffing      | `X-Content-Type-Options: nosniff`                                                                       |
+| Prompt injection   | User input sanitized; `imageAnalysis` passed as user message, not interpolated into system prompt       |
+| SSRF               | `isPublicHttpsUrl()` blocks private IP ranges on all user-supplied URLs                                 |
+| Info leakage       | Error handlers never return stack traces; only `error.message` is logged server-side                    |
+| Insecure transport | `Strict-Transport-Security` (1 year, includeSubDomains, preload)                                        |
+| LLM output trust   | Wardrobe AI response fields are whitelist-validated before hitting the DB                               |
+| File upload abuse  | MIME type whitelist + 5 MB size cap on `/api/analyze-image`                                             |
 
 ## Credits System
 

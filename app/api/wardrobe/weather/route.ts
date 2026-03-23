@@ -43,12 +43,18 @@ export async function POST(req: Request) {
 
   const { lat, lon } = await req.json();
   if (lat == null || lon == null) {
-    return NextResponse.json({ error: 'lat and lon are required' }, { status: 400 });
+    return NextResponse.json(
+      { error: 'lat and lon are required' },
+      { status: 400 }
+    );
   }
 
   const apiKey = process.env.OPENWEATHER_API_KEY;
   if (!apiKey) {
-    return NextResponse.json({ error: 'Weather API not configured' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Weather API not configured' },
+      { status: 500 }
+    );
   }
 
   // Fetch next 24h forecast (8 × 3h slots)
@@ -56,26 +62,34 @@ export async function POST(req: Request) {
     `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric&cnt=8`
   );
   if (!weatherRes.ok) {
-    return NextResponse.json({ error: 'Failed to fetch weather data' }, { status: 502 });
+    return NextResponse.json(
+      { error: 'Failed to fetch weather data' },
+      { status: 502 }
+    );
   }
 
   const weatherData = await weatherRes.json();
   const city: string = weatherData.city?.name ?? 'Your location';
 
-  const forecast: ForecastSlot[] = (weatherData.list ?? []).map((slot: {
-    dt_txt: string;
-    main: { temp: number };
-    weather: { main: string; description: string; icon: string }[];
-  }) => ({
-    time: slot.dt_txt.slice(11, 16), // "HH:MM"
-    temp: Math.round(slot.main.temp),
-    condition: conditionEmoji(slot.weather[0]?.main ?? ''),
-    description: slot.weather[0]?.description ?? '',
-    icon: slot.weather[0]?.icon ?? '',
-  }));
+  const forecast: ForecastSlot[] = (weatherData.list ?? []).map(
+    (slot: {
+      dt_txt: string;
+      main: { temp: number };
+      weather: { main: string; description: string; icon: string }[];
+    }) => ({
+      time: slot.dt_txt.slice(11, 16), // "HH:MM"
+      temp: Math.round(slot.main.temp),
+      condition: conditionEmoji(slot.weather[0]?.main ?? ''),
+      description: slot.weather[0]?.description ?? '',
+      icon: slot.weather[0]?.icon ?? '',
+    })
+  );
 
-  const avgTemp = forecast.reduce((sum, s) => sum + s.temp, 0) / forecast.length;
-  const hasRain = forecast.some((s) => s.description.toLowerCase().includes('rain'));
+  const avgTemp =
+    forecast.reduce((sum, s) => sum + s.temp, 0) / forecast.length;
+  const hasRain = forecast.some((s) =>
+    s.description.toLowerCase().includes('rain')
+  );
   const mappedSeason = tempToSeason(avgTemp);
 
   // Query matching wardrobe items
@@ -92,7 +106,10 @@ export async function POST(req: Request) {
     .where(
       and(
         eq(wardrobeItems.userId, userId),
-        or(eq(wardrobeItems.season, mappedSeason), eq(wardrobeItems.season, 'all'))
+        or(
+          eq(wardrobeItems.season, mappedSeason),
+          eq(wardrobeItems.season, 'all')
+        )
       )
     );
 
@@ -107,7 +124,10 @@ export async function POST(req: Request) {
 
   const forecastSummary = `${Math.round(avgTemp)}°C average, ${hasRain ? 'rain expected' : 'no rain'}, ${mappedSeason} conditions`;
   const wardrobeDescription = items
-    .map((i) => `[${i.id}] ${i.category}, ${i.style}, colors: ${(i.colors as string[]).join(', ')}`)
+    .map(
+      (i) =>
+        `[${i.id}] ${i.category}, ${i.style}, colors: ${(i.colors as string[]).join(', ')}`
+    )
     .join('\n');
 
   const aiResponse = await openai.chat.completions.create({
@@ -115,7 +135,8 @@ export async function POST(req: Request) {
     messages: [
       {
         role: 'system',
-        content: 'You are a personal fashion stylist. Suggest an outfit based on the weather forecast.',
+        content:
+          'You are a personal fashion stylist. Suggest an outfit based on the weather forecast.',
       },
       {
         role: 'user',
@@ -129,9 +150,14 @@ export async function POST(req: Request) {
   type AiResult = { recommendation: string; itemIds: string[] };
   let result: AiResult;
   try {
-    result = JSON.parse(aiResponse.choices[0].message.content ?? '{}') as AiResult;
+    result = JSON.parse(
+      aiResponse.choices[0].message.content ?? '{}'
+    ) as AiResult;
   } catch {
-    result = { recommendation: aiResponse.choices[0].message.content ?? '', itemIds: [] };
+    result = {
+      recommendation: aiResponse.choices[0].message.content ?? '',
+      itemIds: [],
+    };
   }
 
   return NextResponse.json({ city, forecast, ...result });

@@ -24,7 +24,9 @@ test.describe('Features Section', () => {
       'Outfit Generator',
     ];
     for (let i = 0; i < expectedTitles.length; i++) {
-      await expect(page.getByTestId(`feature-title-${i}`)).toHaveText(expectedTitles[i]);
+      await expect(page.getByTestId(`feature-title-${i}`)).toHaveText(
+        expectedTitles[i]
+      );
     }
   });
 

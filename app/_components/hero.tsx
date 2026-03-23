@@ -73,7 +73,9 @@ const Hero = () => {
 
               <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
                 <span className="text-foreground block">{t('titleLine1')}</span>
-                <span className="gradient-text mt-1 block">{t('titleLine2')}</span>
+                <span className="gradient-text mt-1 block">
+                  {t('titleLine2')}
+                </span>
               </h1>
             </div>
 

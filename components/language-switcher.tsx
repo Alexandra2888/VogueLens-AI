@@ -21,7 +21,7 @@ export function LanguageSwitcher() {
   };
 
   return (
-    <div className="flex items-center rounded-lg border border-border/50 overflow-hidden text-xs font-medium">
+    <div className="border-border/50 flex items-center overflow-hidden rounded-lg border text-xs font-medium">
       <button
         onClick={() => switchLocale('en')}
         disabled={isPending}

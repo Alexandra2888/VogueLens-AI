@@ -35,7 +35,7 @@ const Message = ({
       <Card
         className={`px-4 py-3 text-sm shadow-none ${
           message.sender === 'user'
-            ? 'bg-brand-red text-white border-transparent'
+            ? 'bg-brand-red border-transparent text-white'
             : 'bg-muted/50 border-border'
         }`}
       >

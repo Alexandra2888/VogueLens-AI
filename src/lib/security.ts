@@ -6,7 +6,12 @@ export const MAX_PROMPT_LENGTH = 2000;
 export const MAX_NOTES_LENGTH = 500;
 export const MAX_BRAND_LENGTH = 100;
 export const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
-export const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+export const ALLOWED_IMAGE_TYPES = [
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+  'image/gif',
+];
 
 // ── Text sanitization ────────────────────────────────────────────────────────
 // Strips HTML tags, <script> blocks, javascript: URIs, and inline event handlers.
@@ -35,7 +40,8 @@ export function isPublicHttpsUrl(raw: string): boolean {
       /^10\./.test(hostname) ||
       /^192\.168\./.test(hostname) ||
       /^172\.(1[6-9]|2\d|3[01])\./.test(hostname)
-    ) return false;
+    )
+      return false;
     return true;
   } catch {
     return false;
@@ -54,7 +60,9 @@ export const wardrobePostSchema = z.object({
     .string()
     .url()
     .max(500)
-    .refine(isPublicHttpsUrl, { message: 'imageUrl must be a public HTTPS URL' }),
+    .refine(isPublicHttpsUrl, {
+      message: 'imageUrl must be a public HTTPS URL',
+    }),
   brand: z.string().max(MAX_BRAND_LENGTH).nullable().optional(),
   notes: z.string().max(MAX_NOTES_LENGTH).nullable().optional(),
 });

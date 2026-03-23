@@ -52,7 +52,9 @@ export default function PrivacyPolicy() {
                 <ul className="text-primary mt-2 list-disc pl-6">
                   <li>{t('sections.serviceData.li1')}</li>
                 </ul>
-                <p className="text-primary mt-2">{t('sections.serviceData.format')}</p>
+                <p className="text-primary mt-2">
+                  {t('sections.serviceData.format')}
+                </p>
                 <p>{t('sections.serviceData.example')}</p>
                 <pre className="text-primary mt-2 rounded p-2">
                   {`{

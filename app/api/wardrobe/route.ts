@@ -40,7 +40,10 @@ export async function GET() {
 
     return NextResponse.json({ items });
   } catch (error) {
-    console.error('[wardrobe GET] Error:', error instanceof Error ? error.message : 'unknown');
+    console.error(
+      '[wardrobe GET] Error:',
+      error instanceof Error ? error.message : 'unknown'
+    );
     return internalErrorResponse();
   }
 }
@@ -63,7 +66,9 @@ export async function POST(req: Request) {
 
     const parsed = wardrobePostSchema.safeParse(body);
     if (!parsed.success) {
-      return badRequestResponse(parsed.error.errors[0]?.message ?? 'Invalid input');
+      return badRequestResponse(
+        parsed.error.errors[0]?.message ?? 'Invalid input'
+      );
     }
 
     const { imageUrl } = parsed.data;
@@ -97,14 +102,40 @@ Return only valid JSON, no markdown.`,
       max_tokens: 300,
     });
 
-    const ALLOWED_CATEGORIES = ['top', 'bottom', 'shoes', 'accessories', 'outerwear'] as const;
-    const ALLOWED_STYLES = ['casual', 'formal', 'athletic', 'bohemian', 'streetwear', 'business'] as const;
-    const ALLOWED_SEASONS = ['spring', 'summer', 'fall', 'winter', 'all'] as const;
-    const ALLOWED_OCCASIONS = ['casual', 'work', 'party', 'sport', 'date', 'formal'] as const;
+    const ALLOWED_CATEGORIES = [
+      'top',
+      'bottom',
+      'shoes',
+      'accessories',
+      'outerwear',
+    ] as const;
+    const ALLOWED_STYLES = [
+      'casual',
+      'formal',
+      'athletic',
+      'bohemian',
+      'streetwear',
+      'business',
+    ] as const;
+    const ALLOWED_SEASONS = [
+      'spring',
+      'summer',
+      'fall',
+      'winter',
+      'all',
+    ] as const;
+    const ALLOWED_OCCASIONS = [
+      'casual',
+      'work',
+      'party',
+      'sport',
+      'date',
+      'formal',
+    ] as const;
 
-    type Category = typeof ALLOWED_CATEGORIES[number];
-    type Style = typeof ALLOWED_STYLES[number];
-    type Season = typeof ALLOWED_SEASONS[number];
+    type Category = (typeof ALLOWED_CATEGORIES)[number];
+    type Style = (typeof ALLOWED_STYLES)[number];
+    type Season = (typeof ALLOWED_SEASONS)[number];
 
     type ItemAnalysis = {
       category: Category;
@@ -116,7 +147,9 @@ Return only valid JSON, no markdown.`,
 
     let raw: Record<string, unknown>;
     try {
-      raw = JSON.parse(analysisResponse.choices[0].message.content ?? '{}') as Record<string, unknown>;
+      raw = JSON.parse(
+        analysisResponse.choices[0].message.content ?? '{}'
+      ) as Record<string, unknown>;
     } catch {
       raw = {};
     }
@@ -134,11 +167,15 @@ Return only valid JSON, no markdown.`,
         : 'all',
       colors: Array.isArray(raw.colors)
         ? (raw.colors as string[])
-            .filter((c) => typeof c === 'string' && /^#[0-9a-fA-F]{3,6}$/.test(c))
+            .filter(
+              (c) => typeof c === 'string' && /^#[0-9a-fA-F]{3,6}$/.test(c)
+            )
             .slice(0, 3)
         : [],
       occasions: Array.isArray(raw.occasions)
-        ? (raw.occasions as string[]).filter((o) => ALLOWED_OCCASIONS.includes(o as typeof ALLOWED_OCCASIONS[number]))
+        ? (raw.occasions as string[]).filter((o) =>
+            ALLOWED_OCCASIONS.includes(o as (typeof ALLOWED_OCCASIONS)[number])
+          )
         : [],
     };
 
@@ -174,7 +211,10 @@ Return only valid JSON, no markdown.`,
 
     return NextResponse.json({ item }, { status: 201 });
   } catch (error) {
-    console.error('[wardrobe POST] Error:', error instanceof Error ? error.message : 'unknown');
+    console.error(
+      '[wardrobe POST] Error:',
+      error instanceof Error ? error.message : 'unknown'
+    );
     return internalErrorResponse();
   }
 }

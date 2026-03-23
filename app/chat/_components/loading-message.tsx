@@ -12,13 +12,13 @@ const LoadingMessage = () => (
       </Avatar>
       <Card className="bg-muted/50 border-border px-4 py-3 shadow-none">
         <div className="flex items-center space-x-1.5">
-          <div className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground/40" />
+          <div className="bg-muted-foreground/40 h-2 w-2 animate-bounce rounded-full" />
           <div
-            className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground/40"
+            className="bg-muted-foreground/40 h-2 w-2 animate-bounce rounded-full"
             style={{ animationDelay: '0.2s' }}
           />
           <div
-            className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground/40"
+            className="bg-muted-foreground/40 h-2 w-2 animate-bounce rounded-full"
             style={{ animationDelay: '0.4s' }}
           />
         </div>

@@ -7,7 +7,9 @@ import { openai } from '@/lib/openai';
 import { generateEmbedding } from '@/lib/embeddings';
 
 function cosineSimilarity(a: number[], b: number[]): number {
-  let dot = 0, magA = 0, magB = 0;
+  let dot = 0,
+    magA = 0,
+    magB = 0;
   for (let i = 0; i < a.length; i++) {
     dot += a[i] * b[i];
     magA += a[i] * a[i];
@@ -32,7 +34,10 @@ export async function POST(req: Request) {
 
   const { imageUrl } = await req.json();
   if (!imageUrl) {
-    return NextResponse.json({ error: 'imageUrl is required' }, { status: 400 });
+    return NextResponse.json(
+      { error: 'imageUrl is required' },
+      { status: 400 }
+    );
   }
 
   // Analyze shopping item with GPT-4o vision
@@ -63,9 +68,17 @@ Return only valid JSON, no markdown.`,
 
   let analysis: ItemAnalysis;
   try {
-    analysis = JSON.parse(visionRes.choices[0].message.content ?? '{}') as ItemAnalysis;
+    analysis = JSON.parse(
+      visionRes.choices[0].message.content ?? '{}'
+    ) as ItemAnalysis;
   } catch {
-    analysis = { category: 'top', colors: [], style: 'casual', season: 'all', occasions: [] };
+    analysis = {
+      category: 'top',
+      colors: [],
+      style: 'casual',
+      season: 'all',
+      occasions: [],
+    };
   }
 
   // Generate embedding for the shopping item
@@ -88,7 +101,10 @@ Return only valid JSON, no markdown.`,
 
   // Cosine similarity — top 5 matches
   const withScores = wardrobe
-    .filter((item) => Array.isArray(item.embedding) && (item.embedding as number[]).length > 0)
+    .filter(
+      (item) =>
+        Array.isArray(item.embedding) && (item.embedding as number[]).length > 0
+    )
     .map((item) => ({
       ...item,
       score: cosineSimilarity(shoppingEmbedding, item.embedding as number[]),
@@ -96,13 +112,15 @@ Return only valid JSON, no markdown.`,
     .sort((a, b) => b.score - a.score)
     .slice(0, 5);
 
-  const compatibilityScore = withScores.length > 0
-    ? Math.round(withScores[0].score * 100)
-    : 0;
+  const compatibilityScore =
+    withScores.length > 0 ? Math.round(withScores[0].score * 100) : 0;
 
   // Ask GPT-4o-mini for BUY/SKIP/CONSIDER
   const similarDesc = withScores
-    .map((i) => `[${i.id}] ${i.category}, ${i.style}, score: ${(i.score * 100).toFixed(0)}%`)
+    .map(
+      (i) =>
+        `[${i.id}] ${i.category}, ${i.style}, score: ${(i.score * 100).toFixed(0)}%`
+    )
     .join('\n');
 
   const aiRes = await openai.chat.completions.create({
@@ -110,7 +128,8 @@ Return only valid JSON, no markdown.`,
     messages: [
       {
         role: 'system',
-        content: "You are a personal fashion stylist helping decide whether to buy a new item.",
+        content:
+          'You are a personal fashion stylist helping decide whether to buy a new item.',
       },
       {
         role: 'user',
@@ -130,15 +149,25 @@ Return JSON: { "recommendation": "BUY"|"SKIP"|"CONSIDER", "reasoning": "explanat
     response_format: { type: 'json_object' },
   });
 
-  type AiResult = { recommendation: string; reasoning: string; pairsWithIds: string[] };
+  type AiResult = {
+    recommendation: string;
+    reasoning: string;
+    pairsWithIds: string[];
+  };
   let aiResult: AiResult;
   try {
     aiResult = JSON.parse(aiRes.choices[0].message.content ?? '{}') as AiResult;
   } catch {
-    aiResult = { recommendation: 'CONSIDER', reasoning: aiRes.choices[0].message.content ?? '', pairsWithIds: [] };
+    aiResult = {
+      recommendation: 'CONSIDER',
+      reasoning: aiRes.choices[0].message.content ?? '',
+      pairsWithIds: [],
+    };
   }
 
-  const similarItems = withScores.map(({ score: _, embedding: __, ...rest }) => rest);
+  const similarItems = withScores.map(
+    ({ score: _, embedding: __, ...rest }) => rest
+  );
 
   return NextResponse.json({
     analysis,

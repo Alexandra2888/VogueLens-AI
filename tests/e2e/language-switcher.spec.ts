@@ -33,7 +33,9 @@ test.describe('Language Switcher', () => {
     await expect(page).toHaveURL(/\/en/);
   });
 
-  test('switching preserves the current page path on non-protected routes', async ({ page }) => {
+  test('switching preserves the current page path on non-protected routes', async ({
+    page,
+  }) => {
     await page.goto('/en/privacy');
     await page.waitForLoadState('networkidle');
     const roBtn = page.getByRole('button', { name: 'RO' }).first();

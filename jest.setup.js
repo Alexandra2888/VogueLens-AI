@@ -11,7 +11,11 @@ jest.mock('next/server', () => ({
 jest.mock('next/router', () => require('next-router-mock'));
 
 jest.mock('next/navigation', () => ({
-  useRouter: () => ({ push: jest.fn(), replace: jest.fn(), prefetch: jest.fn() }),
+  useRouter: () => ({
+    push: jest.fn(),
+    replace: jest.fn(),
+    prefetch: jest.fn(),
+  }),
   usePathname: () => '/en',
   useSearchParams: () => new URLSearchParams(),
 }));
@@ -22,12 +26,17 @@ jest.mock('next-intl', () => ({
 }));
 
 jest.mock('motion/react', () => ({
-  motion: new Proxy({}, {
-    get: (_, tag) => ({ children, ...props }) => {
-      const React = require('react');
-      return React.createElement(tag || 'div', props, children);
-    },
-  }),
+  motion: new Proxy(
+    {},
+    {
+      get:
+        (_, tag) =>
+        ({ children, ...props }) => {
+          const React = require('react');
+          return React.createElement(tag || 'div', props, children);
+        },
+    }
+  ),
   AnimatePresence: ({ children }) => children,
   useReducedMotion: () => false,
   useScroll: () => ({ scrollY: { on: jest.fn() } }),

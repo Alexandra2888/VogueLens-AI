@@ -4,7 +4,11 @@
 
 const store = new Map<string, number[]>();
 
-function rateLimit(key: string, maxRequests: number, windowMs: number): boolean {
+function rateLimit(
+  key: string,
+  maxRequests: number,
+  windowMs: number
+): boolean {
   const now = Date.now();
   const timestamps = (store.get(key) ?? []).filter((t) => now - t < windowMs);
   if (timestamps.length >= maxRequests) {
@@ -20,10 +24,14 @@ function rateLimit(key: string, maxRequests: number, windowMs: number): boolean 
 export const ipLimit = (ip: string) => rateLimit(`ip:${ip}`, 120, 60_000);
 
 // Per-user limits for expensive routes
-export const chatLimit = (userId: string) => rateLimit(`chat:${userId}`, 30, 60_000);
-export const imageLimit = (userId: string) => rateLimit(`image:${userId}`, 10, 60_000);
-export const creditsLimit = (userId: string) => rateLimit(`credits:${userId}`, 60, 60_000);
-export const wardrobeLimit = (userId: string) => rateLimit(`wardrobe:${userId}`, 30, 60_000);
+export const chatLimit = (userId: string) =>
+  rateLimit(`chat:${userId}`, 30, 60_000);
+export const imageLimit = (userId: string) =>
+  rateLimit(`image:${userId}`, 10, 60_000);
+export const creditsLimit = (userId: string) =>
+  rateLimit(`credits:${userId}`, 60, 60_000);
+export const wardrobeLimit = (userId: string) =>
+  rateLimit(`wardrobe:${userId}`, 30, 60_000);
 
 // Legacy exports kept so existing imports don't break (all return null → disabled)
 export const apiRatelimit = null;

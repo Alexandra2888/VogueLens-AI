@@ -26,13 +26,17 @@ export async function POST(req: Request) {
 
   if (items.length === 0) {
     return NextResponse.json({
-      recommendation: 'Add some items to your wardrobe first to get outfit recommendations!',
+      recommendation:
+        'Add some items to your wardrobe first to get outfit recommendations!',
       itemIds: [],
     });
   }
 
   const wardrobeDescription = items
-    .map((item) => `[${item.id}] ${item.category}, ${item.style}, colors: ${(item.colors as string[]).join(', ')}, season: ${item.season}`)
+    .map(
+      (item) =>
+        `[${item.id}] ${item.category}, ${item.style}, colors: ${(item.colors as string[]).join(', ')}, season: ${item.season}`
+    )
     .join('\n');
 
   const response = await openai.chat.completions.create({
@@ -40,7 +44,8 @@ export async function POST(req: Request) {
     messages: [
       {
         role: 'system',
-        content: "You are a personal fashion stylist. Suggest outfit combinations from the user's wardrobe.",
+        content:
+          "You are a personal fashion stylist. Suggest outfit combinations from the user's wardrobe.",
       },
       {
         role: 'user',
@@ -54,9 +59,14 @@ export async function POST(req: Request) {
   type RecommendResult = { recommendation: string; itemIds: string[] };
   let result: RecommendResult;
   try {
-    result = JSON.parse(response.choices[0].message.content ?? '{}') as RecommendResult;
+    result = JSON.parse(
+      response.choices[0].message.content ?? '{}'
+    ) as RecommendResult;
   } catch {
-    result = { recommendation: response.choices[0].message.content ?? '', itemIds: [] };
+    result = {
+      recommendation: response.choices[0].message.content ?? '',
+      itemIds: [],
+    };
   }
 
   return NextResponse.json(result);

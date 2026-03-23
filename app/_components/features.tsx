@@ -6,7 +6,12 @@ import { useTranslations } from 'next-intl';
 import { Sparkles, Palette, Zap, Shirt } from 'lucide-react';
 
 const featureIcons = [Sparkles, Palette, Zap, Shirt];
-const featureKeys = ['aiRecommendations', 'colorCoordination', 'instantTips', 'outfitGenerator'] as const;
+const featureKeys = [
+  'aiRecommendations',
+  'colorCoordination',
+  'instantTips',
+  'outfitGenerator',
+] as const;
 
 export default function FeaturesSection() {
   const t = useTranslations('features');

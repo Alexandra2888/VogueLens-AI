@@ -6,14 +6,18 @@ test.describe('Security Headers', () => {
     expect(res.headers()['x-frame-options']).toBe('DENY');
   });
 
-  test('response includes X-Content-Type-Options: nosniff', async ({ request }) => {
+  test('response includes X-Content-Type-Options: nosniff', async ({
+    request,
+  }) => {
     const res = await request.get('/en');
     expect(res.headers()['x-content-type-options']).toBe('nosniff');
   });
 
   test('response includes Referrer-Policy', async ({ request }) => {
     const res = await request.get('/en');
-    expect(res.headers()['referrer-policy']).toBe('strict-origin-when-cross-origin');
+    expect(res.headers()['referrer-policy']).toBe(
+      'strict-origin-when-cross-origin'
+    );
   });
 
   test('response includes Strict-Transport-Security', async ({ request }) => {
@@ -48,7 +52,9 @@ test.describe('API Security', () => {
     expect(res.status()).toBe(401);
   });
 
-  test('POST /api/analyze-image without auth returns 401', async ({ request }) => {
+  test('POST /api/analyze-image without auth returns 401', async ({
+    request,
+  }) => {
     const res = await request.post('/api/analyze-image', {
       multipart: {
         image: {
@@ -61,7 +67,9 @@ test.describe('API Security', () => {
     expect(res.status()).toBe(401);
   });
 
-  test('GET /api/user/credits without auth returns 401', async ({ request }) => {
+  test('GET /api/user/credits without auth returns 401', async ({
+    request,
+  }) => {
     const res = await request.get('/api/user/credits');
     expect(res.status()).toBe(401);
   });
@@ -76,7 +84,9 @@ test.describe('API Security', () => {
     expect(res.status()).not.toBe(200);
   });
 
-  test('CSRF: cross-origin POST to API is rejected (403)', async ({ request }) => {
+  test('CSRF: cross-origin POST to API is rejected (403)', async ({
+    request,
+  }) => {
     const res = await request.post('/api/chat', {
       data: { prompt: 'hello' },
       headers: {

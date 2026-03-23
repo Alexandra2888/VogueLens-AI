@@ -38,11 +38,17 @@ export async function GET() {
       user = newUser;
     }
 
-    return NextResponse.json({ credits: user.credits, earlyAccess: user.earlyAccess });
+    return NextResponse.json({
+      credits: user.credits,
+      earlyAccess: user.earlyAccess,
+    });
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
     console.error('[credits] Error:', msg);
-    console.error('[credits] Full error:', JSON.stringify(error, Object.getOwnPropertyNames(error)));
+    console.error(
+      '[credits] Full error:',
+      JSON.stringify(error, Object.getOwnPropertyNames(error))
+    );
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 }

@@ -1,4 +1,9 @@
-import { sanitizeText, isPublicHttpsUrl, chatSchema, wardrobePostSchema } from '@/lib/security';
+import {
+  sanitizeText,
+  isPublicHttpsUrl,
+  chatSchema,
+  wardrobePostSchema,
+} from '@/lib/security';
 
 // ── sanitizeText ─────────────────────────────────────────────────────────────
 
@@ -32,7 +37,9 @@ describe('sanitizeText', () => {
   });
 
   it('preserves plain text unchanged', () => {
-    expect(sanitizeText('What should I wear today?')).toBe('What should I wear today?');
+    expect(sanitizeText('What should I wear today?')).toBe(
+      'What should I wear today?'
+    );
     expect(sanitizeText('red dress for a party')).toBe('red dress for a party');
   });
 
@@ -49,7 +56,9 @@ describe('sanitizeText', () => {
 
 describe('isPublicHttpsUrl', () => {
   it('accepts valid public HTTPS URLs', () => {
-    expect(isPublicHttpsUrl('https://res.cloudinary.com/example/image.jpg')).toBe(true);
+    expect(
+      isPublicHttpsUrl('https://res.cloudinary.com/example/image.jpg')
+    ).toBe(true);
     expect(isPublicHttpsUrl('https://example.com/path')).toBe(true);
   });
 
@@ -95,7 +104,10 @@ describe('chatSchema', () => {
   });
 
   it('accepts generateImage flag', () => {
-    const result = chatSchema.safeParse({ prompt: 'red dress', generateImage: true });
+    const result = chatSchema.safeParse({
+      prompt: 'red dress',
+      generateImage: true,
+    });
     expect(result.success).toBe(true);
   });
 

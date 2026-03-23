@@ -74,8 +74,10 @@ export default function ProfilePage() {
                 )}
               </div>
               <div className="mt-3 flex items-center gap-2">
-                <Coins className="h-4 w-4 text-brand-red" />
-                <span className="text-primary font-medium">{t('credits')}: </span>
+                <Coins className="text-brand-red h-4 w-4" />
+                <span className="text-primary font-medium">
+                  {t('credits')}:{' '}
+                </span>
                 <span className="text-primary">
                   {credits !== null ? credits : '—'}
                 </span>

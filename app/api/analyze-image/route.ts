@@ -27,7 +27,10 @@ try {
 
   vision = new ImageAnnotatorClient({ credentials: credentials });
 } catch (error) {
-  console.error('[analyze-image] Vision client init failed:', error instanceof Error ? error.message : 'unknown');
+  console.error(
+    '[analyze-image] Vision client init failed:',
+    error instanceof Error ? error.message : 'unknown'
+  );
   vision = null;
 }
 
@@ -42,13 +45,21 @@ export async function POST(req: Request) {
 
     // Credit check (5 credits per image analysis)
     const cost = 5;
-    const user = await db.query.users.findFirst({ where: eq(users.id, userId) });
+    const user = await db.query.users.findFirst({
+      where: eq(users.id, userId),
+    });
     if (!user || user.credits < cost) {
-      return NextResponse.json({ error: 'Insufficient credits' }, { status: 402 });
+      return NextResponse.json(
+        { error: 'Insufficient credits' },
+        { status: 402 }
+      );
     }
 
     if (!vision) {
-      return NextResponse.json({ error: 'Image analysis unavailable' }, { status: 503 });
+      return NextResponse.json(
+        { error: 'Image analysis unavailable' },
+        { status: 503 }
+      );
     }
 
     const formData = await req.formData();
@@ -58,7 +69,9 @@ export async function POST(req: Request) {
 
     // Validate file type (don't trust client-provided MIME; check header bytes via type field)
     if (!ALLOWED_IMAGE_TYPES.includes(image.type)) {
-      return badRequestResponse('Unsupported image type. Use JPEG, PNG, WebP, or GIF.');
+      return badRequestResponse(
+        'Unsupported image type. Use JPEG, PNG, WebP, or GIF.'
+      );
     }
 
     // Validate file size
@@ -113,9 +126,15 @@ export async function POST(req: Request) {
       .filter(Boolean)
       .join('. ');
 
-    return NextResponse.json({ description, creditsRemaining: user.credits - cost });
+    return NextResponse.json({
+      description,
+      creditsRemaining: user.credits - cost,
+    });
   } catch (error) {
-    console.error('[analyze-image] Error:', error instanceof Error ? error.message : 'unknown');
+    console.error(
+      '[analyze-image] Error:',
+      error instanceof Error ? error.message : 'unknown'
+    );
     return internalErrorResponse();
   }
 }

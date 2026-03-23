@@ -16,7 +16,9 @@ test.describe('Chat Page', () => {
   });
 
   test('shows initial greeting message', async ({ page }) => {
-    await expect(page.getByText('Hi! How can I help you today?')).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText('Hi! How can I help you today?')).toBeVisible({
+      timeout: 10000,
+    });
   });
 
   test('sidebar heading is visible', async ({ page }) => {
@@ -24,7 +26,9 @@ test.describe('Chat Page', () => {
   });
 
   test('New Fashion Chat button is present', async ({ page }) => {
-    await expect(page.getByRole('button', { name: /New Fashion Chat/i })).toBeVisible();
+    await expect(
+      page.getByRole('button', { name: /New Fashion Chat/i })
+    ).toBeVisible();
   });
 
   test('input field is present and enabled', async ({ page }) => {
@@ -38,8 +42,12 @@ test.describe('Chat Page', () => {
   });
 
   test('typing in input enables send button', async ({ page }) => {
-    await page.getByPlaceholder(/Ask for fashion advice/i).fill('What should I wear?');
-    const enabledBtn = page.locator('div.flex.items-center.space-x-2 button:not([disabled])');
+    await page
+      .getByPlaceholder(/Ask for fashion advice/i)
+      .fill('What should I wear?');
+    const enabledBtn = page.locator(
+      'div.flex.items-center.space-x-2 button:not([disabled])'
+    );
     await expect(enabledBtn.first()).toBeVisible();
   });
 

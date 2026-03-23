@@ -24,10 +24,10 @@ const Sidebar = ({
   const t = useTranslations('chat');
 
   return (
-    <aside className="w-72 border-r border-border bg-muted/20 flex-shrink-0">
+    <aside className="border-border bg-muted/20 w-72 flex-shrink-0 border-r">
       <div className="flex h-full flex-col">
-        <div className="border-b border-border p-4">
-          <h2 className="pt-8 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+        <div className="border-border border-b p-4">
+          <h2 className="text-muted-foreground pt-8 text-sm font-semibold tracking-wide uppercase">
             {t('chatHistory')}
           </h2>
         </div>
@@ -35,14 +35,17 @@ const Sidebar = ({
           {isLoading ? (
             <div className="space-y-1 p-2">
               {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="flex items-center gap-2 rounded-lg px-3 py-2">
-                  <Skeleton className="h-4 w-4 rounded flex-shrink-0" />
+                <div
+                  key={i}
+                  className="flex items-center gap-2 rounded-lg px-3 py-2"
+                >
+                  <Skeleton className="h-4 w-4 flex-shrink-0 rounded" />
                   <Skeleton className="h-4 flex-1 rounded" />
                 </div>
               ))}
             </div>
           ) : conversations.length === 0 ? (
-            <p className="p-4 text-center text-sm text-muted-foreground">
+            <p className="text-muted-foreground p-4 text-center text-sm">
               {t('noConversations')}
             </p>
           ) : (
@@ -57,7 +60,7 @@ const Sidebar = ({
                 }`}
               >
                 {conv.messages.some((m) => m.sender === 'user') ? (
-                  <Bot className="h-4 w-4 flex-shrink-0 text-brand-red" />
+                  <Bot className="text-brand-red h-4 w-4 flex-shrink-0" />
                 ) : (
                   <MessageSquare className="h-4 w-4 flex-shrink-0" />
                 )}
@@ -66,8 +69,12 @@ const Sidebar = ({
             ))
           )}
         </ScrollArea>
-        <div className="border-t border-border p-4">
-          <Button onClick={onNewConversation} variant="outline" className="w-full gap-2">
+        <div className="border-border border-t p-4">
+          <Button
+            onClick={onNewConversation}
+            variant="outline"
+            className="w-full gap-2"
+          >
             <Plus className="h-4 w-4" />
             {t('newChat')}
           </Button>

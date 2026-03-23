@@ -7,8 +7,12 @@ test.describe('Hero Section', () => {
   });
 
   test('renders CTA buttons', async ({ page }) => {
-    await expect(page.getByRole('link', { name: /Start Styling/i })).toBeVisible();
-    await expect(page.getByRole('link', { name: /Explore Features/i })).toBeVisible();
+    await expect(
+      page.getByRole('link', { name: /Start Styling/i })
+    ).toBeVisible();
+    await expect(
+      page.getByRole('link', { name: /Explore Features/i })
+    ).toBeVisible();
   });
 
   test('renders hero images on desktop', async ({ page }) => {

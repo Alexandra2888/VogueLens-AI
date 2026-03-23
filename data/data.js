@@ -1,15 +1,8 @@
-import {
-  Facebook,
-  Instagram,
-  Twitter,
-} from 'lucide-react';
+import { Facebook, Instagram, Twitter } from 'lucide-react';
 
 // Nav items — labels are now provided via translations in the header component
 
-export const footerLinks = [
-  { href: '/terms' },
-  { href: '/privacy' },
-];
+export const footerLinks = [{ href: '/terms' }, { href: '/privacy' }];
 
 export const socialLinks = [
   { href: '#', icon: Instagram, label: 'Instagram' },

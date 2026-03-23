@@ -3,7 +3,14 @@
 import { useUser } from '@clerk/nextjs';
 import { useEffect, useState } from 'react';
 import { AnimatePresence } from 'motion/react';
-import { Upload, Sparkles, Loader2, Cloud, ShoppingBag, Shirt } from 'lucide-react';
+import {
+  Upload,
+  Sparkles,
+  Loader2,
+  Cloud,
+  ShoppingBag,
+  Shirt,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -18,7 +25,10 @@ import { Toaster } from '@/components/ui/toaster';
 import { redirect } from 'next/navigation';
 import { useRef } from 'react';
 import { supabase, WARDROBE_BUCKET } from '@/lib/supabase';
-import { ItemCard, type WardrobeItem } from '../../wardrobe/_components/item-card';
+import {
+  ItemCard,
+  type WardrobeItem,
+} from '../../wardrobe/_components/item-card';
 import { WeatherTab } from '../../wardrobe/_components/weather-tab';
 import { ShoppingTab } from '../../wardrobe/_components/shopping-tab';
 import { useTranslations } from 'next-intl';
@@ -175,7 +185,11 @@ export default function WardrobePage() {
   const tabs = [
     { id: 'wardrobe' as ActiveTab, label: t('tabs.wardrobe'), icon: Shirt },
     { id: 'weather' as ActiveTab, label: t('tabs.weather'), icon: Cloud },
-    { id: 'shopping' as ActiveTab, label: t('tabs.shopping'), icon: ShoppingBag },
+    {
+      id: 'shopping' as ActiveTab,
+      label: t('tabs.shopping'),
+      icon: ShoppingBag,
+    },
   ];
 
   return (
@@ -185,14 +199,14 @@ export default function WardrobePage() {
           <h1 className="text-primary mb-6 text-3xl font-bold">{t('title')}</h1>
 
           {/* Tab bar */}
-          <div className="flex gap-1 rounded-xl border bg-muted/30 p-1 w-fit mb-6">
+          <div className="bg-muted/30 mb-6 flex w-fit gap-1 rounded-xl border p-1">
             {tabs.map(({ id, label, icon: Icon }) => (
               <button
                 key={id}
                 onClick={() => setActiveTab(id)}
                 className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
                   activeTab === id
-                    ? 'bg-background shadow-sm text-foreground'
+                    ? 'bg-background text-foreground shadow-sm'
                     : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
@@ -214,23 +228,27 @@ export default function WardrobePage() {
                 disabled={items.length >= 10}
               />
               <div
-                onClick={() => items.length < 10 && !isSaving && fileInputRef.current?.click()}
+                onClick={() =>
+                  items.length < 10 &&
+                  !isSaving &&
+                  fileInputRef.current?.click()
+                }
                 className={`flex cursor-pointer items-center gap-3 rounded-xl border-2 border-dashed px-5 py-3 transition-colors ${
                   items.length >= 10
-                    ? 'cursor-not-allowed border-border opacity-50'
+                    ? 'border-border cursor-not-allowed opacity-50'
                     : 'border-border hover:border-primary/50 hover:bg-muted/20'
                 }`}
               >
                 {isSaving ? (
-                  <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                  <Loader2 className="text-muted-foreground h-5 w-5 animate-spin" />
                 ) : (
-                  <Upload className="h-5 w-5 text-muted-foreground" />
+                  <Upload className="text-muted-foreground h-5 w-5" />
                 )}
                 <div>
                   <p className="text-sm font-medium">
                     {isSaving ? t('analyzing') : t('addItem')}
                   </p>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-muted-foreground text-xs">
                     {items.length}/10 {t('itemsUsed')}
                   </p>
                 </div>
@@ -242,10 +260,16 @@ export default function WardrobePage() {
                 <SelectContent>
                   <SelectItem value="all">{t('categories.all')}</SelectItem>
                   <SelectItem value="top">{t('categories.top')}</SelectItem>
-                  <SelectItem value="bottom">{t('categories.bottom')}</SelectItem>
+                  <SelectItem value="bottom">
+                    {t('categories.bottom')}
+                  </SelectItem>
                   <SelectItem value="shoes">{t('categories.shoes')}</SelectItem>
-                  <SelectItem value="outerwear">{t('categories.outerwear')}</SelectItem>
-                  <SelectItem value="accessories">{t('categories.accessories')}</SelectItem>
+                  <SelectItem value="outerwear">
+                    {t('categories.outerwear')}
+                  </SelectItem>
+                  <SelectItem value="accessories">
+                    {t('categories.accessories')}
+                  </SelectItem>
                 </SelectContent>
               </Select>
               <Select value={seasonFilter} onValueChange={setSeasonFilter}>
@@ -273,9 +297,7 @@ export default function WardrobePage() {
               </div>
             ) : filtered.length === 0 ? (
               <div className="text-muted-foreground flex h-48 flex-col items-center justify-center gap-2">
-                <p>
-                  {items.length === 0 ? t('empty') : t('noMatch')}
-                </p>
+                <p>{items.length === 0 ? t('empty') : t('noMatch')}</p>
                 {items.length === 0 && (
                   <p className="text-sm">{t('addItemHint')}</p>
                 )}

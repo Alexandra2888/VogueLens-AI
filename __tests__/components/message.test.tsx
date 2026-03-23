@@ -24,7 +24,9 @@ const userMessageWithImage: MessageProps = {
 describe('Message component', () => {
   it('renders bot message text', () => {
     render(<Message message={botMessage} />);
-    expect(screen.getByText('Hi! How can I help you today?')).toBeInTheDocument();
+    expect(
+      screen.getByText('Hi! How can I help you today?')
+    ).toBeInTheDocument();
   });
 
   it('renders user message text', () => {
@@ -53,14 +55,18 @@ describe('Message component', () => {
 
   it('does not render image when imageUrl is absent', () => {
     render(<Message message={userMessage} />);
-    expect(screen.queryByAltText('Uploaded fashion item')).not.toBeInTheDocument();
+    expect(
+      screen.queryByAltText('Uploaded fashion item')
+    ).not.toBeInTheDocument();
   });
 
   it('shows Bot icon for bot messages', () => {
     const { container } = render(<Message message={botMessage} />);
     // Avatar fallback has the icon
-    const avatarFallback = container.querySelector('[class*="AvatarFallback"], [data-slot="avatar-fallback"]')
-      ?? container.querySelector('.flex.h-full');
+    const avatarFallback =
+      container.querySelector(
+        '[class*="AvatarFallback"], [data-slot="avatar-fallback"]'
+      ) ?? container.querySelector('.flex.h-full');
     expect(avatarFallback ?? container).toBeTruthy();
   });
 });

@@ -7,7 +7,9 @@ test.describe('Privacy Policy Page', () => {
   });
 
   test('displays the privacy policy title', async ({ page }) => {
-    await expect(page.getByRole('heading', { name: 'Privacy Policy' })).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: 'Privacy Policy' })
+    ).toBeVisible();
   });
 
   test('displays version text', async ({ page }) => {
@@ -29,6 +31,8 @@ test.describe('Privacy Policy Page', () => {
 
   test('is responsive on mobile', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
-    await expect(page.getByRole('heading', { name: 'Privacy Policy' })).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: 'Privacy Policy' })
+    ).toBeVisible();
   });
 });

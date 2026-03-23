@@ -24,7 +24,9 @@ test.describe('How It Works Section', () => {
       'Refine Your Style',
     ];
     for (let i = 0; i < expectedTitles.length; i++) {
-      await expect(page.getByTestId(`step-title-${i}`)).toHaveText(expectedTitles[i]);
+      await expect(page.getByTestId(`step-title-${i}`)).toHaveText(
+        expectedTitles[i]
+      );
     }
   });
 
