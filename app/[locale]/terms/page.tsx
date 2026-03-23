@@ -38,6 +38,9 @@ export default function TermsPage() {
               <button
                 data-testid={`section-toggle-${index}`}
                 onClick={() => toggleSection(index)}
+                aria-expanded={expandedSections.includes(index)}
+                aria-controls={`section-panel-${index}`}
+                id={`section-toggle-${index}`}
                 className="flex w-full items-center justify-between px-4 py-5 text-left sm:px-6"
               >
                 <h3 className="text-primary text-lg leading-6 font-medium">
@@ -51,6 +54,9 @@ export default function TermsPage() {
               </button>
               {expandedSections.includes(index) && (
                 <div
+                  id={`section-panel-${index}`}
+                  role="region"
+                  aria-labelledby={`section-toggle-${index}`}
                   data-testid={`section-content-${index}`}
                   className="px-4 py-5 sm:px-6"
                 >

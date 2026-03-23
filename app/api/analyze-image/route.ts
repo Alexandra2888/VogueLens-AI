@@ -5,6 +5,7 @@ import { eq, sql, gte, and } from 'drizzle-orm';
 import { db } from '@/lib/db';
 import { users } from '@/db/schema';
 import { imageLimit } from '@/lib/rate-limit';
+import { getOrCreateUser } from '@/lib/get-or-create-user';
 import {
   MAX_IMAGE_SIZE_BYTES,
   ALLOWED_IMAGE_TYPES,
@@ -26,11 +27,7 @@ try {
   }
 
   vision = new ImageAnnotatorClient({ credentials: credentials });
-} catch (error) {
-  console.error(
-    '[analyze-image] Vision client init failed:',
-    error instanceof Error ? error.message : 'unknown'
-  );
+} catch {
   vision = null;
 }
 
@@ -42,6 +39,9 @@ export async function POST(req: Request) {
 
     // Per-user rate limit
     if (!imageLimit(userId)) return rateLimitExceeded();
+
+    // Bootstrap user row (handles first-time users)
+    await getOrCreateUser(userId);
 
     const cost = 5;
 
@@ -142,11 +142,7 @@ export async function POST(req: Request) {
       description,
       creditsRemaining: updated.creditsRemaining,
     });
-  } catch (error) {
-    console.error(
-      '[analyze-image] Error:',
-      error instanceof Error ? error.message : 'unknown'
-    );
+  } catch {
     return internalErrorResponse();
   }
 }

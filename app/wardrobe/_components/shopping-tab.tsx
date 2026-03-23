@@ -118,7 +118,10 @@ export function ShoppingTab({ wardrobeItems }: ShoppingTabProps) {
           variant="outline"
           size="sm"
           className="gap-2"
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.stopPropagation();
+            fileInputRef.current?.click();
+          }}
         >
           <Upload className="h-4 w-4" /> {t('choosePhoto')}
         </Button>
@@ -207,7 +210,7 @@ export function ShoppingTab({ wardrobeItems }: ShoppingTabProps) {
           <p className="mb-3 text-sm font-medium">{t('pairsWith')}</p>
           <div className="flex gap-3 overflow-x-auto pb-2">
             {pairsWithItems.map((item) => (
-              <div key={item.id} className="flex-shrink-0">
+              <div key={item.id} className="shrink-0">
                 <img
                   src={item.imageUrl}
                   alt={item.category}

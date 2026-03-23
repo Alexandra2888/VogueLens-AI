@@ -1,7 +1,7 @@
 import { OpenAI } from 'openai';
 import { NextResponse } from 'next/server';
-import { auth, currentUser } from '@clerk/nextjs/server';
-import { eq, count, sql, gte, and } from 'drizzle-orm';
+import { auth } from '@clerk/nextjs/server';
+import { eq, sql, gte, and } from 'drizzle-orm';
 import { db } from '@/lib/db';
 import { users } from '@/db/schema';
 import { chatLimit } from '@/lib/rate-limit';
@@ -10,7 +10,9 @@ import {
   rateLimitExceeded,
   unauthorizedResponse,
   badRequestResponse,
+  internalErrorResponse,
 } from '@/lib/security';
+import { getOrCreateUser } from '@/lib/get-or-create-user';
 import { z } from 'zod';
 
 const chatSchema = z.object({
@@ -42,41 +44,6 @@ function getOpenAI() {
   return new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 }
 
-async function getOrCreateUser(userId: string) {
-  let user = await db.query.users.findFirst({ where: eq(users.id, userId) });
-  if (!user) {
-    const clerkUser = await currentUser();
-    const email = clerkUser?.emailAddresses?.[0]?.emailAddress ?? null;
-
-    user = await db.transaction(async (tx) => {
-      const [{ value: earlyCount }] = await tx
-        .select({ value: count() })
-        .from(users)
-        .where(eq(users.earlyAccess, true));
-
-      const isEarly = Number(earlyCount) < 100;
-
-      const [newUser] = await tx
-        .insert(users)
-        .values({
-          id: userId,
-          email,
-          credits: isEarly ? 100 : 0,
-          earlyAccess: isEarly,
-        })
-        .onConflictDoNothing({ target: users.id })
-        .returning();
-
-      // Another request may have inserted first — read the existing row
-      return (
-        newUser ??
-        (await tx.query.users.findFirst({ where: eq(users.id, userId) }))
-      );
-    });
-  }
-  return user!;
-}
-
 export async function POST(req: Request) {
   try {
     const { userId } = await auth();
@@ -104,9 +71,19 @@ export async function POST(req: Request) {
 
     if (!prompt) return badRequestResponse('Prompt cannot be empty');
 
-    // Check user has at least 1 credit
-    const user = await getOrCreateUser(userId);
-    if (user.credits < 1) {
+    await getOrCreateUser(userId);
+
+    // Reserve 1 credit atomically before the GPT-4 call
+    const [reserved] = await db
+      .update(users)
+      .set({
+        credits: sql`${users.credits} - 1`,
+        updatedAt: new Date(),
+      })
+      .where(and(eq(users.id, userId), gte(users.credits, 1)))
+      .returning({ creditsRemaining: users.credits });
+
+    if (!reserved) {
       return NextResponse.json(
         { error: 'Insufficient credits' },
         { status: 402 }
@@ -133,23 +110,44 @@ export async function POST(req: Request) {
     }
     messages.push({ role: 'user', content: prompt });
 
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4',
-      messages,
-      tools: [generateImageTool],
-      tool_choice: 'auto',
-      temperature: 0.7,
-      max_tokens: 500,
-    });
+    let completion;
+    try {
+      completion = await openai.chat.completions.create({
+        model: 'gpt-4',
+        messages,
+        tools: [generateImageTool],
+        tool_choice: 'auto',
+        temperature: 0.7,
+        max_tokens: 500,
+      });
+    } catch {
+      // Refund the reserved credit on provider failure
+      await db
+        .update(users)
+        .set({
+          credits: sql`${users.credits} + 1`,
+          updatedAt: new Date(),
+        })
+        .where(eq(users.id, userId));
+      return internalErrorResponse();
+    }
 
     const choice = completion.choices[0];
 
-    // GPT-4 decided to generate an image
     if (choice.finish_reason === 'tool_calls') {
       const toolCall = choice.message.tool_calls?.[0];
       if (toolCall?.function.name === 'generate_image') {
-        // Image costs 5 credits — verify user has enough
-        if (user.credits < 5) {
+        // Image generation costs 4 additional credits (1 already reserved)
+        const [imgReserved] = await db
+          .update(users)
+          .set({
+            credits: sql`${users.credits} - 4`,
+            updatedAt: new Date(),
+          })
+          .where(and(eq(users.id, userId), gte(users.credits, 4)))
+          .returning({ creditsRemaining: users.credits });
+
+        if (!imgReserved) {
           return NextResponse.json(
             { error: 'Insufficient credits for image generation' },
             { status: 402 }
@@ -160,68 +158,55 @@ export async function POST(req: Request) {
           toolCall.function.arguments
         ) as { prompt: string };
 
-        const imageResponse = await openai.images.generate({
-          model: 'dall-e-3',
-          prompt: imagePrompt,
-          n: 1,
-          size: '1024x1024',
-        });
+        let imageUrl: string | undefined;
+        try {
+          const imageResponse = await openai.images.generate({
+            model: 'dall-e-3',
+            prompt: imagePrompt,
+            n: 1,
+            size: '1024x1024',
+          });
+          imageUrl = imageResponse.data?.[0]?.url;
+        } catch {
+          // Refund the 4 extra credits on DALL-E failure
+          await db
+            .update(users)
+            .set({
+              credits: sql`${users.credits} + 4`,
+              updatedAt: new Date(),
+            })
+            .where(eq(users.id, userId));
+          return internalErrorResponse();
+        }
 
-        const imageUrl = imageResponse.data?.[0]?.url;
         if (!imageUrl) {
+          // Refund the extra 4 credits if no URL returned
+          await db
+            .update(users)
+            .set({
+              credits: sql`${users.credits} + 4`,
+              updatedAt: new Date(),
+            })
+            .where(eq(users.id, userId));
           return NextResponse.json(
             { error: 'Failed to generate image' },
             { status: 502 }
           );
         }
 
-        const [imgDeducted] = await db
-          .update(users)
-          .set({
-            credits: sql`${users.credits} - 5`,
-            updatedAt: new Date(),
-          })
-          .where(and(eq(users.id, userId), gte(users.credits, 5)))
-          .returning({ creditsRemaining: users.credits });
-
-        if (!imgDeducted) {
-          return NextResponse.json(
-            { error: 'Insufficient credits for image generation' },
-            { status: 402 }
-          );
-        }
-
         return NextResponse.json({
           response: 'Here is your generated outfit:',
           imageUrl,
-          creditsRemaining: imgDeducted.creditsRemaining,
+          creditsRemaining: imgReserved.creditsRemaining,
         });
       }
     }
 
-    const [textDeducted] = await db
-      .update(users)
-      .set({
-        credits: sql`${users.credits} - 1`,
-        updatedAt: new Date(),
-      })
-      .where(and(eq(users.id, userId), gte(users.credits, 1)))
-      .returning({ creditsRemaining: users.credits });
-
-    if (!textDeducted) {
-      return NextResponse.json(
-        { error: 'Insufficient credits' },
-        { status: 402 }
-      );
-    }
-
     return NextResponse.json({
       response: choice.message.content,
-      creditsRemaining: textDeducted.creditsRemaining,
+      creditsRemaining: reserved.creditsRemaining,
     });
-  } catch (error) {
-    const msg = error instanceof Error ? error.message : String(error);
-    console.error('[chat] Error:', msg);
-    return NextResponse.json({ error: msg }, { status: 500 });
+  } catch {
+    return internalErrorResponse();
   }
 }

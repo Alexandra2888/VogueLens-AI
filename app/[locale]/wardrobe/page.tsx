@@ -1,7 +1,7 @@
 'use client';
 
 import { useUser } from '@clerk/nextjs';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useRef } from 'react';
 import { AnimatePresence } from 'motion/react';
 import {
   Upload,
@@ -22,8 +22,7 @@ import {
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { Toaster } from '@/components/ui/toaster';
-import { redirect } from 'next/navigation';
-import { useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { supabase, WARDROBE_BUCKET } from '@/lib/supabase';
 import {
   ItemCard,
@@ -38,6 +37,7 @@ type ActiveTab = 'wardrobe' | 'weather' | 'shopping';
 export default function WardrobePage() {
   const { user, isLoaded } = useUser();
   const { toast } = useToast();
+  const router = useRouter();
   const t = useTranslations('wardrobe');
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -55,11 +55,7 @@ export default function WardrobePage() {
     itemIds: string[];
   } | null>(null);
 
-  useEffect(() => {
-    fetchItems();
-  }, []);
-
-  async function fetchItems() {
+  const fetchItems = useCallback(async () => {
     setIsFetching(true);
     try {
       const res = await fetch('/api/wardrobe');
@@ -74,7 +70,11 @@ export default function WardrobePage() {
     } finally {
       setIsFetching(false);
     }
-  }
+  }, [toast, t]);
+
+  useEffect(() => {
+    fetchItems();
+  }, [fetchItems]);
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -168,7 +168,10 @@ export default function WardrobePage() {
         <Loader2 className="animate-spin" />
       </div>
     );
-  if (!user) redirect('/sign-in');
+  if (!user) {
+    router.push('/sign-in');
+    return null;
+  }
 
   const filtered = items.filter((item) => {
     if (categoryFilter !== 'all' && item.category !== categoryFilter)

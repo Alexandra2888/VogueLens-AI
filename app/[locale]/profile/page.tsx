@@ -2,12 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
-import { redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Coins } from 'lucide-react';
 
 export default function ProfilePage() {
   const { user, isLoaded } = useUser();
+  const router = useRouter();
   const t = useTranslations('profile');
   const [credits, setCredits] = useState<number | null>(null);
 
@@ -26,7 +27,8 @@ export default function ProfilePage() {
   }
 
   if (!user) {
-    redirect('/sign-in');
+    router.push('/sign-in');
+    return null;
   }
 
   return (

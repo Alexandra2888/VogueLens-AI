@@ -187,7 +187,6 @@ export default function ChatbotInterface() {
     setConversations((prev) => [tempConv, ...prev]);
     setCurrentConversation(tempConv);
 
-    // Persist to DB
     const dbId = await apiCreateConversation(t('newConversation'));
     if (dbId) {
       await apiSaveMessage(dbId, 'bot', greetingText);
@@ -200,6 +199,9 @@ export default function ChatbotInterface() {
         prev.map((c) => (c.id === tempId ? realConv : c))
       );
       setCurrentConversation((cur) => (cur?.id === tempId ? realConv : cur));
+    } else {
+      setConversations((prev) => prev.filter((c) => c.id !== tempId));
+      setCurrentConversation(null);
     }
   }, [t]);
 
@@ -310,12 +312,15 @@ export default function ChatbotInterface() {
       );
       setCurrentConversation(withBot);
 
-      // Persist
+      // Persist — skip blob: URLs which are ephemeral local previews
+      const persistableUserImageUrl = userMsg.imageUrl?.startsWith('blob:')
+        ? undefined
+        : userMsg.imageUrl;
       await apiSaveMessage(
         currentConversation.id,
         'user',
         userMsg.text,
-        userMsg.imageUrl
+        persistableUserImageUrl
       );
       await apiSaveMessage(
         currentConversation.id,
