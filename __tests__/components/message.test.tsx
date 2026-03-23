@@ -3,19 +3,19 @@ import Message from '../../app/chat/_components/message';
 import { MessageProps } from '../../types/message';
 
 const botMessage: MessageProps = {
-  id: 1,
+  id: '1',
   text: 'Hi! How can I help you today?',
   sender: 'bot',
 };
 
 const userMessage: MessageProps = {
-  id: 2,
+  id: '2',
   text: 'What should I wear today?',
   sender: 'user',
 };
 
 const userMessageWithImage: MessageProps = {
-  id: 3,
+  id: '3',
   text: 'Check this outfit',
   sender: 'user',
   imageUrl: 'https://example.com/outfit.jpg',

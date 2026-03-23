@@ -7,7 +7,6 @@ import { users } from '@/db/schema';
 export async function GET() {
   try {
     const { userId } = await auth();
-    console.log('[credits] userId:', userId);
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -18,37 +17,42 @@ export async function GET() {
       const clerkUser = await currentUser();
       const email = clerkUser?.emailAddresses?.[0]?.emailAddress ?? null;
 
-      const [{ value: earlyCount }] = await db
-        .select({ value: count() })
-        .from(users)
-        .where(eq(users.earlyAccess, true));
+      user = await db.transaction(async (tx) => {
+        const [{ value: earlyCount }] = await tx
+          .select({ value: count() })
+          .from(users)
+          .where(eq(users.earlyAccess, true));
 
-      const isEarly = Number(earlyCount) < 100;
+        const isEarly = Number(earlyCount) < 100;
 
-      const [newUser] = await db
-        .insert(users)
-        .values({
-          id: userId,
-          email,
-          credits: isEarly ? 100 : 0,
-          earlyAccess: isEarly,
-        })
-        .returning();
+        const [newUser] = await tx
+          .insert(users)
+          .values({
+            id: userId,
+            email,
+            credits: isEarly ? 100 : 0,
+            earlyAccess: isEarly,
+          })
+          .onConflictDoNothing({ target: users.id })
+          .returning();
 
-      user = newUser;
+        return (
+          newUser ??
+          (await tx.query.users.findFirst({ where: eq(users.id, userId) }))
+        );
+      });
     }
 
     return NextResponse.json({
-      credits: user.credits,
-      earlyAccess: user.earlyAccess,
+      credits: user!.credits,
+      earlyAccess: user!.earlyAccess,
     });
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
     console.error('[credits] Error:', msg);
-    console.error(
-      '[credits] Full error:',
-      JSON.stringify(error, Object.getOwnPropertyNames(error))
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
     );
-    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }

@@ -1,7 +1,7 @@
 import { OpenAI } from 'openai';
 import { NextResponse } from 'next/server';
 import { auth, currentUser } from '@clerk/nextjs/server';
-import { eq, count } from 'drizzle-orm';
+import { eq, count, sql, gte, and } from 'drizzle-orm';
 import { db } from '@/lib/db';
 import { users } from '@/db/schema';
 import { chatLimit } from '@/lib/rate-limit';
@@ -47,23 +47,34 @@ async function getOrCreateUser(userId: string) {
   if (!user) {
     const clerkUser = await currentUser();
     const email = clerkUser?.emailAddresses?.[0]?.emailAddress ?? null;
-    const [{ value: earlyCount }] = await db
-      .select({ value: count() })
-      .from(users)
-      .where(eq(users.earlyAccess, true));
-    const isEarly = Number(earlyCount) < 100;
-    const [newUser] = await db
-      .insert(users)
-      .values({
-        id: userId,
-        email,
-        credits: isEarly ? 100 : 0,
-        earlyAccess: isEarly,
-      })
-      .returning();
-    user = newUser;
+
+    user = await db.transaction(async (tx) => {
+      const [{ value: earlyCount }] = await tx
+        .select({ value: count() })
+        .from(users)
+        .where(eq(users.earlyAccess, true));
+
+      const isEarly = Number(earlyCount) < 100;
+
+      const [newUser] = await tx
+        .insert(users)
+        .values({
+          id: userId,
+          email,
+          credits: isEarly ? 100 : 0,
+          earlyAccess: isEarly,
+        })
+        .onConflictDoNothing({ target: users.id })
+        .returning();
+
+      // Another request may have inserted first — read the existing row
+      return (
+        newUser ??
+        (await tx.query.users.findFirst({ where: eq(users.id, userId) }))
+      );
+    });
   }
-  return user;
+  return user!;
 }
 
 export async function POST(req: Request) {
@@ -164,28 +175,49 @@ export async function POST(req: Request) {
           );
         }
 
-        await db
+        const [imgDeducted] = await db
           .update(users)
-          .set({ credits: user.credits - 5, updatedAt: new Date() })
-          .where(eq(users.id, userId));
+          .set({
+            credits: sql`${users.credits} - 5`,
+            updatedAt: new Date(),
+          })
+          .where(and(eq(users.id, userId), gte(users.credits, 5)))
+          .returning({ creditsRemaining: users.credits });
+
+        if (!imgDeducted) {
+          return NextResponse.json(
+            { error: 'Insufficient credits for image generation' },
+            { status: 402 }
+          );
+        }
 
         return NextResponse.json({
           response: 'Here is your generated outfit:',
           imageUrl,
-          creditsRemaining: user.credits - 5,
+          creditsRemaining: imgDeducted.creditsRemaining,
         });
       }
     }
 
-    // Normal text response
-    await db
+    const [textDeducted] = await db
       .update(users)
-      .set({ credits: user.credits - 1, updatedAt: new Date() })
-      .where(eq(users.id, userId));
+      .set({
+        credits: sql`${users.credits} - 1`,
+        updatedAt: new Date(),
+      })
+      .where(and(eq(users.id, userId), gte(users.credits, 1)))
+      .returning({ creditsRemaining: users.credits });
+
+    if (!textDeducted) {
+      return NextResponse.json(
+        { error: 'Insufficient credits' },
+        { status: 402 }
+      );
+    }
 
     return NextResponse.json({
       response: choice.message.content,
-      creditsRemaining: user.credits - 1,
+      creditsRemaining: textDeducted.creditsRemaining,
     });
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);

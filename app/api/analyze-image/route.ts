@@ -1,7 +1,7 @@
 import { ImageAnnotatorClient } from '@google-cloud/vision';
 import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { eq } from 'drizzle-orm';
+import { eq, sql, gte, and } from 'drizzle-orm';
 import { db } from '@/lib/db';
 import { users } from '@/db/schema';
 import { imageLimit } from '@/lib/rate-limit';
@@ -43,17 +43,7 @@ export async function POST(req: Request) {
     // Per-user rate limit
     if (!imageLimit(userId)) return rateLimitExceeded();
 
-    // Credit check (5 credits per image analysis)
     const cost = 5;
-    const user = await db.query.users.findFirst({
-      where: eq(users.id, userId),
-    });
-    if (!user || user.credits < cost) {
-      return NextResponse.json(
-        { error: 'Insufficient credits' },
-        { status: 402 }
-      );
-    }
 
     if (!vision) {
       return NextResponse.json(
@@ -67,33 +57,55 @@ export async function POST(req: Request) {
 
     if (!image) return badRequestResponse('No image provided');
 
-    // Validate file type (don't trust client-provided MIME; check header bytes via type field)
     if (!ALLOWED_IMAGE_TYPES.includes(image.type)) {
       return badRequestResponse(
         'Unsupported image type. Use JPEG, PNG, WebP, or GIF.'
       );
     }
 
-    // Validate file size
     if (image.size > MAX_IMAGE_SIZE_BYTES) {
       return badRequestResponse('Image exceeds 5 MB limit.');
     }
 
-    // Deduct credits after validation, before the expensive Vision API call
-    await db
+    // Atomic credit deduction: decrement only if balance is sufficient
+    const [updated] = await db
       .update(users)
-      .set({ credits: user.credits - cost, updatedAt: new Date() })
-      .where(eq(users.id, userId));
+      .set({
+        credits: sql`${users.credits} - ${cost}`,
+        updatedAt: new Date(),
+      })
+      .where(and(eq(users.id, userId), gte(users.credits, cost)))
+      .returning({ creditsRemaining: users.credits });
 
-    const buffer = Buffer.from(await image.arrayBuffer());
-    const [result] = await vision.annotateImage({
-      image: { content: buffer },
-      features: [
-        { type: 'LABEL_DETECTION', maxResults: 5 },
-        { type: 'OBJECT_LOCALIZATION', maxResults: 5 },
-        { type: 'IMAGE_PROPERTIES' },
-      ],
-    });
+    if (!updated) {
+      return NextResponse.json(
+        { error: 'Insufficient credits' },
+        { status: 402 }
+      );
+    }
+
+    let result;
+    try {
+      const buffer = Buffer.from(await image.arrayBuffer());
+      [result] = await vision.annotateImage({
+        image: { content: buffer },
+        features: [
+          { type: 'LABEL_DETECTION', maxResults: 5 },
+          { type: 'OBJECT_LOCALIZATION', maxResults: 5 },
+          { type: 'IMAGE_PROPERTIES' },
+        ],
+      });
+    } catch (visionError) {
+      // Refund credits on Vision API failure
+      await db
+        .update(users)
+        .set({
+          credits: sql`${users.credits} + ${cost}`,
+          updatedAt: new Date(),
+        })
+        .where(eq(users.id, userId));
+      throw visionError;
+    }
 
     const labels =
       result.labelAnnotations
@@ -128,7 +140,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       description,
-      creditsRemaining: user.credits - cost,
+      creditsRemaining: updated.creditsRemaining,
     });
   } catch (error) {
     console.error(
