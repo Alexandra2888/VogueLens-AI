@@ -14,6 +14,7 @@ import {
   badRequestResponse,
   internalErrorResponse,
 } from '@/lib/security';
+import { getOrCreateUser } from '@/lib/get-or-create-user';
 
 export async function GET() {
   try {
@@ -52,6 +53,8 @@ export async function POST(req: Request) {
   try {
     const { userId } = await auth();
     if (!userId) return unauthorizedResponse();
+
+    await getOrCreateUser(userId);
 
     // Per-user rate limit for expensive wardrobe POST (calls GPT-4o vision)
     if (!wardrobeLimit(userId)) return rateLimitExceeded();
