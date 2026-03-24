@@ -19,7 +19,7 @@ let vision: ImageAnnotatorClient | null;
 
 try {
   const credentials = JSON.parse(
-    process.env.NEXT_GOOGLE_CLOUD_CREDENTIALS || ''
+    process.env.GOOGLE_APPLICATION_CREDENTIALS || ''
   );
 
   if (!credentials.client_email || !credentials.private_key) {

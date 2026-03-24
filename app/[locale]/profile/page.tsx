@@ -19,13 +19,18 @@ export default function ProfilePage() {
       return;
     }
     if (isLoaded && user) {
-      fetch('/api/user/credits')
+      const controller = new AbortController();
+      fetch('/api/user/credits', { signal: controller.signal })
         .then((r) => r.json())
         .then((data) => {
           if (data.credits !== undefined) setCredits(data.credits);
           else console.error('[credits] unexpected response:', data);
         })
-        .catch((e) => console.error('[credits] fetch failed:', e));
+        .catch((e) => {
+          if (e?.name === 'AbortError') return;
+          console.error('[credits] fetch failed:', e);
+        });
+      return () => controller.abort();
     }
   }, [isLoaded, user, router, locale]);
 

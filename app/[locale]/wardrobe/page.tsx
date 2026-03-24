@@ -56,14 +56,15 @@ export default function WardrobePage() {
     itemIds: string[];
   } | null>(null);
 
-  const fetchItems = useCallback(async () => {
+  const fetchItems = useCallback(async (signal?: AbortSignal) => {
     setIsFetching(true);
     try {
-      const res = await fetch('/api/wardrobe');
+      const res = await fetch('/api/wardrobe', { signal });
       if (!res.ok) throw new Error();
       const data = await res.json();
       setItems(data.items ?? []);
-    } catch {
+    } catch (err) {
+      if (err instanceof Error && err.name === 'AbortError') return;
       toast({
         title: t('toast.error'),
         description: t('toast.loadError'),
@@ -80,7 +81,9 @@ export default function WardrobePage() {
       return;
     }
     if (isLoaded && user) {
-      fetchItems();
+      const controller = new AbortController();
+      fetchItems(controller.signal);
+      return () => controller.abort();
     }
   }, [isLoaded, user, fetchItems, router, locale]);
 
