@@ -24,10 +24,14 @@ export default function ProfilePage() {
         .then((r) => r.json())
         .then((data) => {
           if (data.credits !== undefined) setCredits(data.credits);
-          else console.error('[credits] unexpected response:', data);
+          else {
+            // eslint-disable-next-line no-console -- client credits diagnostics
+            console.error('[credits] unexpected response:', data);
+          }
         })
         .catch((e) => {
           if (e?.name === 'AbortError') return;
+          // eslint-disable-next-line no-console -- client credits diagnostics
           console.error('[credits] fetch failed:', e);
         });
       return () => controller.abort();

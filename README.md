@@ -69,8 +69,11 @@ NEXT_OPENAI_API_KEY=
 # Google Cloud Vision (JSON credentials as string)
 NEXT_GOOGLE_CLOUD_CREDENTIALS=
 
-# Supabase
+# Supabase — pooled connection (runtime, e.g. serverless)
 DATABASE_URL=
+
+# Supabase — direct connection (Drizzle migrations / DDL)
+DIRECT_URL=
 
 # Upstash Redis (rate limiting)
 UPSTASH_REDIS_REST_URL=

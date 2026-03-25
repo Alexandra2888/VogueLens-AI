@@ -17,7 +17,10 @@ const CrispChat = () => {
 
       try {
         Crisp.configure(CRISP_WEBSITE_ID);
-      } catch {}
+      } catch (error) {
+        // eslint-disable-next-line no-console -- Crisp init diagnostics
+        console.error('[crisp] configure failed:', error);
+      }
     };
 
     initCrisp();

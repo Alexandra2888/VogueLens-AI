@@ -15,18 +15,39 @@ import {
   internalErrorResponse,
 } from '@/lib/security';
 
+function parseServiceAccountJson(raw: string): Record<string, unknown> | null {
+  try {
+    const parsed = JSON.parse(raw) as Record<string, unknown>;
+    if (parsed.client_email && parsed.private_key) return parsed;
+  } catch {
+    /* invalid JSON or wrong shape */
+  }
+  return null;
+}
+
+function createVisionClient(): ImageAnnotatorClient | null {
+  const fromNext = process.env.NEXT_GOOGLE_CLOUD_CREDENTIALS?.trim();
+  if (fromNext) {
+    const credentials = parseServiceAccountJson(fromNext);
+    if (credentials) return new ImageAnnotatorClient({ credentials });
+  }
+
+  const gac = process.env.GOOGLE_APPLICATION_CREDENTIALS?.trim();
+  if (!gac) return null;
+
+  if (gac.startsWith('{')) {
+    const credentials = parseServiceAccountJson(gac);
+    return credentials ? new ImageAnnotatorClient({ credentials }) : null;
+  }
+
+  // Filesystem path — GoogleAuth reads GOOGLE_APPLICATION_CREDENTIALS
+  return new ImageAnnotatorClient();
+}
+
 let vision: ImageAnnotatorClient | null;
 
 try {
-  const credentials = JSON.parse(
-    process.env.GOOGLE_APPLICATION_CREDENTIALS || ''
-  );
-
-  if (!credentials.client_email || !credentials.private_key) {
-    throw new Error('Invalid credentials format');
-  }
-
-  vision = new ImageAnnotatorClient({ credentials: credentials });
+  vision = createVisionClient();
 } catch {
   vision = null;
 }
