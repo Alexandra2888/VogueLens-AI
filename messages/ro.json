@@ -102,6 +102,7 @@
   },
   "wardrobe": {
     "title": "Garderoba Mea",
+    "subtitle": "Adaugă fotografii ale pieselor, filtrează garderoba și primește idei de ținute cu AI pentru orice ocazie.",
     "tabs": {
       "wardrobe": "Garderoba Mea",
       "weather": "Ținută Meteo",

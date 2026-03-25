@@ -16,10 +16,14 @@ export async function PATCH(
     const { id } = await params;
     const { title } = await req.json();
 
-    await db
+    const result = await db
       .update(conversations)
       .set({ title, updatedAt: new Date() })
-      .where(and(eq(conversations.id, id), eq(conversations.userId, userId)));
+      .where(and(eq(conversations.id, id), eq(conversations.userId, userId)))
+      .returning({ id: conversations.id });
+
+    if (result.length === 0)
+      return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
     return NextResponse.json({ ok: true });
   } catch (error) {
