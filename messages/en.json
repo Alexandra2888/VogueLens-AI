@@ -102,6 +102,7 @@
   },
   "wardrobe": {
     "title": "My Wardrobe",
+    "subtitle": "Add photos of your pieces, filter your closet, and get AI outfit ideas for any occasion.",
     "tabs": {
       "wardrobe": "My Wardrobe",
       "weather": "Weather Outfit",
