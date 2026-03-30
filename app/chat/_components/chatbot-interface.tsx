@@ -295,6 +295,24 @@ export default function ChatbotInterface() {
           imageAnalysis,
         }),
       });
+
+      if (!chatResponse.ok) {
+        const botMsg: MessageProps = {
+          id: crypto.randomUUID(),
+          text: t('errorMessage'),
+          sender: 'bot',
+        };
+        const withBot: ConversationProps = {
+          ...withUser,
+          messages: [...withUser.messages, botMsg],
+        };
+        setConversations((prev) =>
+          prev.map((c) => (c.id === currentConversation.id ? withBot : c))
+        );
+        setCurrentConversation(withBot);
+        return;
+      }
+
       const chatData = await chatResponse.json();
       if (chatData.creditsRemaining !== undefined)
         setCredits(chatData.creditsRemaining);

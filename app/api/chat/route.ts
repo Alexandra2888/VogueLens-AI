@@ -44,6 +44,8 @@ function getOpenAI() {
   return new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 }
 
+export const maxDuration = 30;
+
 export async function POST(req: Request) {
   try {
     const { userId } = await auth();
@@ -113,7 +115,7 @@ export async function POST(req: Request) {
     let completion;
     try {
       completion = await openai.chat.completions.create({
-        model: 'gpt-4',
+        model: 'gpt-4o',
         messages,
         tools: [generateImageTool],
         tool_choice: 'auto',
