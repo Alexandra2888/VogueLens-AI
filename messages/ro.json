@@ -82,7 +82,7 @@
   "chat": {
     "welcome": "Bun venit la Asistentul AI de Modă",
     "welcomeSubtitle": "Începe o conversație nouă pentru sfaturi personalizate de modă",
-    "newConversation": "Ultimul Mesaj Modă",
+    "newConversation": "Chat Nou",
     "placeholder": "Cere sfaturi de modă sau descrie o imagine pentru a genera...",
     "generateImageTitle": "Generează Imagine",
     "sendMessage": "Trimite mesaj",
@@ -98,7 +98,10 @@
     "gateSubtitle": "Înregistrează-te pentru funcții complete.",
     "outOfCreditsTitle": "Ai folosit toate creditele",
     "outOfCreditsSubtitle": "Fă upgrade pentru a continua.",
-    "errorMessage": "Ceva a mers greșit. Încearcă din nou."
+    "errorMessage": "Ceva a mers greșit. Încearcă din nou.",
+    "deleteConfirmation": "Ești sigur că vrei să ștergi această conversație?",
+    "editTitle": "Editează titlul",
+    "deleteChat": "Șterge conversația"
   },
   "wardrobe": {
     "title": "Garderoba Mea",
