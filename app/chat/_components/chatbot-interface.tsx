@@ -61,6 +61,37 @@ async function apiUpdateTitle(conversationId: string, title: string) {
   }
 }
 
+async function apiGenerateTitle(
+  userMessage: string,
+  botResponse: string
+): Promise<string | null> {
+  try {
+    const res = await fetch('/api/conversations/generate-title', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userMessage, botResponse }),
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.title ?? null;
+  } catch {
+    return null;
+  }
+}
+
+async function apiDeleteConversation(
+  conversationId: string
+): Promise<boolean> {
+  try {
+    const res = await fetch(`/api/conversations/${conversationId}`, {
+      method: 'DELETE',
+    });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
 async function apiLoadMessages(
   conversationId: string
 ): Promise<MessageProps[]> {
@@ -105,7 +136,7 @@ export default function ChatbotInterface() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const initializedRef = useRef(false);
 
-  const generateChatTitle = (message: string): string => {
+  const generatePlaceholderTitle = (message: string): string => {
     const clean = message.replace(/^Generate image:\s*/i, '');
     return clean.length > 30 ? `${clean.substring(0, 27)}...` : clean;
   };
@@ -223,6 +254,57 @@ export default function ChatbotInterface() {
     []
   );
 
+  const handleRenameConversation = useCallback(
+    async (conversationId: string, newTitle: string) => {
+      await apiUpdateTitle(conversationId, newTitle);
+      setConversations((prev) =>
+        prev.map((c) =>
+          c.id === conversationId ? { ...c, title: newTitle } : c
+        )
+      );
+      setCurrentConversation((cur) =>
+        cur && cur.id === conversationId ? { ...cur, title: newTitle } : cur
+      );
+    },
+    []
+  );
+
+  const handleDeleteConversation = useCallback(
+    async (conversationId: string) => {
+      if (!window.confirm(t('deleteConfirmation'))) return;
+
+      const success = await apiDeleteConversation(conversationId);
+      if (!success) return;
+
+      setConversations((prev) => {
+        const remaining = prev.filter((c) => c.id !== conversationId);
+        // If the deleted conversation was active, switch to next or create new
+        if (currentConversation?.id === conversationId) {
+          if (remaining.length > 0) {
+            const next = remaining[0];
+            // Lazy-load messages if needed
+            if (next.messages.length === 0) {
+              apiLoadMessages(next.id).then((msgs) => {
+                const loaded = { ...next, messages: msgs };
+                setConversations((p) =>
+                  p.map((c) => (c.id === next.id ? loaded : c))
+                );
+                setCurrentConversation(loaded);
+              });
+            } else {
+              setCurrentConversation(next);
+            }
+          } else {
+            setCurrentConversation(null);
+            startNewConversation();
+          }
+        }
+        return remaining;
+      });
+    },
+    [currentConversation?.id, startNewConversation, t]
+  );
+
   const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -256,7 +338,7 @@ export default function ChatbotInterface() {
         (m) => m.sender === 'user'
       );
       const newTitle = isFirstUserMessage
-        ? generateChatTitle(userMsg.text)
+        ? generatePlaceholderTitle(userMsg.text)
         : currentConversation.title;
 
       let imageAnalysis: string | null = null;
@@ -350,8 +432,25 @@ export default function ChatbotInterface() {
         botMsg.text,
         botMsg.imageUrl
       );
-      if (isFirstUserMessage)
+      if (isFirstUserMessage) {
         await apiUpdateTitle(currentConversation.id, newTitle);
+        // Generate AI title in the background
+        apiGenerateTitle(userMsg.text, botMsg.text).then((aiTitle) => {
+          if (aiTitle) {
+            apiUpdateTitle(currentConversation.id, aiTitle);
+            setConversations((prev) =>
+              prev.map((c) =>
+                c.id === currentConversation.id ? { ...c, title: aiTitle } : c
+              )
+            );
+            setCurrentConversation((cur) =>
+              cur && cur.id === currentConversation.id
+                ? { ...cur, title: aiTitle }
+                : cur
+            );
+          }
+        });
+      }
     } catch (error) {
       console.error('Error processing message:', error);
     } finally {
@@ -393,6 +492,8 @@ export default function ChatbotInterface() {
           currentConversation={currentConversation}
           onConversationSelect={handleConversationSelect}
           onNewConversation={startNewConversation}
+          onRenameConversation={handleRenameConversation}
+          onDeleteConversation={handleDeleteConversation}
           isLoading={isLoadingConversations}
         />
       </div>

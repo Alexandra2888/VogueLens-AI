@@ -82,7 +82,7 @@
   "chat": {
     "welcome": "Welcome to AI Fashion Assistant",
     "welcomeSubtitle": "Start a new conversation to get personalized fashion advice",
-    "newConversation": "Last Fashion Message",
+    "newConversation": "New Chat",
     "placeholder": "Ask for fashion advice or describe an image to generate...",
     "generateImageTitle": "Generate Image",
     "sendMessage": "Send message",
@@ -98,7 +98,10 @@
     "gateSubtitle": "Register for full features.",
     "outOfCreditsTitle": "You've used all your credits",
     "outOfCreditsSubtitle": "Upgrade to keep styling.",
-    "errorMessage": "Something went wrong. Please try again."
+    "errorMessage": "Something went wrong. Please try again.",
+    "deleteConfirmation": "Are you sure you want to delete this conversation?",
+    "editTitle": "Edit title",
+    "deleteChat": "Delete chat"
   },
   "wardrobe": {
     "title": "My Wardrobe",

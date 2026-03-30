@@ -1,8 +1,9 @@
-import React from 'react';
-import { MessageSquare, Plus, Bot } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Plus, Pencil, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -13,15 +14,54 @@ const Sidebar = ({
   currentConversation,
   onConversationSelect,
   onNewConversation,
+  onRenameConversation,
+  onDeleteConversation,
   isLoading,
 }: {
   conversations: ConversationProps[];
   currentConversation: ConversationProps | null;
   onConversationSelect: (conv: ConversationProps) => void;
   onNewConversation: () => void;
+  onRenameConversation: (conversationId: string, newTitle: string) => void;
+  onDeleteConversation: (conversationId: string) => void;
   isLoading: boolean;
 }) => {
   const t = useTranslations('chat');
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editValue, setEditValue] = useState('');
+  const editInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (editingId && editInputRef.current) {
+      editInputRef.current.focus();
+      editInputRef.current.select();
+    }
+  }, [editingId]);
+
+  const handleStartEdit = (
+    e: React.MouseEvent,
+    conv: ConversationProps
+  ) => {
+    e.stopPropagation();
+    setEditingId(conv.id);
+    setEditValue(conv.title);
+  };
+
+  const handleSaveEdit = () => {
+    if (editingId && editValue.trim()) {
+      onRenameConversation(editingId, editValue.trim());
+    }
+    setEditingId(null);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+  };
+
+  const handleDelete = (e: React.MouseEvent, conversationId: string) => {
+    e.stopPropagation();
+    onDeleteConversation(conversationId);
+  };
 
   return (
     <aside className="border-border bg-muted/20 w-72 flex-shrink-0 border-r">
@@ -49,24 +89,60 @@ const Sidebar = ({
               {t('noConversations')}
             </p>
           ) : (
-            conversations.map((conv) => (
-              <button
-                key={conv.id}
-                onClick={() => onConversationSelect(conv)}
-                className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm transition-colors ${
-                  currentConversation?.id === conv.id
-                    ? 'bg-background text-foreground shadow-sm'
-                    : 'text-muted-foreground hover:bg-background/60 hover:text-foreground'
-                }`}
-              >
-                {conv.messages.some((m) => m.sender === 'user') ? (
-                  <Bot className="text-brand-red h-4 w-4 flex-shrink-0" />
-                ) : (
-                  <MessageSquare className="h-4 w-4 flex-shrink-0" />
-                )}
-                <span className="flex-1 truncate">{conv.title}</span>
-              </button>
-            ))
+            conversations.map((conv) => {
+              const isActive = currentConversation?.id === conv.id;
+              const isEditing = editingId === conv.id;
+
+              return (
+                <div
+                  key={conv.id}
+                  className={`flex items-center rounded-lg px-3 py-2 text-sm transition-colors ${
+                    isActive
+                      ? 'bg-background text-foreground shadow-sm'
+                      : 'text-muted-foreground hover:bg-background/60 hover:text-foreground'
+                  }`}
+                >
+                  <button
+                    onClick={(e) => handleStartEdit(e, conv)}
+                    className="text-muted-foreground hover:text-foreground mr-2 flex-shrink-0 rounded p-0.5 transition-colors"
+                    title={t('editTitle')}
+                  >
+                    <Pencil className="h-3.5 w-3.5" />
+                  </button>
+
+                  {isEditing ? (
+                    <Input
+                      ref={editInputRef}
+                      value={editValue}
+                      onChange={(e) => setEditValue(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') handleSaveEdit();
+                        if (e.key === 'Escape') handleCancelEdit();
+                      }}
+                      onBlur={handleSaveEdit}
+                      className="h-6 min-w-0 flex-1 px-1 py-0 text-sm"
+                    />
+                  ) : (
+                    <button
+                      onClick={() => onConversationSelect(conv)}
+                      className="min-w-0 flex-1 text-left"
+                    >
+                      <span className="block max-w-[10rem] truncate">
+                        {conv.title}
+                      </span>
+                    </button>
+                  )}
+
+                  <button
+                    onClick={(e) => handleDelete(e, conv.id)}
+                    className="text-muted-foreground hover:text-destructive ml-2 flex-shrink-0 rounded p-0.5 transition-colors"
+                    title={t('deleteChat')}
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              );
+            })
           )}
         </ScrollArea>
         <div className="border-border border-t p-4">
