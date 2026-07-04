@@ -1,0 +1,4 @@
+# Keep GitHub's language bar accurate.
+# These are generated test/report artifacts, not source — exclude from Linguist.
+playwright-report/** linguist-generated
+test-results/**     linguist-generated
