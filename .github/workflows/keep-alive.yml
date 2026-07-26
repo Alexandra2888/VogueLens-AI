@@ -1,0 +1,26 @@
+name: Keep Alive
+
+# Backs up the Vercel cron in vercel.json. Supabase's free tier pauses a project
+# after ~7 days without activity, so this runs well inside that window and fails
+# loudly (GitHub emails on a failed run) instead of pausing silently.
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping keep-alive endpoint
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          KEEP_ALIVE_URL: https://vogue-lens-ai.vercel.app/api/cron/keep-alive
+        run: |
+          set -euo pipefail
+          # --fail-with-body so a non-2xx still prints the JSON diagnostics
+          # before curl exits non-zero and marks the run red.
+          curl --silent --show-error --fail-with-body \
+            --max-time 60 --retry 3 --retry-delay 20 --retry-all-errors \
+            --header "Authorization: Bearer ${CRON_SECRET}" \
+            "${KEEP_ALIVE_URL}"
