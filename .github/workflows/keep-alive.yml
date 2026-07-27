@@ -14,13 +14,34 @@ jobs:
     steps:
       - name: Ping keep-alive endpoint
         env:
-          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          # The repository secret is named CRON_JOB; the route reads it as
+          # CRON_SECRET (the name Vercel Cron uses). Keep both in sync — if the
+          # Vercel env var is rotated, update the CRON_JOB secret to match.
+          CRON_SECRET: ${{ secrets.CRON_JOB }}
           KEEP_ALIVE_URL: https://vogue-lens-ai.vercel.app/api/cron/keep-alive
         run: |
           set -euo pipefail
+
+          # A missing secret produces an empty Bearer token, which the route
+          # answers with 401. Fail here instead, so the log names the cause.
+          if [ -z "${CRON_SECRET}" ]; then
+            echo "::error::CRON_JOB repository secret is empty or unset."
+            exit 1
+          fi
+
           # --fail-with-body so a non-2xx still prints the JSON diagnostics
-          # before curl exits non-zero and marks the run red.
-          curl --silent --show-error --fail-with-body \
-            --max-time 60 --retry 3 --retry-delay 20 --retry-all-errors \
+          # before curl exits non-zero. No --retry-all-errors: the default
+          # retries cover the transient cases (timeouts, 429, 5xx), while an
+          # auth or config error fails immediately instead of after ~1 minute.
+          response=$(curl --silent --show-error --fail-with-body \
+            --max-time 60 --retry 3 --retry-delay 20 \
             --header "Authorization: Bearer ${CRON_SECRET}" \
-            "${KEEP_ALIVE_URL}"
+            "${KEEP_ALIVE_URL}")
+          echo "${response}"
+
+          # The route answers 207 when only one of the two probes fails, and
+          # curl treats 2xx as success — so check the body's own verdict too.
+          if [ "$(jq -r '.ok' <<<"${response}")" != "true" ]; then
+            echo "::error::keep-alive reported a probe failure."
+            exit 1
+          fi
