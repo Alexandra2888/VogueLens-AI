@@ -79,9 +79,7 @@ async function apiGenerateTitle(
   }
 }
 
-async function apiDeleteConversation(
-  conversationId: string
-): Promise<boolean> {
+async function apiDeleteConversation(conversationId: string): Promise<boolean> {
   try {
     const res = await fetch(`/api/conversations/${conversationId}`, {
       method: 'DELETE',

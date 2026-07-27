@@ -5,9 +5,50 @@ import { test, expect } from '@playwright/test';
 // one with the bypass enabled via webServer.env in playwright.config.ts.
 // If reusing an existing dev server, add NEXT_PUBLIC_CLERK_BYPASS_AUTH=true to .env.local
 // and restart it.
+//
+// The chat UI is driven entirely by /api/user/credits and /api/conversations.
+// Those are stubbed below so the page renders the same way on every machine:
+// against a live backend the assertions depend on the signed-in user's credit
+// balance and stored conversations, which differ per environment.
 
 test.describe('Chat Page', () => {
   test.beforeEach(async ({ page }) => {
+    await page.route('**/api/user/credits', (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ credits: 100, earlyAccess: true }),
+      })
+    );
+
+    // Start from an empty history so the component opens a fresh conversation
+    // and renders the greeting.
+    await page.route('**/api/conversations', (route) => {
+      if (route.request().method() === 'POST') {
+        return route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ conversation: { id: 'e2e-conversation-1' } }),
+        });
+      }
+      return route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ conversations: [] }),
+      });
+    });
+
+    await page.route('**/api/conversations/*/messages', (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          message: { id: 'e2e-message-1' },
+          messages: [],
+        }),
+      })
+    );
+
     await page.goto('/en/chat', { waitUntil: 'domcontentloaded' });
     // Skip if redirected to sign-in (auth not bypassed on this server)
     if (page.url().includes('sign-in')) {
@@ -42,9 +83,9 @@ test.describe('Chat Page', () => {
   });
 
   test('typing in input enables send button', async ({ page }) => {
-    await page
-      .getByPlaceholder(/Ask for fashion advice/i)
-      .fill('What should I wear?');
+    const input = page.getByPlaceholder(/Ask for fashion advice/i);
+    await expect(input).toBeEnabled();
+    await input.fill('What should I wear?');
     const enabledBtn = page.locator(
       'div.flex.items-center.space-x-2 button:not([disabled])'
     );
@@ -53,8 +94,10 @@ test.describe('Chat Page', () => {
 
   test('chat card fills most of the viewport height', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 800 });
-    const chatCard = page.locator('.rounded-xl.border.border-border');
-    const box = await chatCard.first().boundingBox();
-    expect(box?.height).toBeGreaterThan(400);
+    const chatCard = page.locator('.rounded-xl.border.border-border').first();
+    await expect(chatCard).toBeVisible();
+    const box = await chatCard.boundingBox();
+    expect(box).not.toBeNull();
+    expect(box!.height).toBeGreaterThan(400);
   });
 });

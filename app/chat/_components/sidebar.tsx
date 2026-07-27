@@ -38,10 +38,7 @@ const Sidebar = ({
     }
   }, [editingId]);
 
-  const handleStartEdit = (
-    e: React.MouseEvent,
-    conv: ConversationProps
-  ) => {
+  const handleStartEdit = (e: React.MouseEvent, conv: ConversationProps) => {
     e.stopPropagation();
     setEditingId(conv.id);
     setEditValue(conv.title);
